@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Africa United News</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f5f5f5;
+      color: #222;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #222;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 2em;
+      letter-spacing: 1px;
+      border-bottom: 5px solid #999;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    .article {
+      border-bottom: 1px solid #ccc;
+      padding: 15px 0;
+    }
+    .article img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .article h2 {
+      font-size: 1.4em;
+      margin-bottom: 5px;
+    }
+    .article p {
+      font-size: 1em;
+      line-height: 1.6;
+    }
+    .article a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+    .article a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.9em;
+      color: #666;
+      padding: 20px;
+      border-top: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Africa United News
+  </header>
+  <div class="container" id="news-container">
+    <p>Loading latest African headlines...</p>
+  </div>
+  <footer>
+    &copy; 2025 Africa United News. Powered by NewsAPI.
+  </footer>
+
+  <script>
+    const apiKey = "365d5c72c9eb4d719cd39b5bd63ade70";
+    const keywords = [
+      "Africa business",
+      "Africa politics",
+      "Africa technology",
+      "Africa health",
+      "Africa economy",
+      "Africa climate",
+      "Africa education",
+      "Africa innovation"
+    ];
+
+    const selectedKeyword = keywords[Math.floor(Math.random() * keywords.length)];
+    const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(selectedKeyword)}&language=en&pageSize=10&sortBy=publishedAt&apiKey=${apiKey}`;
+
+    async function fetchNews() {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const container = document.getElementById("news-container");
+        container.innerHTML = "";
+
+        if (!data.articles || data.articles.length === 0) {
+          container.innerHTML = "<p>No African news found at the moment.</p>";
+          return;
+        }
+
+        data.articles.forEach(article => {
+          const div = document.createElement("div");
+          div.className = "article";
+          div.innerHTML = `
+            ${article.urlToImage ? `<img src="${article.urlToImage}" alt="News image">` : ""}
+            <h2>${article.title}</h2>
+            <p>${article.description || "No description available."}</p>
+            <a href="${article.url}" target="_blank">Read more</a>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        document.getElementById("news-container").innerHTML = "<p>Failed to load news. NewsAPI may be blocking browser requests.</p>";
+      }
+    }
+
+    fetchNews();
+  </script>
+</body>
+</html>
