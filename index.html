@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="300" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Africa United News</title>
   <style>
@@ -20,6 +21,82 @@
       font-size: 2.5em;
       letter-spacing: 1px;
       border-bottom: 6px double #999;
+    }
+    .ticker-bar {
+      display: flex;
+      align-items: center;
+      background-color: #000;
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 1em;
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.3);
+    }
+    .live-badge {
+      background-color: #d60000;
+      color: white;
+      font-weight: bold;
+      padding: 6px 12px;
+      margin-right: 20px;
+      border-radius: 4px;
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.3);
+      user-select: none;
+      pointer-events: none;
+    }
+    .ticker {
+      overflow: hidden;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .ticker span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll 60s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    .search-bar {
+      text-align: center;
+      margin: 20px auto;
+    }
+    .search-bar input {
+      padding: 10px;
+      font-size: 1em;
+      width: 60%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .search-bar button {
+      padding: 10px 15px;
+      font-size: 1em;
+      margin-left: 10px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .search-bar button:hover {
+      background-color: #005fa3;
+    }
+    .tabs {
+      text-align: center;
+      margin: 20px auto;
+    }
+    .tabs button {
+      background-color: #eee;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .tabs button:hover {
+      background-color: #ddd;
     }
     .container {
       max-width: 1000px;
@@ -43,23 +120,30 @@
       margin-bottom: 5px;
       color: #111;
     }
+    .meta {
+      font-size: 0.85em;
+      color: #666;
+      margin-bottom: 8px;
+    }
     .article p {
       font-size: 0.95em;
       line-height: 1.6;
       margin-bottom: 10px;
     }
     .article a {
-      color: #0077cc;
+      display: inline-block;
+      background-color: #000;
+      color: #fff;
+      padding: 10px 15px;
+      margin-top: 10px;
       text-decoration: none;
       font-weight: bold;
+      border-radius: 4px;
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.3);
+      transition: background-color 0.3s ease;
     }
     .article a:hover {
-      text-decoration: underline;
-    }
-    .fallback {
-      font-size: 1em;
-      line-height: 1.6;
-      color: #444;
+      background-color: #333;
     }
     footer {
       text-align: center;
@@ -82,60 +166,102 @@
   <header>
     Africa United News
   </header>
-  <div class="container" id="news-container">
-    <p class="fallback">Loading top headlines...</p>
+
+  <div class="ticker-bar">
+    <div class="live-badge">LIVE</div>
+    <div class="ticker"><span id="ticker-text">Loading breaking news...</span></div>
   </div>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search African news...">
+    <button onclick="searchNews()">Search</button>
+  </div>
+
+  <div class="tabs">
+    <button onclick="fetchNews('business')">Business</button>
+    <button onclick="fetchNews('politics')">Politics</button>
+    <button onclick="fetchNews('technology')">Tech</button>
+    <button onclick="fetchNews('sports')">Sports</button>
+    <button onclick="fetchNews('entertainment')">Culture</button>
+  </div>
+
+  <div class="container" id="news-container">
+    <p>Loading African headlines...</p>
+  </div>
+
   <footer>
-    &copy; 2025 Africa United News. Powered by GNews.
+    &copy; 2025 Africa United News. Powered by NewsData.io.
   </footer>
 
   <script>
-    const apiKey = "cca4d82f09d6133ebf1cecf879c43fed";
-    const url = `https://gnews.io/api/v4/top-headlines?lang=en&max=12&token=${apiKey}`;
+    const apiKey = "pub_ef2abfa4125b47e49e63977d2bff8a4f";
+    const keywords = ["business", "politics", "technology"];
+    let currentIndex = 0;
 
-    async function fetchNews() {
+    function rotateKeywords() {
+      const query = keywords[currentIndex];
+      fetchNews(query);
+      currentIndex = (currentIndex + 1) % keywords.length;
+    }
+
+    function searchNews() {
+      const query = document.getElementById("searchInput").value.trim();
+      if (query) {
+        fetchNews(query);
+      }
+    }
+
+    async function fetchNews(category) {
+      const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=za&language=en&category=${category}`;
       const container = document.getElementById("news-container");
+      const ticker = document.getElementById("ticker-text");
+
       try {
         const res = await fetch(url);
         const data = await res.json();
 
-        if (!data.articles || data.articles.length === 0) {
-          showFallback(container);
+        if (!data.results || data.results.length === 0) {
+          container.innerHTML = "<p>No news found for this topic.</p>";
+          ticker.textContent = "No breaking news available.";
           return;
         }
 
         container.innerHTML = "";
-        data.articles.forEach(article => {
+        let tickerItems = [];
+
+        data.results.forEach(article => {
           const div = document.createElement("div");
           div.className = "article";
+
+          const author = article.source_id || "Unknown source";
+          const publishedDate = new Date(article.pubDate).toLocaleDateString("en-ZA", {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+          });
+
+          tickerItems.push(article.title);
+
           div.innerHTML = `
-            ${article.image ? `<img src="${article.image}" alt="News image">` : ""}
+            ${article.image_url ? `<img src="${article.image_url}" alt="News image">` : ""}
             <h2>${article.title}</h2>
+            <div class="meta">By ${author} &nbsp;|&nbsp; ${publishedDate}</div>
             <p>${article.description || "No description available."}</p>
-            <a href="${article.url}" target="_blank">Read more</a>
+            <a href="${article.link}" target="_blank">Read more</a>
           `;
           container.appendChild(div);
         });
+
+        ticker.textContent = tickerItems.join(" • ");
       } catch (error) {
-        showFallback(container);
+        console.error("NewsData.io error:", error);
+        container.innerHTML = "<p>Unable to load news at the moment.</p>";
+        ticker.textContent = "Unable to load breaking news.";
       }
     }
 
-    function showFallback(container) {
-      container.innerHTML = `
-        <div class="fallback">
-          <h2>Latest Headlines</h2>
-          <p>We’re currently unable to load live news. Here are some recent highlights:</p>
-          <ul>
-            <li><strong>South Africa’s economy shows signs of recovery</strong> — Analysts report a modest uptick in GDP.</li>
-            <li><strong>Kenya launches new tech hub in Nairobi</strong> — A major investment in East Africa’s digital future.</li>
-            <li><strong>Ghana expands solar energy grid</strong> — Rural electrification efforts gain momentum.</li>
-          </ul>
-        </div>
-      `;
-    }
-
-    fetchNews();
+    rotateKeywords();
+    setInterval(rotateKeywords, 45000); // Rotate every 45 seconds
   </script>
 </body>
 </html>
