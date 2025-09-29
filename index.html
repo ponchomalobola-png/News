@@ -1,27 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="favicon.png">
   <meta charset="UTF-8" />
   <meta http-equiv="refresh" content="300" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Africa United News</title>
+
   <style>
+    :root {
+      --bg-color: #fdfcf8;
+      --text-color: #222;
+      --card-bg: #fff;
+      --accent: #d60000;
+    }
+
     body {
       font-family: 'Georgia', serif;
-      background-color: #fdfcf8;
-      color: #222;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
       padding: 0;
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
+
     header {
-      background-color: #222;
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-      font-size: 2.5em;
-      letter-spacing: 1px;
-      border-bottom: 6px double #999;
-    }
+  background-color: #222;
+  color: white;
+  padding: 30px 20px 20px;
+  text-align: center;
+  font-size: 2.5em;
+  letter-spacing: 1px;
+  border-bottom: 6px double #999;
+  position: relative;
+}
+
+.header-title {
+  margin-bottom: 10px;
+}
+
+.theme-toggle-wrapper {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.theme-toggle {
+  display: inline-block;
+  position: relative;
+  width: 60px;
+  height: 30px;
+}
+
+.theme-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 30px;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "🌍";
+  height: 24px; width: 24px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+  font-size: 16px;
+  text-align: center;
+  line-height: 24px;
+}
+
+input:checked + .slider {
+  background-color: #333;
+}
+
+input:checked + .slider:before {
+  transform: translateX(30px);
+  content: "🌑";
+}
+
+@media screen and (max-width: 768px) {
+  header {
+    font-size: 2em;
+    padding: 20px 10px;
+  }
+
+  .theme-toggle-wrapper {
+    margin-top: 10px;
+  }
+
+  .slider:before {
+    font-size: 14px;
+  }
+}
+
     .ticker-bar {
       display: flex;
       align-items: center;
@@ -29,37 +112,41 @@
       color: #fff;
       padding: 10px 20px;
       font-size: 1em;
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.3);
     }
+
     .live-badge {
-      background-color: #d60000;
+      background-color: var(--accent);
       color: white;
       font-weight: bold;
       padding: 6px 12px;
       margin-right: 20px;
       border-radius: 4px;
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.3);
       user-select: none;
       pointer-events: none;
     }
+
     .ticker {
       overflow: hidden;
       white-space: nowrap;
       flex: 1;
     }
+
     .ticker span {
       display: inline-block;
       padding-left: 100%;
       animation: scroll 60s linear infinite;
     }
+
     @keyframes scroll {
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
     }
+
     .search-bar {
       text-align: center;
       margin: 20px auto;
     }
+
     .search-bar input {
       padding: 10px;
       font-size: 1em;
@@ -68,6 +155,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+
     .search-bar button {
       padding: 10px 15px;
       font-size: 1em;
@@ -78,26 +166,33 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .search-bar button:hover {
-      background-color: #005fa3;
-    }
+
     .tabs {
-      text-align: center;
-      margin: 20px auto;
-    }
-    .tabs button {
-      background-color: #eee;
-      border: none;
-      padding: 10px 15px;
-      margin: 5px;
-      font-size: 1em;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
-    }
-    .tabs button:hover {
-      background-color: #ddd;
-    }
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px auto;
+  padding: 0 10px;
+}
+
+.tabs button {
+  background-color: #eee;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex: 1 0 auto;
+  max-width: 150px;
+  transition: background-color 0.3s ease;
+}
+
+.tabs button:hover {
+  background-color: #ddd;
+}
+
     .container {
       max-width: 1000px;
       margin: auto;
@@ -105,46 +200,107 @@
       column-count: 2;
       column-gap: 40px;
     }
+
     .article {
       break-inside: avoid;
       margin-bottom: 30px;
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: 6px;
     }
+
     .article img {
       width: 100%;
       height: auto;
       margin-bottom: 10px;
       border-radius: 4px;
     }
+
     .article h2 {
       font-size: 1.3em;
       margin-bottom: 5px;
-      color: #111;
     }
+
     .meta {
       font-size: 0.85em;
       color: #666;
       margin-bottom: 8px;
     }
+
     .article p {
       font-size: 0.95em;
       line-height: 1.6;
       margin-bottom: 10px;
     }
-    .article a {
+
+    .article a, .article button {
       display: inline-block;
-      background-color: #000;
-      color: #fff;
-      padding: 10px 15px;
       margin-top: 10px;
+      margin-right: 10px;
+      padding: 8px 12px;
+      font-size: 0.9em;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .article a {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .article button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .ads-section {
+      text-align: center;
+      padding: 40px 20px;
+      background-color: #fff8f0;
+      border-top: 2px solid #ccc;
+    }
+
+    .sponsored-label {
+      font-size: 0.9em;
+      color: #999;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .ad-block {
+      max-width: 320px;
+      margin: auto;
+      background-color: var(--card-bg);
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .ad-block h3 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .ad-block p {
+      font-size: 0.95em;
+      margin-bottom: 15px;
+    }
+
+    .ad-block a {
+      background-color: var(--accent);
+      color: white;
+      padding: 10px 15px;
       text-decoration: none;
       font-weight: bold;
       border-radius: 4px;
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.3);
-      transition: background-color 0.3s ease;
     }
-    .article a:hover {
-      background-color: #333;
-    }
+
     footer {
       text-align: center;
       font-size: 0.9em;
@@ -160,12 +316,53 @@
         padding: 20px;
       }
     }
+    .donation-banner {
+  background-color: #fff4e6;
+  border: 1px solid #d60000;
+  padding: 20px;
+  text-align: center;
+  margin: 40px auto;
+  max-width: 600px;
+  border-radius: 8px;
+}
+
+.donation-banner h3 {
+  font-size: 1.4em;
+  margin-bottom: 10px;
+  color: #d60000;
+}
+
+.donation-banner p {
+  font-size: 1em;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.donation-banner a {
+  background-color: #d60000;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.donation-banner a:hover {
+  background-color: #a80000;
+}
   </style>
 </head>
 <body>
   <header>
-    Africa United News
-  </header>
+  <div class="header-title">Africa United News</div>
+  <div class="theme-toggle-wrapper">
+    <label class="theme-toggle">
+      <input type="checkbox" id="themeSwitch" onchange="toggleTheme()">
+      <span class="slider"></span>
+    </label>
+  </div>
+</header>
 
   <div class="ticker-bar">
     <div class="live-badge">LIVE</div>
@@ -184,9 +381,19 @@
     <button onclick="fetchNews('sports')">Sports</button>
     <button onclick="fetchNews('entertainment')">Culture</button>
   </div>
+  
+  
 
   <div class="container" id="news-container">
     <p>Loading African headlines...</p>
+  </div>
+  <div class="ads-section">
+    <div class="sponsored-label">Sponsored by you</div>
+   <div class="donation-banner">
+  <h3>Support Africa United News</h3>
+  <p>This platform runs on passion, pride, and your support. Please help us keep the lights on.</p>
+  <a href="https://www.buymeacoffee.com/africaunited" target="_blank">☕ Donate Now</a>
+</div>
   </div>
 
   <footer>
@@ -211,7 +418,7 @@
       }
     }
 
-    async function fetchNews(category) {
+    async function fetchNews(category = "business") {
       const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=za&language=en&category=${category}`;
       const container = document.getElementById("news-container");
       const ticker = document.getElementById("ticker-text");
@@ -220,48 +427,94 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        if (!data.results || data.results.length === 0) {
-          container.innerHTML = "<p>No news found for this topic.</p>";
-          ticker.textContent = "No breaking news available.";
-          return;
-        }
+        if (!data.results || data.results.length === 0) throw new Error("No results");
 
-        container.innerHTML = "";
-        let tickerItems = [];
+        const curated = data.results.filter(article =>
+          article.image_url &&
+          article.description &&
+          new Date(article.pubDate) > Date.now() - 1000 * 60 * 60 * 24
+        );
 
-        data.results.forEach(article => {
-          const div = document.createElement("div");
-          div.className = "article";
-
-          const author = article.source_id || "Unknown source";
-          const publishedDate = new Date(article.pubDate).toLocaleDateString("en-ZA", {
-            year: "numeric",
-            month: "short",
-            day: "numeric"
-          });
-
-          tickerItems.push(article.title);
-
-          div.innerHTML = `
-            ${article.image_url ? `<img src="${article.image_url}" alt="News image">` : ""}
-            <h2>${article.title}</h2>
-            <div class="meta">By ${author} &nbsp;|&nbsp; ${publishedDate}</div>
-            <p>${article.description || "No description available."}</p>
-            <a href="${article.link}" target="_blank">Read more</a>
-          `;
-          container.appendChild(div);
-        });
-
-        ticker.textContent = tickerItems.join(" • ");
+        renderNews(curated, container, ticker);
       } catch (error) {
-        console.error("NewsData.io error:", error);
+        console.warn("API failed, loading fallback.");
         container.innerHTML = "<p>Unable to load news at the moment.</p>";
-        ticker.textContent = "Unable to load breaking news.";
+        ticker.textContent = "No breaking news available.";
       }
     }
 
-    rotateKeywords();
-    setInterval(rotateKeywords, 45000); // Rotate every 45 seconds
+    function renderNews(results, container, ticker) {
+      container.innerHTML = "";
+      let tickerItems = [];
+
+      results.forEach(article => {
+        const div = document.createElement("div");
+        div.className = "article";
+
+        const author = article.source_id || "Unknown source";
+        const publishedDate = new Date(article.pubDate).toLocaleDateString("en-ZA", {
+          year: "numeric",
+          month: "short",
+          day: "numeric"
+        });
+
+        tickerItems.push(article.title);
+
+        div.innerHTML = `
+          ${article.image_url ? `<img src="${article.image_url}" alt="News image">` : ""}
+          <h2>${article.title}</h2>
+          <div class="meta">By ${author} &nbsp;|&nbsp; ${publishedDate}</div>
+          <p>${article.description || "No description available."}</p>
+          <button onclick="speakArticle('${article.title.replace(/'/g, "")}', '${(article.description || "").replace(/'/g, "")}')">🔊 Listen</button>
+          <a href="${article.link}" target="_blank">Read more</a>
+        `;
+        container.appendChild(div);
+      });
+
+      ticker.textContent = tickerItems.join(" • ");
+    }
+
+    function speakArticle(title, description) {
+      const text = `${title}. ${description}`;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-ZA';
+      utterance.rate = 1;
+      speechSynthesis.speak(utterance);
+    }
+
+    let adIndex = 0;
+
+    function rotateAds() {
+      const ad = ads[adIndex];
+      const adContainer = document.getElementById("ad-rotator");
+
+      adContainer.innerHTML = `
+        <h3>${ad.brand}</h3>
+        <p>${ad.text}</p>
+        <a href="${ad.link}" target="_blank">${ad.label}</a>
+      `;
+
+      adIndex = (adIndex + 1) % ads.length;
+    }
+
+    function toggleTheme() {
+      const isDark = document.getElementById("themeSwitch").checked;
+
+      if (isDark) {
+        document.documentElement.style.setProperty('--bg-color', '#121212');
+        document.documentElement.style.setProperty('--text-color', '#f5f5f5');
+        document.documentElement.style.setProperty('--card-bg', '#1e1e1e');
+      } else {
+        document.documentElement.style.setProperty('--bg-color', '#fdfcf8');
+        document.documentElement.style.setProperty('--text-color', '#222');
+        document.documentElement.style.setProperty('--card-bg', '#fff');
+      }
+    }
+
+    fetchNews("business");
+    setInterval(rotateKeywords, 45000);
+    rotateAds();
+    setInterval(rotateAds, 30000);
   </script>
 </body>
-</html>
+  </html>
