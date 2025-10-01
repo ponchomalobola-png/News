@@ -351,6 +351,24 @@ input:checked + .slider:before {
 .donation-banner a:hover {
   background-color: #a80000;
 }
+.article.religion { border-left: 4px solid #0077cc; }
+.article.poetry { border-left: 4px solid #cc0077; }
+
+.article button {
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 0.9em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.article button:hover {
+  background-color: #005fa3;
+}
   </style>
 </head>
 <body>
@@ -375,14 +393,27 @@ input:checked + .slider:before {
   </div>
 
   <div class="tabs">
-    <button onclick="fetchNews('business')">Business</button>
-    <button onclick="fetchNews('politics')">Politics</button>
-    <button onclick="fetchNews('technology')">Tech</button>
-    <button onclick="fetchNews('sports')">Sports</button>
-    <button onclick="fetchNews('entertainment')">Culture</button>
-  </div>
+  <button onclick="fetchNews('business')">Business</button>
+  <button onclick="fetchNews('politics')">Politics</button>
+  <button onclick="fetchNews('technology')">Tech</button>
+  <button onclick="fetchNews('sports')">Sports</button>
+  <button onclick="fetchNews('entertainment')">Culture</button>
+</div>
   
-  
+  <div class="article poetry">
+  <h2>Poem of the Day: “Ubuntu”</h2>
+  <p id="poem-text"><em>I am because we are —<br>
+  A rhythm of roots and rising sun,<br>
+  Where every voice is a drumbeat,<br>
+  And every soul a verse begun.</em></p>
+  <button onclick="readPoem()">🔊 Listen to Poem</button>
+</div>
+
+<div class="article religion">
+  <h2>Daily Reflection: “Peace in the Storm”</h2>
+  <p id="reflection-text">Even in the whirlwind, the voice of faith whispers calm.</p>
+  <button onclick="readReflection()">🔊 Listen to Reflection</button>
+</div>
 
   <div class="container" id="news-container">
     <p>Loading African headlines...</p>
@@ -400,121 +431,177 @@ input:checked + .slider:before {
     &copy; 2025 Africa United News. Powered by NewsData.io.
   </footer>
 
-  <script>
-    const apiKey = "pub_ef2abfa4125b47e49e63977d2bff8a4f";
-    const keywords = ["business", "politics", "technology"];
-    let currentIndex = 0;
+ <script>
+  // 1. Theme Toggle
+  function toggleTheme() {
+    const isDark = document.getElementById("themeSwitch").checked;
+    document.documentElement.style.setProperty('--bg-color', isDark ? '#121212' : '#fdfcf8');
+    document.documentElement.style.setProperty('--text-color', isDark ? '#f5f5f5' : '#222');
+    document.documentElement.style.setProperty('--card-bg', isDark ? '#1e1e1e' : '#fff');
+  }
 
-    function rotateKeywords() {
-      const query = keywords[currentIndex];
-      fetchNews(query);
-      currentIndex = (currentIndex + 1) % keywords.length;
-    }
+  // 2. IndexedDB Setup
+  let db;
+  const request = indexedDB.open("AfricaUnitedDB", 1);
 
-    function searchNews() {
-      const query = document.getElementById("searchInput").value.trim();
-      if (query) {
-        fetchNews(query);
+  request.onupgradeneeded = function(event) {
+    db = event.target.result;
+    const store = db.createObjectStore("newsCache", { keyPath: "id", autoIncrement: true });
+    store.createIndex("timestamp", "timestamp", { unique: false });
+  };
+
+  request.onsuccess = function(event) {
+    db = event.target.result;
+    pruneOldHeadlines();
+  };
+
+  request.onerror = function(event) {
+    console.error("IndexedDB error:", event.target.errorCode);
+  };
+
+  // 3. Prune Old Headlines
+  function pruneOldHeadlines() {
+    const tx = db.transaction("newsCache", "readwrite");
+    const store = tx.objectStore("newsCache");
+    const now = Date.now();
+
+    store.getAll().onsuccess = function(e) {
+      e.target.result.forEach(entry => {
+        if (now - entry.timestamp > 86400000) store.delete(entry.id);
+      });
+    };
+  }
+
+  // 4. Save to Cache
+  function cacheHeadline(title, description, link) {
+    const tx = db.transaction("newsCache", "readwrite");
+    const store = tx.objectStore("newsCache");
+    const item = { title, description, link, timestamp: Date.now() };
+    store.add(item);
+
+    store.getAll().onsuccess = function(e) {
+      const all = e.target.result;
+      if (all.length > 200) {
+        const oldest = all.sort((a, b) => a.timestamp - b.timestamp).slice(0, all.length - 200);
+        oldest.forEach(entry => store.delete(entry.id));
       }
+    };
+  }
+
+  // 5. Fetch News
+  async function fetchNews(category = "business") {
+    const url = `https://newsdata.io/api/1/news?apikey=YOUR_API_KEY&country=za&language=en&category=${category}`;
+    const container = document.getElementById("news-container");
+    const ticker = document.getElementById("ticker-text");
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const curated = data.results.filter(article =>
+        article.image_url && article.description &&
+        new Date(article.pubDate) > Date.now() - 86400000
+      );
+      renderNews(curated, container, ticker);
+      curated.forEach(article => cacheHeadline(article.title, article.description, article.link));
+    } catch (error) {
+      console.warn("API failed, loading cached headlines.");
+      const tx = db.transaction("newsCache", "readonly");
+      const store = tx.objectStore("newsCache");
+
+      store.getAll().onsuccess = function(e) {
+        const cached = e.target.result;
+        if (cached.length > 0) {
+          renderNews(cached, container, ticker);
+        } else {
+          container.innerHTML = "<p>No cached news available.</p>";
+          ticker.textContent = "No breaking news available.";
+        }
+      };
     }
+  }
 
-    async function fetchNews(category = "business") {
-      const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=za&language=en&category=${category}`;
-      const container = document.getElementById("news-container");
-      const ticker = document.getElementById("ticker-text");
+  // 6. Render News
+  function renderNews(results, container, ticker) {
+    container.innerHTML = "";
+    let tickerItems = [];
 
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
+    results.forEach(article => {
+      const div = document.createElement("div");
+      div.className = "article";
 
-        if (!data.results || data.results.length === 0) throw new Error("No results");
-
-        const curated = data.results.filter(article =>
-          article.image_url &&
-          article.description &&
-          new Date(article.pubDate) > Date.now() - 1000 * 60 * 60 * 24
-        );
-
-        renderNews(curated, container, ticker);
-      } catch (error) {
-        console.warn("API failed, loading fallback.");
-        container.innerHTML = "<p>Unable to load news at the moment.</p>";
-        ticker.textContent = "No breaking news available.";
-      }
-    }
-
-    function renderNews(results, container, ticker) {
-      container.innerHTML = "";
-      let tickerItems = [];
-
-      results.forEach(article => {
-        const div = document.createElement("div");
-        div.className = "article";
-
-        const author = article.source_id || "Unknown source";
-        const publishedDate = new Date(article.pubDate).toLocaleDateString("en-ZA", {
-          year: "numeric",
-          month: "short",
-          day: "numeric"
-        });
-
-        tickerItems.push(article.title);
-
-        div.innerHTML = `
-          ${article.image_url ? `<img src="${article.image_url}" alt="News image">` : ""}
-          <h2>${article.title}</h2>
-          <div class="meta">By ${author} &nbsp;|&nbsp; ${publishedDate}</div>
-          <p>${article.description || "No description available."}</p>
-          <button onclick="speakArticle('${article.title.replace(/'/g, "")}', '${(article.description || "").replace(/'/g, "")}')">🔊 Listen</button>
-          <a href="${article.link}" target="_blank">Read more</a>
-        `;
-        container.appendChild(div);
+      const author = article.source_id || "Unknown source";
+      const publishedDate = new Date(article.pubDate).toLocaleDateString("en-ZA", {
+        year: "numeric", month: "short", day: "numeric"
       });
 
-      ticker.textContent = tickerItems.join(" • ");
-    }
+      tickerItems.push(article.title);
 
-    function speakArticle(title, description) {
-      const text = `${title}. ${description}`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-ZA';
-      utterance.rate = 1;
-      speechSynthesis.speak(utterance);
-    }
-
-    let adIndex = 0;
-
-    function rotateAds() {
-      const ad = ads[adIndex];
-      const adContainer = document.getElementById("ad-rotator");
-
-      adContainer.innerHTML = `
-        <h3>${ad.brand}</h3>
-        <p>${ad.text}</p>
-        <a href="${ad.link}" target="_blank">${ad.label}</a>
+      div.innerHTML = `
+        ${article.image_url ? `<img src="${article.image_url}" alt="News image">` : ""}
+        <h2>${article.title}</h2>
+        <div class="meta">By ${author} &nbsp;|&nbsp; ${publishedDate}</div>
+        <p>${article.description || "No description available."}</p>
+        <button onclick="speakArticle('${article.title.replace(/'/g, "")}', '${(article.description || "").replace(/'/g, "")}')">🔊 Listen</button>
+        <button onclick="copyAsHTML('${article.title}', '${article.description}', '${article.link}')">📋 Copy as HTML</button>
+        <button onclick="saveInterest('${article.title}', '${article.description}', '${article.link}')">💾 Save</button>
+        <a href="${article.link}" target="_blank">Read more</a>
       `;
+      container.appendChild(div);
+    });
 
-      adIndex = (adIndex + 1) % ads.length;
-    }
+    ticker.textContent = tickerItems.join(" • ");
+  }
 
-    function toggleTheme() {
-      const isDark = document.getElementById("themeSwitch").checked;
+  // 7. Voice Reader
+  function speakArticle(title, description) {
+    const text = `${title}. ${description}`;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-ZA';
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+  }
 
-      if (isDark) {
-        document.documentElement.style.setProperty('--bg-color', '#121212');
-        document.documentElement.style.setProperty('--text-color', '#f5f5f5');
-        document.documentElement.style.setProperty('--card-bg', '#1e1e1e');
-      } else {
-        document.documentElement.style.setProperty('--bg-color', '#fdfcf8');
-        document.documentElement.style.setProperty('--text-color', '#222');
-        document.documentElement.style.setProperty('--card-bg', '#fff');
-      }
-    }
+  // 8. Copy as HTML
+  function copyAsHTML(title, description, link) {
+    const html = `<h2>${title}</h2><p>${description}</p><a href="${link}" target="_blank">Read more on Africa United News</a>`;
+    navigator.clipboard.writeText(html).then(() => {
+      alert("Copied as HTML! Paste into WhatsApp, blog, or newsletter.");
+    });
+  }
 
+  // 9. Save Interest
+  function saveInterest(title, description, link) {
+    const tx = db.transaction("interests", "readwrite");
+    const store = tx.objectStore("interests");
+    const item = { title, description, link, timestamp: new Date().toISOString() };
+    store.add(item);
+    alert("Saved to your interests!");
+  }
+
+  // 10. Load on Startup
+  window.addEventListener("load", () => {
     fetchNews("business");
-    setInterval(rotateKeywords, 45000);
-    rotateAds();
-    setInterval(rotateAds, 30000);
-  </script>
+    setInterval(() => fetchNews("politics"), 45000);
+  });
+</script>
+  
+  <script>
+  function readPoem() {
+    const text = document.getElementById("poem-text").innerText;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-ZA";
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+  }
+
+  function readReflection() {
+    const text = document.getElementById("reflection-text").innerText;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-ZA";
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+  }
+</script>
+  
 </body>
-  </html>
+</html>
