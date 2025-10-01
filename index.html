@@ -402,16 +402,18 @@ input:checked + .slider:before {
   
   <div class="article poetry">
   <h2>Poem of the Day: “Ubuntu”</h2>
-  <p id="poem-text"><em>I am because we are —<br>
+  <p><em>I am because we are —<br>
   A rhythm of roots and rising sun,<br>
   Where every voice is a drumbeat,<br>
   And every soul a verse begun.</em></p>
+  <div class="meta">Submitted by Community Poet &nbsp;|&nbsp; Oct 1, 2025</div>
   <button onclick="readPoem()">🔊 Listen to Poem</button>
 </div>
 
 <div class="article religion">
   <h2>Daily Reflection: “Peace in the Storm”</h2>
   <p id="reflection-text">Even in the whirlwind, the voice of faith whispers calm.</p>
+  <div class="meta">From Africa United Faith Desk &nbsp;|&nbsp; Oct 1, 2025</div>
   <button onclick="readReflection()">🔊 Listen to Reflection</button>
 </div>
 
@@ -513,8 +515,8 @@ input:checked + .slider:before {
         if (cached.length > 0) {
           renderNews(cached, container, ticker);
         } else {
-          container.innerHTML = "<p>No cached news available.</p>";
-          ticker.textContent = "No breaking news available.";
+          container.innerHTML = "<p>🎣No cached news available.</p>";
+          ticker.textContent = "😨No breaking news available.";
         }
       };
     }
