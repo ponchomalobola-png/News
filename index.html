@@ -471,6 +471,42 @@ The echo of unity where silence once stood.</em></p>
   </footer>
 
  <script>
+   
+   function searchNews() {
+  const query = document.getElementById("searchInput").value.trim();
+  const apiKey = "pub_ef2abfa4125b47e49e63977d2bff8a4f"; // ✅ Your confirmed NewsData.io key
+  const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&q=${encodeURIComponent(query)}&country=za&language=en`;
+
+  const container = document.getElementById("news-container");
+  const ticker = document.getElementById("ticker-text");
+
+  if (!query) {
+    alert("Please enter a search term.");
+    return;
+  }
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const curated = data.results.filter(article =>
+        article.image_url &&
+        article.description &&
+        new Date(article.pubDate) > Date.now() - 86400000
+      );
+
+      if (curated.length > 0) {
+        renderNews(curated, container, ticker);
+      } else {
+        container.innerHTML = `<p>No results found for "${query}".</p>`;
+        ticker.textContent = "No breaking news available.";
+      }
+    })
+    .catch(error => {
+      console.error("Search failed:", error);
+      container.innerHTML = "<p>Search failed. Please try again later.</p>";
+      ticker.textContent = "Search error.";
+    });
+          }
   // 1. Theme Toggle
   function toggleTheme() {
     const isDark = document.getElementById("themeSwitch").checked;
