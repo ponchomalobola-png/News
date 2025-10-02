@@ -369,6 +369,38 @@ input:checked + .slider:before {
 .article button:hover {
   background-color: #005fa3;
 }
+.center-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 60px;
+  margin-bottom: 40px;
+}
+
+.icon-ring {
+  width: 60px;
+  height: 60px;
+  font-size: 1.8em;
+  text-decoration: none;
+  color: #333;
+  border: 3px solid #25d366; /* green ring */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s, border-color 0.3s;
+}
+
+.icon-ring:hover {
+  border-color: #128c7e;
+  transform: scale(1.1);
+}
+@media (max-width: 600px) {
+  .center-icon {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+}
   </style>
 </head>
 <body>
@@ -399,8 +431,17 @@ input:checked + .slider:before {
   <button onclick="fetchNews('sports')">Sports</button>
   <button onclick="fetchNews('entertainment')">Culture</button>
 </div>
+  <div class="center-icon">
+  <a href="journalist-chat.html" class="icon-ring">📬</a>
+</div>
+</div>
   
- <div class="article poetry">
+
+
+  <div class="container" id="news-container">
+    <p>Loading African headlines...</p>
+  </div>
+    <div class="article poetry">
   <h2>Poem of the Day: “The Drum Remembers”</h2>
   <p><em>The drum remembers what the world forgets —  
 The names unsung, the feet unshod,  
@@ -416,10 +457,6 @@ The echo of unity where silence once stood.</em></p>
   <div class="meta">From Africa United Faith Desk &nbsp;|&nbsp; Oct 2, 2025</div>
   <button onclick="readReflection()">🔊 Listen to Reflection</button>
 </div>
-
-  <div class="container" id="news-container">
-    <p>Loading African headlines...</p>
-  </div>
   <div class="ads-section">
     <div class="sponsored-label">Sponsored by you</div>
    <div class="donation-banner">
@@ -466,8 +503,7 @@ The echo of unity where silence once stood.</em></p>
     const tx = db.transaction("newsCache", "readwrite");
     const store = tx.objectStore("newsCache");
     const now = Date.now();
-
-    store.getAll().onsuccess = function(e) {
+store.getAll().onsuccess = function(e) {
       e.target.result.forEach(entry => {
         if (now - entry.timestamp > 86400000) store.delete(entry.id);
       });
@@ -492,9 +528,11 @@ The echo of unity where silence once stood.</em></p>
 
   // 5. Fetch News
   async function fetchNews(category = "business") {
-    const url = `https://newsdata.io/api/1/news?apikey=YOUR_API_KEY&country=za&language=en&category=${category}`;
-    const container = document.getElementById("news-container");
-    const ticker = document.getElementById("ticker-text");
+  const apiKey = "pub_ef2abfa4125b47e49e63977d2bff8a4f"; // ✅ Your confirmed NewsData.io key
+  const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=za&language=en&category=${category}`;
+  const container = document.getElementById("news-container");
+  const ticker = document.getElementById("ticker-text");
+
 
     try {
       const res = await fetch(url);
@@ -604,6 +642,6 @@ The echo of unity where silence once stood.</em></p>
     speechSynthesis.speak(utterance);
   }
 </script>
-  
+
 </body>
-</html>
+  </html>
