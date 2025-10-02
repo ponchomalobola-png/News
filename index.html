@@ -9,6 +9,31 @@
   <title>Africa United News</title>
 
   <style>
+ .floating-chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  font-size: 1.8em;
+  text-decoration: none;
+  color: #333;
+  border: 3px solid #25d366;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 12px rgba(37, 211, 102, 0.5); /* circular green glow */
+  z-index: 999;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  touch-action: manipulation;
+}
+
+.floating-chat:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 8px rgba(10, 120, 110, 0.1); /* tighter glow on tap */
+}
     :root {
       --bg-color: #fdfcf8;
       --text-color: #222;
@@ -369,41 +394,11 @@ input:checked + .slider:before {
 .article button:hover {
   background-color: #005fa3;
 }
-.center-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 60px;
-  margin-bottom: 40px;
-}
 
-.icon-ring {
-  width: 60px;
-  height: 60px;
-  font-size: 1.8em;
-  text-decoration: none;
-  color: #333;
-  border: 3px solid #25d366; /* green ring */
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.2s, border-color 0.3s;
-}
-
-.icon-ring:hover {
-  border-color: #128c7e;
-  transform: scale(1.1);
-}
-@media (max-width: 600px) {
-  .center-icon {
-    margin-top: 4px;
-    margin-bottom: 4px;
-  }
-}
   </style>
 </head>
 <body>
+  <a href="journalist-chat.html" class="floating-chat">📬</a>
   <header>
   <div class="header-title">Africa United News</div>
   <div class="theme-toggle-wrapper">
@@ -432,7 +427,7 @@ input:checked + .slider:before {
   <button onclick="fetchNews('entertainment')">Culture</button>
 </div>
   <div class="center-icon">
-  <a href="journalist-chat.html" class="icon-ring">📬</a>
+  
 </div>
 </div>
   
@@ -506,7 +501,8 @@ The echo of unity where silence once stood.</em></p>
       container.innerHTML = "<p>Search failed. Please try again later.</p>";
       ticker.textContent = "Search error.";
     });
-          }
+}
+   
   // 1. Theme Toggle
   function toggleTheme() {
     const isDark = document.getElementById("themeSwitch").checked;
@@ -680,4 +676,4 @@ store.getAll().onsuccess = function(e) {
 </script>
 
 </body>
-  </html>
+      </html>
