@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Journalist Chat</title>
+  <style>
+  #footer {
+  background: #eeeeee;
+  color: #333;
+  font-size: 0.75em;
+  text-align: center;
+  padding: 6px 10px;
+  border-top: 1px solid #ccc;
+}
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #e5ddd5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+   header {
+  background: #075e54;
+  color: #fff;
+  padding: 10px 0 30px; /* extra bottom padding for ticker */
+  text-align: center;
+  font-weight: bold;
+  font-size: 1em;
+  position: relative;
+}
+    #live-badge {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: red;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: bold;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      animation: pulse 1.5s infinite;
+      z-index: 999;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    #ticker {
+  background: #25d366;
+  color: #000;
+  font-size: 0.8em;
+  padding: 5px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+    #ticker span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll 15s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    #chat-box {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    .message {
+      margin: 6px 0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      max-width: 75%;
+      word-wrap: break-word;
+      font-size: 0.9em;
+      position: relative;
+    }
+    .user {
+      background: #dcf8c6;
+      align-self: flex-end;
+    }
+    .bot {
+      background: #f0f0f0;
+      align-self: flex-start;
+    }
+    .timestamp {
+      font-size: 0.7em;
+      color: #555;
+      margin-top: 2px;
+      text-align: right;
+    }
+    .date-divider {
+      text-align: center;
+      font-size: 0.75em;
+      color: #666;
+      margin: 10px 0;
+    }
+    #input-area {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      background: #f7f7f7;
+      gap: 8px;
+    }
+    #user-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.9em;
+      background: #fff;
+      box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    }
+    #button-group {
+      display: flex;
+      gap: 6px;
+    }
+    .chat-button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2em;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .chat-button:hover {
+      transform: scale(1.1);
+    }
+    #send-btn {
+      background: #25d366;
+    }
+    #clear-btn {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div id="live-badge">LIVE</div>
+  <header>
+  📰 Journalist Chat
+  <div id="ticker"><span id="headline-text">Breaking: AI tools reshape African newsrooms • Rand strengthens • Youth media surges</span></div>
+</header>
+  <div id="chat-box"></div>
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Type a message" />
+    <div id="button-group">
+      <button id="send-btn" class="chat-button" onclick="sendMessage()">📫</button>
+      <button id="clear-btn" class="chat-button" onclick="clearUserMessages()">🚫</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const headlines = [
+      "Breaking: AI tools reshape African newsrooms",
+      "Rand strengthens against dollar",
+      "Youth-led media platforms surge",
+      "Journalists demand protection laws",
+      "Africa United News launches LIVE ticker"
+    ];
+    let headlineIndex = 0;
+    let lastDate = '';
+
+    function rotateHeadlines() {
+      document.getElementById('headline-text').textContent = headlines[headlineIndex];
+      headlineIndex = (headlineIndex + 1) % headlines.length;
+    }
+    setInterval(rotateHeadlines, 8000);
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      const now = new Date();
+      insertDateDivider(now);
+      appendMessage(text, 'user', now);
+      saveToHistory(text, 'user', now);
+      userInput.value = '';
+      setTimeout(() => {
+        const reply = generateBotReply(text);
+        appendMessage(reply, 'bot', new Date());
+        saveToHistory(reply, 'bot', new Date());
+      }, 400);
+    }
+
+    function appendMessage(text, sender, time) {
+      const msg = document.createElement('div');
+      msg.className = `message ${sender}`;
+      msg.innerHTML = `${text}<div class="timestamp">${formatTime(time)}</div>`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function insertDateDivider(date) {
+      const today = formatDate(date);
+      if (today !== lastDate) {
+        const divider = document.createElement('div');
+        divider.className = 'date-divider';
+        divider.textContent = today;
+        chatBox.appendChild(divider);
+        lastDate = today;
+      }
+    }
+
+    function formatTime(date) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString([], { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function generateBotReply(input) {
+  const lower = input.toLowerCase();
+
+  if (lower.includes('hi') || lower.includes('hello') || lower.includes('good morning')) {
+    return 'Good day! Ready to chase the next headline?';
+  }
+  if (lower.includes('yes')) return 'Awesome, please feel free to write it below.';
+  if (lower.includes('how long') && lower.includes('publish')) {
+  return 'As soon as our editors see it 😉';
+}
+if (lower.includes('thank') && lower.includes('you')) {
+  return 'Your welcome, please feel free to write and send your article, whenever your ready.';
+}
+if (lower.includes('will') && lower.includes('be')) {
+  return 'Yes, please feel free to write and send your article, whenever your ready.';
+}
+if (lower.includes('kind') && lower.includes('what')) {
+  return 'All kinds, please feel free to write and send your article, whenever your ready.';
+}
+  if (lower.includes('deadline')) return 'Deadline approaching? Prioritize clarity over perfection.';
+  if (lower.includes('ok')) return 'Sharp';
+  if (lower.includes('source')) return 'Always verify with at least two independent sources.';
+  if (lower.includes('headline')) return 'Make it punchy, relevant, and emotionally resonant.';
+  if (lower.includes('ethics')) return 'Transparency and accountability are your strongest tools.';
+  if (lower.includes('publish')) return 'Before publishing, ask: is it clear, fair, and necessary?';
+  if (lower.includes('editor')) return 'Your editor is your ally—clarify> your angle before filing.';
+  if (lower.includes('fact-check')) return 'Fact-checking isn’t optional—it’s your credibility.';
+  if (lower.includes('interview')) return 'Prepare open-ended questions and listen actively.';
+  if (lower.includes('photo') || lower.includes('image')) return 'Visuals should support the story, not distract.';
+  if (lower.includes('press') || lower.includes('media')) return 'The press holds power—use it responsibly.';
+  if (lower.includes('story') || lower.includes('article')) return 'Every story needs a strong lead and a clear arc.';
+  if (lower.includes('pitch')) return 'Pitch with precision: who, why, and why now.';
+  if (lower.includes('journalism') || lower.includes('reporting')) return 'Journalism is truth told with urgency.';
+  if (lower.includes('ai') || lower.includes('automation')) return 'AI can assist, but human judgment leads.';
+  if (lower.includes('politics') || lower.includes('celebrity') || lower.includes('sports')) return 'Let’s keep it focused on journalism and publishing.';
+
+  return 'Thanks for your message. Keep reporting!';
+}
+    function saveToHistory(text, sender, time) {
+      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+      history.push({ text, sender, time: time.getTime() });
+      localStorage.setItem('chatHistory', JSON.stringify(history));
+    }
+
+    function loadHistory() {
+      const now = Date.now();
+      const week = 7 * 24 * 60 * 60 * 1000;
+      let history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+      history = history.filter(msg => now - msg.time < week);
+      localStorage.setItem('chatHistory', JSON.stringify(history));
+      lastDate = '';
+      history.forEach(msg => {
+        const date = new Date(msg.time);
+        insertDateDivider(date);
+        appendMessage(msg.text, msg.sender, date);
+      });
+    }
+
+    function clearUserMessages() {
+  let history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+  let filtered = [];
+  for (let i = 0; i < history.length; i++) {
+    if (history[i].sender === 'user') {
+      i++; // skip bot reply
+    } else {
+      filtered.push(history[i]);
+    }
+  }
+  localStorage.setItem('chatHistory', JSON.stringify(filtered));
+  chatBox.innerHTML = '';
+  lastDate = '';
+  filtered.forEach(msg => {
+    const date = new Date(msg.time);
+    insertDateDivider(date);
+    appendMessage(msg.text, msg.sender, date);
+  });
+}
+
+    // IndexedDB setup and wipe
+    let db;
+    const request = indexedDB.open("JournalistDrafts", 1);
+    request.onerror = () => console.log("IndexedDB failed");
+    request.onsuccess = () => {
+      db = request.result;
+      const tx = db.transaction("drafts", "readwrite");
+      const store = tx.objectStore("drafts");
+      store.clear(); // wipe drafts on load
+    };
+    request.onupgradeneeded = (event) => {
+      db = event.target.result;
+      db.createObjectStore("drafts", { autoIncrement: true });
+    };
+
+    loadHistory();
+  </script>
+  <footer id="footer">
+  © 2025 Africa United News • Powered by Journalists, Driven by Truth
+</footer>
+</body>
+</html>
