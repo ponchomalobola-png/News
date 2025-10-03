@@ -659,12 +659,66 @@ store.getAll().onsuccess = function(e) {
     alert("Saved to your interests!");
   }
 
+function showWeeklyPoemAndReflection() {
+  const day = new Date().toLocaleDateString("en-ZA", { weekday: "long" });
+
+  const poem = weeklyPoems.find(p => p.date === day);
+  const reflection = weeklyReflections.find(r => r.date === day);
+
+  const poemContainer = document.getElementById("poem-container");
+  const reflectionContainer = document.getElementById("reflection-container");
+
+  if (poem) {
+    poemContainer.innerHTML = `
+      <div class="article poetry">
+        <h2>Poem of the Day: “${poem.title}”</h2>
+        <p><em>${poem.text}</em></p>
+        <div class="meta">Submitted by Community Poet &nbsp;|&nbsp; ${day}, ${new Date().toLocaleDateString("en-ZA")}</div>
+        <button onclick="readPoem()">🔊 Listen to Poem</button>
+      </div>
+    `;
+  }
+
+  if (reflection) {
+    reflectionContainer.innerHTML = `
+      <div class="article religion">
+        <h2>Daily Reflection</h2>
+        <p><em>${reflection.text}</em></p>
+        <div class="meta">From Africa United Faith Desk &nbsp;|&nbsp; ${day}, ${new Date().toLocaleDateString("en-ZA")}</div>
+        <button onclick="readReflection()">🔊 Listen to Reflection</button>
+      </div>
+    `;
+  }
+}
+   
   // 10. Load on Startup
-  window.addEventListener("load", () => {
-    fetchNews("business");
-    setInterval(() => fetchNews("politics"), 45000);
-  });
+    window.addEventListener("load", () => {
+  fetchNews("business");
+  showWeeklyPoemAndReflection();
+  setInterval(() => fetchNews("politics"), 45000);
+});
+   
 </script>
+
+const weeklyPoems = [
+  { title: "Ubuntu", text: "I am because we are...", date: "Monday" },
+  { title: "The Drum Remembers", text: "The drum remembers what the world forgets...", date: "Tuesday" },
+  { title: "The Soil Remembers Us", text: "We walk on stories buried deep...", date: "Wednesday" },
+  { title: "River of Names", text: "Each name a ripple, each soul a tide...", date: "Thursday" },
+  { title: "Skyline of Hope", text: "Hope rises like skyline over morning dust...", date: "Friday" },
+  { title: "Footprints of Grace", text: "Grace walks ahead, leaving light behind...", date: "Saturday" },
+  { title: "Echoes of Unity", text: "We echo each other’s strength...", date: "Sunday" }
+];
+
+const weeklyReflections = [
+  { text: "Faith is a bridge we build toward each other.", date: "Monday" },
+  { text: "Courage doesn’t always roar — sometimes it’s the quiet choice to keep loving.", date: "Tuesday" },
+  { text: "Grace moves quietly, but leaves footprints on every heart it touches.", date: "Wednesday" },
+  { text: "Peace is not the absence of noise, but the presence of purpose.", date: "Thursday" },
+  { text: "Kindness is a seed — plant it even when the soil feels dry.", date: "Friday" },
+  { text: "Joy is resistance — a flame that dances even in the wind.", date: "Saturday" },
+  { text: "Unity is not sameness — it’s harmony in difference.", date: "Sunday" }
+];
   
   <script>
   function readPoem() {
@@ -682,7 +736,10 @@ store.getAll().onsuccess = function(e) {
     utterance.rate = 1;
     speechSynthesis.speak(utterance);
   }
-</script>
 
+    <div id="poem-container"></div>
+<div id="reflection-container"></div>
+</script>
+  
 </body>
       </html>
