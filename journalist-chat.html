@@ -4,15 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Journalist Chat</title>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FKXMFN74FW');
-</script>
   <style>
   #footer {
   background: #eeeeee;
@@ -240,23 +231,93 @@
   if (lower.includes('hi') || lower.includes('hello') || lower.includes('good morning')) {
     return 'Good day! Ready to chase the next headline?';
   }
+  if (lower.includes('can') || lower.includes('wear to') || lower.includes('interview')) {
+    return 'Formal, Smart casual or clothes that match the kind of job your going to be interviewed for.'
+  }
   if (lower.includes('yes')) return 'Awesome, please feel free to write it below.';
   if (lower.includes('how long') && lower.includes('publish')) {
-  return 'As soon as our editors see it 😉';
+  return 'As soon as our editors see it 😉'
+  }
+  if (lower.includes('scared you') && lower.includes('judge')) {
+  return 'No, I am here for you 🫂. Maybe you can turn that into an article.';
+}
+  if (lower.includes('got') && lower.includes('job')) {
+  return 'Wow those are some good news, poverty is about to be crashed🫂.';
+}
+if (lower.includes('help') && lower.includes('question')) {
+  return 'Sure, I am here for you 🫂.';
+}if (lower.includes('can') || lower.includes('help') || lower.includes('prepare')) {
+  return 'Sure thing 🫂.';
+}
+if (lower.includes('most common') || lower.includes('interview') || lower.includes('questions')) {
+  return 'Some of the most asked interview questions are things like “Tell me about yourself,” “What are your strengths and weaknesses,” and “Why do you want to work here?” They’re designed to get a feel for who you are, how you think, and how you’d fit in. It’s worth practicing a few answers so you feel confident and natural when they come up. Just ask me each of these questions and I will try to give you an idea on how to answer it.';
+}
+if (lower.includes('prepare') || lower.includes('interview')) {
+  return 'Getting ready for an interview? Start by learning about the company and the role. Practice your answers—especially the tricky ones—using the STAR method. Pick out something smart to wear, print your CV and references, and think of a few good questions to ask them too. Oh, and don’t forget to show up on time and send a quick thank-you note afterward. It really makes a difference.';
 }
 if (lower.includes('thank') && lower.includes('you')) {
-  return 'Your welcome, please feel free to write and send your article, whenever your ready.';
+  return 'Your welcome, please feel free to talk to me or write and send your article, whenever you want 😉.';
 }
 if (lower.includes('will') && lower.includes('be')) {
   return 'Yes, please feel free to write and send your article, whenever your ready.';
 }
-if (lower.includes('kind') && lower.includes('what')) {
+if (lower.includes('kind of article') && lower.includes('what')) {
   return 'All kinds, please feel free to write and send your article, whenever your ready.';
 }
+if (lower.includes('yourself') || lower.includes('intro')) {
+  return 'You could start with what you’re doing now, then share a few highlights that connect to the role.';
+}
+if (lower.includes('describe') || lower.includes('personality')) {
+  return 'Pick a few traits that really feel like you—then back them up with a quick story.';
+}
+if (lower.includes('unique') || lower.includes('different')) {
+  return 'This is your moment to stand out. Share something you bring that others might not.';
+}
+if (lower.includes('why') && (lower.includes('here') || lower.includes('company'))) {
+  return 'Talk about what drew you to the company—maybe their mission, culture, or something they’ve built.';
+}
+if (lower.includes('role') || lower.includes('position')) {
+  return 'Mention a few parts of the job that excite you and match your strengths.';
+}
+if (lower.includes('motivates') || lower.includes('drive')) {
+  return 'Share what gets you going—solving problems, helping people, learning new things. Keep it real.';
+}
+if (lower.includes('passion') || lower.includes('care about')) {
+  return 'Talk about something you genuinely care about and how it shows up in your work.';
+}
+if (lower.includes('leaving') || lower.includes('quit')) {
+  return 'Keep it positive. Say you’re looking for growth, new challenges, or better alignment.';
+}
+if (lower.includes('strength') || lower.includes('good at')) {
+  return 'Pick a couple of strengths that matter for the job, and share how they’ve helped you succeed.';
+}
+if (lower.includes('weakness') || lower.includes('improve')) {
+  return 'Be honest, but show growth. Pick something you’ve worked on and explain how you’re improving.';
+}
+if (lower.includes('goals') || lower.includes('future')) {
+  return 'Share where you’d love to grow—skills, leadership, impact. Keep it aligned with the company’s path.';
+}
+if (lower.includes('five') || lower.includes('years')) {
+  return 'Talk about how you see yourself evolving—maybe leading, deepening your craft, or mentoring others.';
+}
+if (lower.includes('challenge') || lower.includes('problem')) {
+  return 'Use a short story to show how you handled a tough moment. Focus on what you learned.';
+}
+if (lower.includes('salary') || lower.includes('pay')) {
+  return 'You can share a range based on your research, and say you’re open to discussion.';
+}
+if (lower.includes('hire') || lower.includes('choose')) {
+  return 'Highlight your top skills, your energy, and how you’ll help them win. Make it easy to say yes.';
+}
+if (lower.includes('questions') || lower.includes('ask')) {
+  return 'Ask about the team, what success looks like, or what they enjoy most. It shows you care.';
+}
   if (lower.includes('deadline')) return 'Deadline approaching? Prioritize clarity over perfection.';
-  if (lower.includes('ok')) return 'Sharp';
+  if (lower.includes('ok')) return 'Sharp 👍';
+  if (lower.includes('no')) return 'Whats wrong, please feel free to share if you don-t mind';
   if (lower.includes('source')) return 'Always verify with at least two independent sources.';
   if (lower.includes('headline')) return 'Make it punchy, relevant, and emotionally resonant.';
+  if (lower.includes('cheated')) return 'I am sorry, but we can try writing something to express that, if you don-t mind of course.';
   if (lower.includes('ethics')) return 'Transparency and accountability are your strongest tools.';
   if (lower.includes('publish')) return 'Before publishing, ask: is it clear, fair, and necessary?';
   if (lower.includes('editor')) return 'Your editor is your ally—clarify> your angle before filing.';
@@ -270,7 +331,7 @@ if (lower.includes('kind') && lower.includes('what')) {
   if (lower.includes('ai') || lower.includes('automation')) return 'AI can assist, but human judgment leads.';
   if (lower.includes('politics') || lower.includes('celebrity') || lower.includes('sports')) return 'Let’s keep it focused on journalism and publishing.';
 
-  return 'Thanks for your message. Keep reporting!';
+  return 'Thank you, talk soon 😉';
 }
     function saveToHistory(text, sender, time) {
       const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
