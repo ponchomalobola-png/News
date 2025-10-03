@@ -468,8 +468,10 @@ The echo of unity where silence once stood.</em></p>
   <p>This platform runs on passion, pride, and your support. Please help us keep the lights on.</p>
   <a href="https://www.buymeacoffee.com/africaunited" target="_blank">☕ Donate Now</a>
 </div>
+    <div id="poem-container"></div>
+<div id="reflection-container"></div>
   </div>
-
+  
   <footer>
     &copy; 2025 Africa United News. Powered by NewsData.io.
   </footer>
@@ -538,6 +540,26 @@ The echo of unity where silence once stood.</em></p>
   request.onerror = function(event) {
     console.error("IndexedDB error:", event.target.errorCode);
   };
+
+   const weeklyPoems = [
+  { title: "Ubuntu", text: "I am because we are...", date: "Monday" },
+  { title: "The Drum Remembers", text: "The drum remembers what the world forgets...", date: "Tuesday" },
+  { title: "The Soil Remembers Us", text: "We walk on stories buried deep...", date: "Wednesday" },
+  { title: "River of Names", text: "Each name a ripple, each soul a tide...", date: "Thursday" },
+  { title: "Skyline of Hope", text: "Hope rises like skyline over morning dust...", date: "Friday" },
+  { title: "Footprints of Grace", text: "Grace walks ahead, leaving light behind...", date: "Saturday" },
+  { title: "Echoes of Unity", text: "We echo each other’s strength...", date: "Sunday" }
+];
+
+const weeklyReflections = [
+  { text: "Faith is a bridge we build toward each other.", date: "Monday" },
+  { text: "Courage doesn’t always roar — sometimes it’s the quiet choice to keep loving.", date: "Tuesday" },
+  { text: "Grace moves quietly, but leaves footprints on every heart it touches.", date: "Wednesday" },
+  { text: "Peace is not the absence of noise, but the presence of purpose.", date: "Thursday" },
+  { text: "Kindness is a seed — plant it even when the soil feels dry.", date: "Friday" },
+  { text: "Joy is resistance — a flame that dances even in the wind.", date: "Saturday" },
+  { text: "Unity is not sameness — it’s harmony in difference.", date: "Sunday" }
+];
 
   // 3. Prune Old Headlines
   function pruneOldHeadlines() {
@@ -699,26 +721,6 @@ function showWeeklyPoemAndReflection() {
 });
    
 </script>
-
-const weeklyPoems = [
-  { title: "Ubuntu", text: "I am because we are...", date: "Monday" },
-  { title: "The Drum Remembers", text: "The drum remembers what the world forgets...", date: "Tuesday" },
-  { title: "The Soil Remembers Us", text: "We walk on stories buried deep...", date: "Wednesday" },
-  { title: "River of Names", text: "Each name a ripple, each soul a tide...", date: "Thursday" },
-  { title: "Skyline of Hope", text: "Hope rises like skyline over morning dust...", date: "Friday" },
-  { title: "Footprints of Grace", text: "Grace walks ahead, leaving light behind...", date: "Saturday" },
-  { title: "Echoes of Unity", text: "We echo each other’s strength...", date: "Sunday" }
-];
-
-const weeklyReflections = [
-  { text: "Faith is a bridge we build toward each other.", date: "Monday" },
-  { text: "Courage doesn’t always roar — sometimes it’s the quiet choice to keep loving.", date: "Tuesday" },
-  { text: "Grace moves quietly, but leaves footprints on every heart it touches.", date: "Wednesday" },
-  { text: "Peace is not the absence of noise, but the presence of purpose.", date: "Thursday" },
-  { text: "Kindness is a seed — plant it even when the soil feels dry.", date: "Friday" },
-  { text: "Joy is resistance — a flame that dances even in the wind.", date: "Saturday" },
-  { text: "Unity is not sameness — it’s harmony in difference.", date: "Sunday" }
-];
   
   <script>
   function readPoem() {
@@ -736,9 +738,6 @@ const weeklyReflections = [
     utterance.rate = 1;
     speechSynthesis.speak(utterance);
   }
-
-    <div id="poem-container"></div>
-<div id="reflection-container"></div>
 </script>
   
 </body>
