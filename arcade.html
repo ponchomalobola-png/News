@@ -1,228 +1,250 @@
-<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center;">
-<main style="flex: 1;">
-  <section id="arcadeBlock" style="margin-top: 3em; text-align: center;">
-    <h2>🧱 Africa United Arcade Block</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Africa United Arcade Block</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      background: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+    }
 
-    <div style="position: relative; display: inline-block;">
-      <canvas id="blockCanvas" width="300" height="400" style="background:#000; border:2px solid #fff;"></canvas>
+    canvas {
+      background: #000;
+      border: 2px solid #fff;
+    }
 
-      <!-- Game Over Overlay -->
-      <div id="gameOverlay" style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: none;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: rgba(0, 0, 0, 0.6);
-        color: #ff4444;
-        font-size: 1.4em;
-        font-weight: bold;
-        animation: flash 1s infinite;
-        opacity: 0;
-        transition: opacity 1s ease;
-      ">
-        <div>GAME OVER! Final Score: <span id="finalScore">0</span></div>
-        <button onclick="resetGame()" style="
-          margin-top: 1em;
-          padding: 0.6em 1.2em;
-          font-size: 1em;
-          border-radius: 10px;
-          background: #ffcc00;
-          border: none;
-          cursor: pointer;
-        ">🔁 Play Again</button>
-      </div>
-
-      <!-- Win Overlay -->
-      <div id="winOverlay" style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: none;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: rgba(0, 0, 0, 0.6);
-        color: #00ff99;
-        font-size: 1.4em;
-        font-weight: bold;
-        animation: flashWin 1s infinite;
-        opacity: 0;
-        transition: opacity 1s ease;
-      ">
-        <div>🎉 Good work! Stage cleared!</div>
-        <button onclick="nextStage()" style="
-          margin-top: 1em;
-          padding: 0.6em 1.2em;
-          font-size: 1em;
-          border-radius: 10px;
-          background: #00ccff;
-          border: none;
-          cursor: pointer;
-          color: #fff;
-        ">🚀 Next Stage</button>
-      </div>
-    </div>
-
-    <div id="blockScore" style="margin-top:1em; font-size:1.1em;">Score: 0</div>
-
-    <div style="margin-top: 1em;">
-      <button onclick="startGame()" style="padding: 0.6em 1.2em; font-size: 1em; border-radius: 10px; background: #ffcc00; border: none; cursor: pointer;">▶️ Play</button>
-    </div>
-
-    <div style="margin-top: 1em;">
-      <button onclick="moveLeft()" style="padding: 0.5em 1em; font-size: 1em; margin-right: 1em;">⬅️</button>
-      <button onclick="moveRight()" style="padding: 0.5em 1em; font-size: 1em;">➡️</button>
-    </div>
-  </section>
-  <div style="margin-top: 2em; font-size: 0.95em; color: #ccc;">
-  Sponsored by <strong>Public | You | Reader</strong>
-</div>
-
-<div style="margin-top: 1em;">
-  <a href="https://www.buymeacoffee.com/africaunited" target="_blank">
-    <button style="
+    button {
       padding: 0.6em 1.2em;
       font-size: 1em;
       border-radius: 10px;
-      background: #ffcc00;
       border: none;
       cursor: pointer;
-    ">☕ Buy Me a Coffee</button>
-  </a>
-</div>
-</main>
-<footer id="pageFooter" style="
-  padding: 1em;
-  font-size: 0.9em;
-  background: #111;
-  color: #ccc;
-  text-align: center;
-  border-top: 1px solid #333;
-">
-  © 2025 Africa United News · Built with pride in Pretoria 🇿🇦
-</footer>
-
-<script>
-  const canvas = document.getElementById("blockCanvas");
-  const ctx = canvas.getContext("2d");
-  let score = 0;
-  let ball = { x: 150, y: 200, dx: 2, dy: -2, radius: 5 };
-  let paddle = { x: 120, width: 60, height: 10 };
-  let blocks = [];
-  let gameRunning = false;
-
-  const rows = 4, cols = 6, blockWidth = 45, blockHeight = 15;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      blocks.push({ x: c * (blockWidth + 5) + 10, y: r * (blockHeight + 5) + 30, hit: false });
+      transition: transform 0.2s ease;
     }
-  }
 
-  function drawBall() {
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    ctx.fillStyle = "#ffcc00";
-    ctx.fill();
-    ctx.closePath();
-  }
+    button:hover {
+      transform: scale(1.05);
+    }
 
-  function drawPaddle() {
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(paddle.x, canvas.height - paddle.height - 10, paddle.width, paddle.height);
-  }
+    #gameOverlay, #winOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.6);
+      font-size: 1.4em;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
 
-  function drawBlocks() {
-    blocks.forEach(b => {
-      if (!b.hit) {
-        ctx.fillStyle = "#ff4444";
-        ctx.fillRect(b.x, b.y, blockWidth, blockHeight);
+    #gameOverlay {
+      color: #ff4444;
+      animation: flash 1s infinite;
+    }
+
+    #winOverlay {
+      color: #00ff99;
+      animation: flashWin 1s infinite;
+    }
+
+    footer {
+      padding: 1em;
+      font-size: 0.9em;
+      background: #111;
+      color: #ccc;
+      text-align: center;
+      border-top: 1px solid #333;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    @keyframes flash {
+      0%, 100% { color: #ff4444; }
+      50% { color: #fff; }
+    }
+
+    @keyframes flashWin {
+      0%, 100% { color: #00ff99; }
+      50% { color: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <main style="flex: 1;">
+    <section id="arcadeBlock" style="margin-top: 3em;">
+      <h2>🧱 Africa United Arcade Block</h2>
+
+      <div style="position: relative; display: inline-block;">
+        <canvas id="blockCanvas" width="300" height="400"></canvas>
+
+        <div id="gameOverlay">
+          <div>GAME OVER! Final Score: <span id="finalScore">0</span></div>
+          <button onclick="resetGame()" style="background: #ffcc00;">🔁 Play Again</button>
+        </div>
+
+        <div id="winOverlay">
+          <div>🎉 Good work! Stage cleared!</div>
+          <button onclick="nextStage()" style="background: #00ccff; color: #fff;">🚀 Next Stage</button>
+        </div>
+      </div>
+
+      <div id="blockScore" style="margin-top:1em; font-size:1.1em;">Score: 0</div>
+
+      <div style="margin-top: 1em;">
+        <button onclick="startGame()" style="background: #ffcc00;">▶️ Play</button>
+      </div>
+
+      <div style="margin-top: 1em;">
+        <button onclick="moveLeft()" style="margin-right: 1em;">⬅️</button>
+        <button onclick="moveRight()">➡️</button>
+      </div>
+    </section>
+
+    <div style="margin-top: 2em; font-size: 0.95em; color: #ccc;">
+      Sponsored by <strong>Public | You | Reader</strong>
+    </div>
+
+    <div style="margin-top: 1em;">
+      <a href="https://www.buymeacoffee.com/africaunited" target="_blank">
+        <button style="background: #ffcc00;">☕ Buy Me a Coffee</button>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Africa United News · Built with pride in Pretoria 🇿🇦
+  </footer>
+
+  <script>
+    const canvas = document.getElementById("blockCanvas");
+    const ctx = canvas.getContext("2d");
+    let score = 0;
+    let ball = { x: 150, y: 200, dx: 2, dy: -2, radius: 5 };
+    let paddle = { x: 120, width: 60, height: 10 };
+    let blocks = [];
+    let gameRunning = false;
+
+    const rows = 4, cols = 6, blockWidth = 45, blockHeight = 15;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        blocks.push({ x: c * (blockWidth + 5) + 10, y: r * (blockHeight + 5) + 30, hit: false });
       }
-    });
-  }
-
-  function draw() {
-    if (!gameRunning) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBall();
-    drawPaddle();
-    drawBlocks();
-
-    ball.x += ball.dx;
-    ball.y += ball.dy;
-
-    if (ball.x < ball.radius || ball.x > canvas.width - ball.radius) ball.dx *= -1;
-    if (ball.y < ball.radius) ball.dy *= -1;
-
-    if (
-      ball.y > canvas.height - paddle.height - 10 - ball.radius &&
-      ball.x > paddle.x &&
-      ball.x < paddle.x + paddle.width
-    ) {
-      ball.dy *= -1;
     }
 
-    blocks.forEach(b => {
-      if (!b.hit &&
-        ball.x > b.x &&
-        ball.x < b.x + blockWidth &&
-        ball.y > b.y &&
-        ball.y < b.y + blockHeight
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffcc00";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawPaddle() {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(paddle.x, canvas.height - paddle.height - 10, paddle.width, paddle.height);
+    }
+
+    function drawBlocks() {
+      blocks.forEach(b => {
+        if (!b.hit) {
+          ctx.fillStyle = "#ff4444";
+          ctx.fillRect(b.x, b.y, blockWidth, blockHeight);
+        }
+      });
+    }
+
+    function draw() {
+      if (!gameRunning) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBall();
+      drawPaddle();
+      drawBlocks();
+
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      if (ball.x < ball.radius || ball.x > canvas.width - ball.radius) ball.dx *= -1;
+      if (ball.y < ball.radius) ball.dy *= -1;
+
+      if (
+        ball.y > canvas.height - paddle.height - 10 - ball.radius &&
+        ball.x > paddle.x &&
+        ball.x < paddle.x + paddle.width
       ) {
-        b.hit = true;
         ball.dy *= -1;
-        score += 10;
-        document.getElementById("blockScore").innerText = `Score: ${score}`;
       }
-    });
 
-    const allCleared = blocks.every(b => b.hit);
-    if (allCleared) {
-      gameRunning = false;
-      const win = document.getElementById("winOverlay");
-      win.style.display = "flex";
-      setTimeout(() => { win.style.opacity = 1; }, 100);
+      blocks.forEach(b => {
+        if (!b.hit &&
+          ball.x > b.x &&
+          ball.x < b.x + blockWidth &&
+          ball.y > b.y &&
+          ball.y < b.y + blockHeight
+        ) {
+          b.hit = true;
+          ball.dy *= -1;
+          score += 10;
+          document.getElementById("blockScore").innerText = `Score: ${score}`;
+        }
+      });
+
+      const allCleared = blocks.every(b => b.hit);
+      if (allCleared) {
+        gameRunning = false;
+        const win = document.getElementById("winOverlay");
+        win.style.display = "flex";
+        setTimeout(() => { win.style.opacity = 1; }, 100);
+      }
+
+      if (ball.y > canvas.height) {
+        gameRunning = false;
+        document.getElementById("finalScore").innerText = score;
+        const overlay = document.getElementById("gameOverlay");
+        overlay.style.display = "flex";
+        setTimeout(() => { overlay.style.opacity = 1; }, 100);
+      }
+
+      requestAnimationFrame(draw);
     }
 
-    if (ball.y > canvas.height) {
-      gameRunning = false;
-      document.getElementById("finalScore").innerText = score;
+    function startGame() {
+      if (!gameRunning) {
+        gameRunning = true;
+        draw();
+      }
+    }
+
+    function resetGame() {
+      score = 0;
+      ball = { x: 150, y: 200, dx: 2, dy: -2, radius: 5 };
+      paddle = { x: 120, width: 60, height: 10 };
+      blocks.forEach(b => b.hit = false);
+      document.getElementById("blockScore").innerText = "Score: 0";
       const overlay = document.getElementById("gameOverlay");
-      overlay.style.display = "flex";
-      setTimeout(() => { overlay.style.opacity = 1; }, 100);
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  function startGame() {
-    if (!gameRunning) {
+      overlay.style.opacity = 0;
+      setTimeout(() => { overlay.style.display = "none"; }, 500);
       gameRunning = true;
       draw();
     }
-  }
 
-  function resetGame() {
-    score = 0;
-    ball = { x: 150, y: 200, dx: 2, dy: -2, radius: 5 };
-    paddle = { x: 120, width: 60, height: 10 };
-    blocks.forEach(b => b.hit = false);
-    document.getElementById("blockScore").innerText = "Score: 0";
-    const overlay = document.getElementById("gameOverlay");
-    overlay.style.opacity = 0;
-    setTimeout(() => { overlay.style.display = "none"; }, 500);
-    gameRunning = true;
-    draw();
-  }
-
-  function nextStage() {
+    function nextStage() {
     score = 0;
     ball = { x: 150, y: 200, dx: 3, dy: -3, radius: 5 };
     paddle = { x: 120, width: 60, height: 10 };
@@ -248,23 +270,3 @@
     if (e.key === "ArrowRight") moveRight();
   });
 </script>
-
-<style>
-  @keyframes flash {
-    0%, 100% { color: #ff4444; }
-    50% { color: #fff; }
-  }
-
-  @keyframes flashWin {
-    0%, 100% { color: #00ff99; }
-    50% { color: #fff; }
-  }
-  button:hover {
-  transform: scale(1.05);
-  transition: transform 0.2s ease;
-}
-
-a {
-  text-decoration: none;
-}
-  </style>
