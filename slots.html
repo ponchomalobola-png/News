@@ -1,34 +1,331 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎰 Africa United Slots</title>
   <style>
-    body { font-family: sans-serif; text-align: center; background: #111; color: #fff; }
-    #reels { font-size: 3em; margin: 20px; display: flex; justify-content: center; gap: 20px; }
-    .reel { width: 80px; height: 80px; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background: #222; }
-    button, input { padding: 10px 20px; font-size: 1.2em; margin: 10px; }
-    #credits, #result, #leaderboard { font-size: 1.2em; margin-top: 10px; }
-    #ads, #donation { margin-top: 20px; font-size: 0.9em; color: #ccc; }
+  #pageFooter {
+  padding: 1em;
+  font-size: 0.9em;
+  background: #111;
+  color: #ccc;
+  text-align: center;
+  border-top: 1px solid #333;
+}
+#pageFooter a {
+  color: #ffcc00;
+  text-decoration: none;
+}
+  .reel.pop {
+  animation: pop 0.3s ease;
+}
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+    body {
+      margin: 0;
+      padding: 1em;
+      font-family: sans-serif;
+      background: radial-gradient(circle at center, #222 40%, #000);
+      color: #fff;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+    }
+    input {
+      padding: 0.6em;
+      font-size: 1em;
+      width: 80%;
+      max-width: 300px;
+      margin-bottom: 1em;
+    }
+    #machine {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      margin: 1em 0;
+    }
+   .reel {
+  width: 80px;
+  height: 80px;
+  font-size: 2em;
+  background: #333;
+  border: 3px solid #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 10px #000;
+  transition: transform 0.3s ease;
+}
+.reel.spin {
+  animation: flash 0.5s linear infinite;
+}
+@keyframes flash {
+  0%   { transform: scale(1); background: #444; }
+  50%  { transform: scale(1.2); background: #666; }
+  100% { transform: scale(1); background: #444; }
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5em;
+      margin: 1em 0;
+    }
+    button {
+      padding: 0.6em 1em;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background: #ffcc00;
+      color: #000;
+      cursor: pointer;
+    }
+    #credits, #result, #leaderboard {
+      margin-top: 1em;
+      font-size: 1.1em;
+    }
+    #ads, #donation {
+      margin-top: 2em;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+    @media (max-width: 600px) {
+      .reel {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5em;
+      }
+      button {
+        flex: 1 1 100%;
+      }
+    }
   </style>
 </head>
-<body>
-  <h1>🎰 Africa United Slots</h1>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+  <main style="flex: 1;">
+  <h1>   <a href="index.html" style="text-decoration: none; color: inherit;">     🎰 Africa United Slots   </a> </h1>
   <input type="text" id="playerName" placeholder="Enter your name" />
-  <div id="reels">
+  <div id="machine">
     <div class="reel">🍒</div>
     <div class="reel">🍒</div>
     <div class="reel">🍒</div>
   </div>
-  <button onclick="spin()">Spin</button>
-  <button onclick="toggleAutoSpin()">Auto Spin</button>
-  <button onclick="resetCredits()">Reset</button>
+  <div id="controls">
+    <button onclick="spin()">Spin</button>
+    <button onclick="toggleAutoSpin()">Auto Spin</button>
+    <button onclick="resetCredits()">Reset</button>
+  </div>
   <div id="credits">Credits: 100</div>
   <div id="result"></div>
   <div id="leaderboard">🏆 Leaderboard:</div>
+  <div id="ads">Sponsored by Public | You | Reader</div>
+  <div id="donation">   <a href="https://buymeacoffee.com/africaunited" target="_blank">     <button style="       padding: 0.6em 1.2em;       font-size: 1em;       border: none;       border-radius: 50px;       background: linear-gradient(to right, #ffcc00, #ffaa00);       color: #000;       cursor: pointer;       box-shadow: 0 4px 10px rgba(0,0,0,0.3);       transition: transform 0.2s;     " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">       ☕ Buy Me a Coffee     </button>   </a> </div>
 
-  <div id="ads">Sponsored by Bokomo | Tiger Brands | Unilever</div>
-  <div id="donation">Support us: <a href="#">Donate</a></div>
+<audio id="bgMusic" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7e6b6c9b5e.mp3?filename=arcade-magic-13449.mp3" loop></audio>
+<audio id="spinSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c3b6f3c6f.mp3?filename=slot-machine-spin-13450.mp3"></audio>
+<audio id="winSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2e3b6f3c6f.mp3?filename=slot-machine-win-13451.mp3"></audio>
 
-  <script src="slot.js"></script>
+  <script>
+    
+    const bgMusic = document.getElementById("bgMusic");
+const spinSound = document.getElementById("spinSound");
+const winSound = document.getElementById("winSound");
+
+// Start background music when page loads
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.3;
+  bgMusic.play().catch(() => {
+    // Autoplay might be blocked; user interaction will trigger it
+    document.body.addEventListener("click", () => bgMusic.play(), { once: true });
+  });
+});
+    
+    const symbols = ["🍒", "🔔", "💎", "🍋", "7️⃣"];
+    const reels = document.querySelectorAll(".reel");
+    const result = document.getElementById("result");
+    const creditsDisplay = document.getElementById("credits");
+    const leaderboardDisplay = document.getElementById("leaderboard");
+    const playerNameInput = document.getElementById("playerName");
+
+    let credits = 100;
+    let autoSpin = false;
+    let autoSpinInterval;
+    let db;
+
+    const request = indexedDB.open("SlotMachineDB", 3);
+    request.onupgradeneeded = e => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains("credits")) {
+        db.createObjectStore("credits", { keyPath: "id" });
+      }
+      if (!db.objectStoreNames.contains("leaderboard")) {
+        db.createObjectStore("leaderboard", { keyPath: "name" });
+      }
+    };
+    request.onsuccess = e => {
+      db = e.target.result;
+      loadCredits();
+      loadLeaderboard();
+    };
+
+    function getPlayerName() {
+      return playerNameInput.value.trim() || "Anonymous";
+    }
+
+    function loadCredits() {
+      const tx = db.transaction("credits", "readonly");
+      const store = tx.objectStore("credits");
+      const get = store.get("player");
+      get.onsuccess = () => {
+        if (get.result) {
+          credits = get.result.amount;
+          updateCredits();
+        }
+      };
+    }
+
+    function saveCredits() {
+      const tx = db.transaction("credits", "readwrite");
+      const store = tx.objectStore("credits");
+      store.put({ id: "player", amount: credits });
+    }
+
+    function updateCredits() {
+      creditsDisplay.innerText = `Credits: ${credits}`;
+    }
+
+    function resetCredits() {
+      credits = 100;
+      saveCredits();
+      updateCredits();
+      result.innerText = "Credits reset.";
+    }
+
+function spin() {
+  if (credits < 1) {
+    result.innerText = "Out of credits!";
+    stopAutoSpin();
+    return;
+  }
+
+  credits -= 1;
+  updateCredits();
+  saveCredits();
+
+  // Disable buttons during spin
+  document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+
+  // Play spin sound
+  spinSound.currentTime = 0;
+  spinSound.play();
+
+  const spinResult = [];
+  let rollCount = 10;
+  let frame = 0;
+
+  const rollInterval = setInterval(() => {
+    for (let i = 0; i < reels.length; i++) {
+      const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+      reels[i].innerText = symbol;
+    }
+    frame++;
+    if (frame >= rollCount) {
+      clearInterval(rollInterval);
+
+      // Final result with pop animation
+      for (let i = 0; i < reels.length; i++) {
+        const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+        reels[i].innerText = symbol;
+        reels[i].classList.add("pop");
+        setTimeout(() => reels[i].classList.remove("pop"), 300);
+        spinResult.push(symbol);
+      }
+
+      const win = checkWin(spinResult);
+      if (win > 0) {
+        credits += win;
+        result.innerText = `🎉 You won ${win} credits!`;
+
+        // Play win sound
+        winSound.currentTime = 0;
+        winSound.play();
+
+        navigator.vibrate?.([200]);
+        updateLeaderboard(getPlayerName(), credits);
+      } else {
+        result.innerText = "Try again!";
+      }
+
+      updateCredits();
+      saveCredits();
+
+      // Re-enable buttons after 3 seconds
+      setTimeout(() => {
+        document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+      }, 3000);
+    }
+  }, 100);
+}
+
+    function checkWin([a, b, c]) {
+      if (a === b && b === c) return 50;
+      if ((a === b || b === c) && Math.random() > 0.7) return 20;
+      return 0;
+    }
+
+    function toggleAutoSpin() {
+      autoSpin = !autoSpin;
+      if (autoSpin) {
+        autoSpinInterval = setInterval(spin, 3000); // was 1000
+        result.innerText = "Auto-spin started.";
+      } else {
+        stopAutoSpin();
+      }
+    }
+
+    function stopAutoSpin() {
+      clearInterval(autoSpinInterval);
+      autoSpin = false;
+      result.innerText = "Auto-spin stopped.";
+    }
+
+    function updateLeaderboard(name, score) {
+      const tx = db.transaction("leaderboard", "readwrite");
+      const store = tx.objectStore("leaderboard");
+      const get = store.get(name);
+      get.onsuccess = () => {
+        const current = get.result;
+        if (!current || score > current.score) {
+          store.put({ name, score });
+          loadLeaderboard();
+        }
+      };
+    }
+
+    function loadLeaderboard() {
+      const tx = db.transaction("leaderboard", "readonly");
+      const store = tx.objectStore("leaderboard");
+      const request = store.getAll();
+      request.onsuccess = () => {
+        const sorted = request.result.sort((a, b) => b.score - a.score).slice(0, 5);
+        leaderboardDisplay.innerHTML = "🏆 Leaderboard:<br>" + sorted.map(e => `${e.name}: ${e.score}`).join("<br>");
+      };
+    }
+  </script>
+  </main>
+  <footer id="pageFooter">
+  © 2025 Africa United News · Built with pride in Pretotia 🇿🇦 ·
+</footer>
 </body>
 </html>
