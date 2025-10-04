@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shape Drop Showdown</title>
+  <style>
+  /* Existing styles... */
+
+  .arcade-button {
+    background: linear-gradient(90deg, #444, #222);
+    color: #ffcc00;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .arcade-button:hover {
+    transform: scale(1.05);
+    background: #333;
+  }
+
+  button {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  padding: clamp(0.4rem, 1vw, 0.6rem);
+}
+h1 {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+}
+#score-line, #sponsor-banner {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+}
+  @media (min-width: 600px) {
+ #arcade-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+  h1 {
+    font-size: clamp(1.2rem, 3vw, 2rem);
+  }
+
+  button {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    padding: 0.6rem;
+  }
+
+  #score-line, #sponsor-banner {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+  }
+}
+    :root {
+      --bg: #111;
+      --accent: #ffcc00;
+      --primary: #00ccff;
+      --danger: #ff4444;
+      --grid-bg: #222;
+      --cell-bg: #333;
+      --font: 'Orbitron', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: #fff;
+      font-family: var(--font);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.5s ease;
+    }
+
+    #arcade-container {
+      width: 100%;
+      max-width: 260px;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      color: var(--accent);
+      text-shadow: 0 0 6px var(--accent);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+#game-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  gap: 1px;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 10 / 20;
+  background: var(--grid-bg);
+  border: 2px solid var(--accent);
+  box-shadow:
+    0 0 6px rgba(255, 204, 0, 0.3),
+    inset 0 0 4px rgba(255, 255, 255, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+    #game-grid div {
+      background: var(--cell-bg);
+      transition: background 0.2s ease;
+    }
+
+#controls {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3rem;
+  margin: 0.6rem 0 0.4rem;
+  width: 100%;
+}
+
+button {
+  padding: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  background: linear-gradient(90deg, #444, #222);
+  color: var(--accent);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+#play-pause-button,
+#reset-button {
+  background: linear-gradient(90deg, var(--primary), #0088cc);
+  color: #000;
+}
+
+    #reset-button {
+      background: var(--danger);
+      color: #fff;
+      width: 100%;
+      margin-top: 0.4rem;
+    }
+
+    #score-line {
+      background: #1a1a1a;
+      padding: 0.4rem;
+      width: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+      border-top: 1px solid #333;
+    }
+
+    #sponsor-banner {
+      background: #0a0;
+      padding: 0.4rem;
+      font-weight: bold;
+      width: 100%;
+      text-align: center;
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    #game-over {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,0,0,0.8);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      display: none;
+      animation: flash 1s ease;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0.8; }
+    }
+
+    footer {
+      width: 100%;
+      padding: 0.6rem;
+      background: #000;
+      color: #999;
+      font-size: 0.75rem;
+      text-align: center;
+      border-top: 1px solid #222;
+    }
+  </style>
+</head>
+<body>
+  <div id="arcade-container">
+   <h1 style="color:#ffcc00; text-shadow:0 0 6px #ffcc00; font-size:2rem; margin-top:1rem;">
+  🧱 Shape Drop
+</h1>
+    <div id="game-grid"></div>
+    <div id="game-over">🛑 GAME OVER</div>
+
+<div id="controls">
+  <button id="left">⬅️</button>
+  <button id="right">➡️</button>
+  <button id="rotate">🔄</button>
+  <button id="down">⬇️</button>
+  <button id="play-pause-button">⏯️</button>
+  <button id="reset-button">🧹</button>
+</div>
+
+    <div id="score-line">Score: 0</div>
+    <div id="sponsor-banner">Sponsored by Africa United</div>
+  </div>
+
+ <div style="margin:1rem 0; display:flex; flex-direction:column; align-items:center;">
+  <a href="gamezone.html" class="arcade-button">🎮 Back to Arcade</a>
+
+  <script>
+    const grid = document.getElementById('game-grid');
+    const resetBtn = document.getElementById('reset-button');
+    const leftBtn = document.getElementById('left');
+    const rightBtn = document.getElementById('right');
+    const rotateBtn = document.getElementById('rotate');
+    const downBtn = document.getElementById('down');
+    const playPauseBtn = document.getElementById('play-pause-button');
+    const scoreLine = document.getElementById('score-line');
+    const gameOverOverlay = document.getElementById('game-over');
+
+    const cols = 10;
+    const rows = 20;
+    const cells = [];
+    const gridState = Array(cols * rows).fill(null);
+
+    for (let i = 0; i < cols * rows; i++) {
+      const cell = document.createElement('div');
+      grid.appendChild(cell);
+      cells.push(cell);
+    }
+
+    const flagColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff6600', '#00ffff'];
+    const shapes = {
+      T: [[1, cols, cols + 1, cols + 2], [1, cols + 1, cols + 2, 2 * cols + 1], [cols, cols + 1, cols + 2, 2 * cols + 1], [1, cols, cols + 1, 2 * cols + 1]],
+      Z: [[0, 1, cols + 1, cols + 2], [1, cols, cols + 1, 2 * cols]],
+      L: [[0, cols, 2 * cols, 2 * cols + 1], [cols, cols + 1, cols + 2, 2 * cols], [0, 1, cols + 1, 2 * cols + 1], [cols, cols + 1, cols + 2, 0]],
+      I: [[0, cols, 2 * cols, 3 * cols], [cols, cols + 1, cols + 2, cols + 3]],
+      O: [[0, 1, cols, cols + 1]],
+      S: [[1, 2, cols, cols + 1], [0, cols, cols + 1, 2 * cols + 1]]
+    };
+
+    let currentShape = [];
+    let shapeType = 'T';
+    let rotation = 0;
+    let position = 4;
+    let interval;
+    let score = 0;
+    let isPlaying = true;
+    let currentColor = flagColors[Math.floor(Math.random() * flagColors.length)];
+
+    function drawShape() {
+      currentShape.forEach(i => {
+        const index = position + i;
+        if (cells[index]) cells[index].style.background = currentColor;
+      });
+    }
+
+    function clearShape() {
+      currentShape.forEach(i => {
+        const index = position + i;
+        if (cells[index]) cells[index].style.background = '#333';
+      });
+    }
+
+    function checkCollision(offset = cols) {
+      return currentShape.some(i => {
+        const index = position + i + offset;
+        const x = index % cols;
+        return (
+          index >= cols * rows ||
+          gridState[index] ||
+          x < 0 || x >= cols
+        );
+      });
+    }
+
+    function freezeShape() {
+      currentShape.forEach(i => {
+        const index = position + i;
+        gridState[index] = true;
+      });
+    }
+
+    function clearRows() {
+      let rowsCleared = 0;
+      for (let r = 0; r < rows; r++) {
+        const rowStart = r * cols;
+        const row = gridState.slice(rowStart, rowStart + cols);
+        if (row.every(cell => cell)) {
+          rowsCleared++;
+          for (let i = rowStart; i < rowStart + cols; i++) {
+            gridState[i] = null;
+            cells[i].style.background = '#333';
+          }
+          for (let i = rowStart - 1; i >= 0; i--) {
+            if (gridState[i]) {
+              gridState[i + cols] = true;
+              gridState[i] = null;
+              cells[i + cols].style.background = cells[i].style.background;
+              cells[i].style.background = '#333';
+            }
+          }
+        }
+      }
+      if (rowsCleared > 0) {
+        score += rowsCleared * 100;
+        if (rowsCleared > 1) {
+          document.body.style.background = '#222';
+          setTimeout(() => document.body.style.background = '', 300);
+        }
+        updateScore();
+        updateStage();
+      }
+    }
+
+    function updateStage() {
+      const stages = ['#111', '#112233', '#113322', '#221133', '#331122'];
+      const stageIndex = Math.floor(score / 500) % stages.length;
+      document.body.style.background = stages[stageIndex];
+    }
+
+    function dropShape() {
+      if (checkCollision()) {
+        freezeShape();
+        clearRows();
+        spawnShape();
+      } else {
+        clearShape();
+        position += cols;
+        drawShape();
+      }
+    }
+
+    function spawnShape() {
+  shapeType = Object.keys(shapes)[Math.floor(Math.random() * Object.keys(shapes).length)];
+  rotation = 0;
+  currentShape = shapes[shapeType][rotation];
+  position = 4;
+  currentColor = flagColors[Math.floor(Math.random() * flagColors.length)];
+  if (checkCollision(0)) {
+    gameOverOverlay.style.display = 'flex';
+    clearInterval(interval);
+    setTimeout(() => {
+      gameOverOverlay.style.display = 'none';
+    }, 1500);
+  } else {
+    drawShape();
+  }
+}
+
+    function rotateShape() {
+      clearShape();
+      const nextRotation = (rotation + 1) % shapes[shapeType].length;
+      const nextShape = shapes[shapeType][nextRotation];
+      currentShape = nextShape;
+      rotation = nextRotation;
+      if (checkCollision(0)) {
+        rotation = (rotation - 1 + shapes[shapeType].length) % shapes[shapeType].length;
+        currentShape = shapes[shapeType][rotation];
+      }
+      drawShape();
+    }
+
+    function moveShape(offset) {
+      clearShape();
+      position += offset;
+      if (checkCollision(0)) position -= offset;
+      drawShape();
+    }
+
+    function resetGame() {
+      clearInterval(interval);
+      gridState.fill(null);
+      cells.forEach(cell => cell.style.background = '#333');
+      score = 0;
+      updateScore();
+      updateStage();
+      isPlaying = true;
+      gameOverOverlay.style.display = 'none';
+      playPauseBtn.textContent = '⏯️';
+      spawnShape();
+      interval = setInterval(() => {
+        if (isPlaying) dropShape();
+      }, 500);
+    }
+
+    function updateScore() {
+      scoreLine.textContent = `Score: ${score}`;
+    }
+
+    function togglePlayPause() {
+      isPlaying = !isPlaying;
+      playPauseBtn.textContent = isPlaying ? '⏯️' : '▶️';
+    }
+
+    // Button listeners
+    leftBtn.addEventListener('click', () => moveShape(-1));
+    rightBtn.addEventListener('click', () => moveShape(1));
+    downBtn.addEventListener('click', () => dropShape());
+    rotateBtn.addEventListener('click', () => rotateShape());
+    resetBtn.addEventListener('click', () => resetGame());
+    playPauseBtn.addEventListener('click', () => togglePlayPause());
+
+    // Start game
+    resetGame();
+  </script>
+  <footer style="margin-top:2rem; font-size:0.8rem; color:#aaa; text-align:center;">
+  🇿🇦 Sponsored by You | our | Reader · Africa United News
+</footer>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snake Showdown</title>
+  <style>
+  /* Existing styles... */
+
+  .arcade-button {
+    background: linear-gradient(90deg, #444, #222);
+    color: #ffcc00;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .arcade-button:hover {
+    transform: scale(1.05);
+    background: #333;
+  }
+#touch-controls {
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  gap: 0.3rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.dpad-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.dpad-btn {
+  background: #5c4033; /* classic brown */
+  color: #fff;
+  border: 2px solid #222;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: 1.4rem;
+  box-shadow: inset 0 -2px 0 #3b2a1a, 0 2px 4px rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+
+.dpad-btn:active {
+  box-shadow: inset 0 2px 0 #3b2a1a;
+  transform: translateY(1px);
+}
+
+.dpad-center {
+  width: 2.6rem;
+  height: 2.6rem;
+  background: transparent;
+  border: none;
+}
+    :root {
+      --bg: #111;
+      --grid-bg: #222;
+      --accent: #ffcc00;
+      --font: 'Orbitron', sans-serif;
+      --flag-colors: #ff0000, #00ff00, #0000ff, #ffff00, #ff6600, #00ffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: #fff;
+      font-family: var(--font);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      color: var(--accent);
+      text-shadow: 0 0 6px var(--accent);
+      margin: 1rem 0 0.5rem;
+      text-align: center;
+    }
+
+    #game-container {
+      width: 90vw;
+      max-width: 480px;
+      aspect-ratio: 1 / 1;
+      background: var(--grid-bg);
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      grid-template-rows: repeat(20, 1fr);
+      gap: 1px;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 8px rgba(255, 204, 0, 0.3);
+      position: relative;
+    }
+
+    #game-container div {
+      background: #333;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+
+    .food {
+      background: transparent;
+      font-size: 1.2rem;
+    }
+
+    #controls, #difficulty-selector, #touch-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      margin: 1rem 0 0.5rem;
+      flex-wrap: wrap;
+      max-width: 480px;
+    }
+
+    button, select {
+      padding: 0.6rem;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #444, #222);
+      color: var(--accent);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    #score-line {
+      background: #1a1a1a;
+      padding: 0.5rem;
+      width: 100%;
+      text-align: center;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      margin-top: 0.5rem;
+      border-top: 1px solid #333;
+    }
+
+    #sponsor-banner {
+      background: #0a0;
+      padding: 0.4rem;
+      font-weight: bold;
+      width: 100%;
+      text-align: center;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      margin-top: 0.4rem;
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    #game-over {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,0,0,0.8);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      display: none;
+      animation: flash 1s ease;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0.8; }
+    }
+
+    footer {
+      width: 100%;
+      padding: 0.6rem;
+      background: #000;
+      color: #999;
+      font-size: 0.75rem;
+      text-align: center;
+      border-top: 1px solid #222;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="color:#ffcc00; text-shadow:0 0 6px #ffcc00; font-size:2rem; margin-top:1rem;">
+  🐍 Snake Showdown
+</h1>
+  <div id="game-container"></div>
+  <div id="game-over">🛑 GAME OVER</div>
+  <div id="controls">
+    <button onclick="togglePlayPause()">⏯️ Play/Pause</button>
+    <button onclick="startGame()">🔁 Restart</button>
+  </div>
+
+<div id="touch-controls">
+  <div class="dpad-row">
+    <button class="dpad-btn" onclick="changeDirection('up')">⬆️</button>
+  </div>
+  <div class="dpad-row">
+    <button class="dpad-btn" onclick="changeDirection('left')">⬅️</button>
+    <button class="dpad-center" disabled></button>
+    <button class="dpad-btn" onclick="changeDirection('right')">➡️</button>
+  </div>
+  <div class="dpad-row">
+    <button class="dpad-btn" onclick="changeDirection('down')">⬇️</button>
+  </div>
+</div>
+
+  <div id="difficulty-selector">
+    <button onclick="setDifficulty(200)">🟢 Easy</button>0t
+    <button onclick="setDifficulty(150)">🟡 Medium</button>
+    <button onclick="setDifficulty(100)">🔴 Hard</button>
+  </div>
+
+  <div id="score-line">Score: 0 | High Score: 0 | Stage: 1</div>
+  <div id="sponsor-banner">Sponsored by Africa United</div>
+  <div style="margin:1rem 0; display:flex; flex-direction:column; align-items:center;">
+  <a href="gamezone.html" class="arcade-button">🎮 Back to Arcade</a>
+
+</div>
+
+ 
+  <script>
+    
+  const gridSize = 20;
+  const gameContainer = document.getElementById('game-container');
+  const gameOverOverlay = document.getElementById('game-over');
+  const scoreLine = document.getElementById('score-line');
+  let cells = [];
+  let snake = [42, 41, 40];
+  let direction = 'right';
+  let food = null;
+  let interval;
+  let score = 0;
+  let highScore = localStorage.getItem('snakeHighScore') || 0;
+  let speed = 150;
+  let isPlaying = true;
+  let stage = 1;
+  const flagColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff6600', '#00ffff'];
+  const fruits = ['🍌','🍇','🍎','🍉','🍊','🍍'];
+  let currentFruit = '🍌';
+  let colorIndex = 0;
+
+  for (let i = 0; i < gridSize * gridSize; i++) {
+    const cell = document.createElement('div');
+    gameContainer.appendChild(cell);
+    cells.push(cell);
+  }
+
+  function drawSnake() {
+    cells.forEach(cell => {
+      cell.className = '';
+      cell.textContent = '';
+      cell.style.background = '#333';
+    });
+    snake.forEach((i, idx) => {
+      const color = flagColors[(colorIndex + idx) % flagColors.length];
+      cells[i].style.background = color;
+      if (idx === 0) {
+        cells[i].textContent = '🐍';
+        cells[i].style.fontSize = '1.2rem';
+      }
+    });
+    if (food !== null) {
+      cells[food].classList.add('food');
+      cells[food].textContent = currentFruit;
+    }
+  }
+
+  function spawnFood() {
+    let index;
+    do {
+      index = Math.floor(Math.random() * cells.length);
+    } while (snake.includes(index));
+    food = index;
+    currentFruit = fruits[Math.floor(Math.random() * fruits.length)];
+  }
+
+  function checkStageProgression() {
+    if (score >= stage * 50) {
+      stage++;
+      speed = Math.max(50, speed - 20);
+      clearInterval(interval);
+      interval = setInterval(moveSnake, speed);
+      document.body.style.background = `linear-gradient(to bottom, #111, hsl(${stage * 40}, 70%, 20%))`;
+    }
+  }
+
+  function moveSnake() {
+    if (!isPlaying) return;
+    const head = snake[0];
+    let next;
+
+    if (direction === 'right') next = head + 1;
+    if (direction === 'left') next = head - 1;
+    if (direction === 'up') next = head - gridSize;
+    if (direction === 'down') next = head + gridSize;
+
+    const x = next % gridSize;
+    const y = Math.floor(next / gridSize);
+
+    if (
+  next < 0 || next >= gridSize * gridSize ||
+  x < 0 || x >= gridSize ||
+  y < 0 || y >= gridSize ||
+  snake.includes(next)
+) {
+  clearInterval(interval);
+  gameOverOverlay.style.display = 'flex';
+  setTimeout(() => gameOverOverlay.style.display = 'none', 1500);
+
+  // 📳 Trigger vibration if supported
+  if (navigator.vibrate) {
+    navigator.vibrate([200, 100, 200]);
+  }
+
+  return;
+}
+
+    snake.unshift(next);
+    if (next === food) {
+      score += 10;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('snakeHighScore', highScore);
+      }
+      spawnFood();
+    } else {
+      snake.pop();
+    }
+
+    colorIndex++;
+    drawSnake();
+    scoreLine.textContent = `Score: ${score} | High Score: ${highScore} | Stage: ${stage}`;
+    checkStageProgression();
+  }
+
+  function changeDirection(dir) {
+    const opposite = { up: 'down', down: 'up', left: 'right', right: 'left' };
+    if (dir !== opposite[direction]) direction = dir;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp') changeDirection('up');
+    if (e.key === 'ArrowDown') changeDirection('down');
+    if (e.key === 'ArrowLeft') changeDirection('left');
+    if (e.key === 'ArrowRight') changeDirection('right');
+  });
+
+  function startGame() {
+    snake = [42, 41, 40];
+    direction = 'right';
+    score = 0;
+    stage = 1;
+    colorIndex = 0;
+    isPlaying = true;
+    scoreLine.textContent = `Score: ${score} | High Score: ${highScore} | Stage: ${stage}`;
+    spawnFood();
+    drawSnake();
+    clearInterval(interval);
+    interval = setInterval(moveSnake, speed);
+  }
+
+  function setDifficulty(value) {
+    speed = parseInt(value);
+    startGame();
+  }
+
+  function togglePlayPause() {
+    isPlaying = !isPlaying;
+  }
+
+  startGame();
+</script
+<footer style="margin-top:2rem; font-size:0.8rem; color:#aaa; text-align:center;">
+  🇿🇦 Sponsored by You | our | Reader · Africa United News
+</footer>
+</body>
+</html>
