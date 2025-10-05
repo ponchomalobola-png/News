@@ -525,6 +525,9 @@ input:checked + .slider:before {
   </footer>
 
  <script>
+   document.addEventListener('gesturestart', function (e) {
+  e.preventDefault();
+});
    
    function searchNews() {
   const query = document.getElementById("searchInput").value.trim();

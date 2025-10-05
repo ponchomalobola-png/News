@@ -5,6 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Africa United Game Zone</title>
   <style>
+  
+  /* Existing styles... */
+
+  .arcade-button {
+    background: linear-gradient(90deg, #444, #222);
+    color: #ffcc00;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .arcade-button:hover {
+    transform: scale(1.05);
+    background: #333;
+  }
+
+  .space {
+  background: linear-gradient(to right, #9900ff, #3300cc);
+  color: #fff;
+}
+  button {
+  touch-action: manipulation; /* Prevents double-tap zoom */
+}
   .snake {
   background: linear-gradient(to right, #00ff99, #009966);
   color: #fff;
@@ -147,11 +179,12 @@
      <h1> 🎮 Africa United Game Zone</h1>
     <p>Choose your game and start playing!</p>
 
-    <div class="game-buttons">
+<div class="game-buttons">
   <a href="slots.html"><button class="slots">🎰 Play Africa United Slots</button></a>
   <a href="arcade.html"><button class="arcade">🕹️ Play Arcade Block</button></a>
-  <a href="snake.html"><button class="snake">🐍 Snake Showdown</button></a>
-  <a href="shapedrop.html"><button class="shape">🧱 Shape Drop</button></a>
+  <a href="snake.html"><button class="snake">🐍 Play Snake Showdown</button></a>
+  <a href="shapedrop.html"><button class="shape">🧱 Play Shape Drop</button></a>
+  <a href="space.html"><button class="space">🚀 Play Space: Africa</button></a>
   <a href="https://www.buymeacoffee.com/africaunited" target="_blank"><button class="coffee">☕ Buy Me a Coffee</button></a>
 </div>
 
@@ -160,9 +193,8 @@
     </div>
   </main>
 
-  <a href="index.html" class="back-button">
-    <button>⬅️</button>
-  </a>
+<div style="margin:1rem 0; display:flex; flex-direction:column; align-items:center;">
+  <a href="index.html" class="arcade-button">🎮 Back to the News</a>
 
   <footer>
     © 2025 Africa United News · Built with pride in Pretoria 🇿🇦

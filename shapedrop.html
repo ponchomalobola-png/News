@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shape Drop Showdown</title>
   <style>
+  button {
+  touch-action: manipulation; /* Prevents double-tap zoom */
+}
   /* Existing styles... */
 
   .arcade-button {
@@ -235,13 +238,16 @@ button {
 </div>
 
     <div id="score-line">Score: 0</div>
-    <div id="sponsor-banner">Sponsored by Africa United</div>
+      <a href="https://www.buymeacoffee.com/africaunited" target="_blank"><button class="coffee">☕ Buy Me a Coffee</button></a>
   </div>
 
  <div style="margin:1rem 0; display:flex; flex-direction:column; align-items:center;">
   <a href="gamezone.html" class="arcade-button">🎮 Back to Arcade</a>
 
   <script>
+    document.addEventListener('gesturestart', function (e) {
+  e.preventDefault();
+});
     const grid = document.getElementById('game-grid');
     const resetBtn = document.getElementById('reset-button');
     const leftBtn = document.getElementById('left');
@@ -438,8 +444,8 @@ button {
     // Start game
     resetGame();
   </script>
-  <footer style="margin-top:2rem; font-size:0.8rem; color:#aaa; text-align:center;">
-  🇿🇦 Sponsored by You | our | Reader · Africa United News
-</footer>
+  <footer>
+    © 2025 Africa United News · Built with pride in Pretoria 🇿🇦
+  </footer>
 </body>
 </html>

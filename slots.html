@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎰 Africa United Slots</title>
   <style>
+  button {
+  touch-action: manipulation; /* Prevents double-tap zoom */
+}
   #pageFooter {
   padding: 1em;
   font-size: 0.9em;
@@ -137,6 +140,9 @@ button:disabled {
 <audio id="winSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2e3b6f3c6f.mp3?filename=slot-machine-win-13451.mp3"></audio>
 
   <script>
+    document.addEventListener('gesturestart', function (e) {
+  e.preventDefault();
+});
     
     const bgMusic = document.getElementById("bgMusic");
 const spinSound = document.getElementById("spinSound");

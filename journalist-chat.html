@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Journalist Chat</title>
   <style>
+  button {
+  touch-action: manipulation; /* Prevents double-tap zoom */
+}
   #footer {
   background: #eeeeee;
   color: #333;
@@ -165,6 +168,9 @@
   </div>
 
   <script>
+    document.addEventListener('gesturestart', function (e) {
+  e.preventDefault();
+});
     const chatBox = document.getElementById('chat-box');
     const userInput = document.getElementById('user-input');
     const headlines = [

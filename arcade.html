@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Africa United Arcade Block</title>
   <style>
+  button {
+  touch-action: manipulation; /* Prevents double-tap zoom */
+}
   /* Existing styles... */
 
   .arcade-button {
@@ -156,6 +159,9 @@
   </footer>
 
   <script>
+    document.addEventListener('gesturestart', function (e) {
+  e.preventDefault();
+});
     const canvas = document.getElementById("blockCanvas");
     const ctx = canvas.getContext("2d");
     let score = 0;

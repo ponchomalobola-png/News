@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space: Africa United</title>
+  <style>
+  
+  /* Existing styles... */
+
+  .arcade-button {
+    background: linear-gradient(90deg, #444, #222);
+    color: #ffcc00;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .arcade-button:hover {
+    transform: scale(1.05);
+    background: #333;
+  }
+
+  button {
+  touch-action: manipulation; /* Prevents double-tap zoom */
+}
+    body {
+      margin: 0;
+      background: radial-gradient(circle at center, #000 40%, #111 100%);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #ffcc00;
+      text-shadow: 0 0 6px #ffcc00;
+      margin: 1rem 0 0.5rem;
+    }
+
+    canvas {
+      background: #000;
+      border: 2px solid #ffcc00;
+      box-shadow: 0 0 12px rgba(255, 204, 0, 0.4);
+    }
+
+    #controls {
+      margin: 1rem 0;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #444, #222);
+      color: #ffcc00;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      touch-action: manipulation;
+    }
+
+    #score-line {
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    #sponsor-banner {
+      background: #0a0;
+      padding: 0.4rem;
+      font-weight: bold;
+      width: 100%;
+      text-align: center;
+      font-size: 1rem;
+      margin-top: 0.4rem;
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    footer {
+      width: 100%;
+      padding: 0.6rem;
+      background: #111;
+      color: #999;
+      font-size: 0.75rem;
+      text-align: center;
+      border-top: 1px solid #222;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Space: Africa United</h1>
+  <canvas id="game" width="320" height="480"></canvas>
+
+  <div id="controls">
+    <button onclick="move('up')">⬆️</button>
+    <button onclick="move('left')">⬅️</button>
+    <button onclick="move('right')">➡️</button>
+    <button onclick="move('down')">⬇️</button>
+    <button onclick="togglePause()">⏯️ Pause/Play</button>
+    <button onclick="restart()">🔁 Restart</button>
+  </div>
+
+  <div id="score-line">Score: 0 | Stage: 1</div>
+  <a href="https://www.buymeacoffee.com/africaunited" target="_blank"><button class="coffee">☕ Buy Me a Coffee</button></a>
+  
+   <div style="margin:1rem 0; display:flex; flex-direction:column; align-items:center;">
+  <a href="gamezone.html" class="arcade-button">🎮 Back to Arcade</a>
+
+  <script>
+    document.addEventListener('gesturestart', function (e) {
+  e.preventDefault();
+});
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    let ship = { x: 150, y: 400, w: 20, h: 20 };
+    let bullets = [];
+    let enemies = [];
+    let boss = null;
+    let score = 0;
+    let stage = 1;
+    let gameOver = false;
+    let paused = false;
+    let powerUps = [];
+
+    const bossIcons = ['👹', '🖲️', '👺', '🗿'];
+
+    function drawShip() {
+      ctx.font = '20px Orbitron';
+      ctx.fillText('🚨', ship.x, ship.y + 20);
+    }
+
+    function drawBullets() {
+      ctx.fillStyle = '#ff0';
+      bullets.forEach(b => {
+        ctx.fillRect(b.x, b.y, 4, 10);
+        b.y -= 5;
+      });
+      bullets = bullets.filter(b => b.y > 0);
+    }
+
+    function drawEnemies() {
+      ctx.font = '20px Orbitron';
+      enemies.forEach(e => {
+        ctx.fillText('👾', e.x, e.y + 20);
+        e.y += 2 + stage;
+      });
+      enemies = enemies.filter(e => e.y < canvas.height);
+    }
+
+    function drawBoss() {
+      if (boss) {
+        ctx.font = '32px Orbitron';
+        ctx.fillText(boss.icon, boss.x, boss.y + 32);
+        boss.y += 1;
+      }
+    }
+
+    function drawPowerUps() {
+      ctx.font = '16px Orbitron';
+      powerUps.forEach(p => {
+        ctx.fillText(p.icon, p.x, p.y + 16);
+        p.y += 2;
+      });
+      powerUps = powerUps.filter(p => p.y < canvas.height);
+    }
+
+    function detectCollisions() {
+      bullets.forEach(b => {
+        enemies.forEach((e, ei) => {
+          if (b.x < e.x + 20 && b.x + 4 > e.x && b.y < e.y + 20 && b.y + 10 > e.y) {
+            enemies.splice(ei, 1);
+            score += 10;
+            if (navigator.vibrate) navigator.vibrate([100]);
+          }
+        });
+
+        if (boss && b.x < boss.x + 40 && b.x + 4 > boss.x && b.y < boss.y + 40 && b.y + 10 > boss.y) {
+          boss = null;
+          score += 100;
+          if (navigator.vibrate) navigator.vibrate([200]);
+        }
+      });
+
+      enemies.forEach(e => {
+        if (e.x < ship.x + ship.w && e.x + 20 > ship.x && e.y < ship.y + ship.h && e.y + 20 > ship.y) {
+          gameOver = true;
+          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        }
+      });
+
+      if (boss && boss.x < ship.x + ship.w && boss.x + 40 > ship.x && boss.y < ship.y + ship.h && boss.y + 40 > ship.y) {
+        gameOver = true;
+        if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
+      }
+
+      powerUps.forEach((p, pi) => {
+        if (p.x < ship.x + ship.w && p.x + 20 > ship.x && p.y < ship.y + ship.h && p.y + 20 > ship.y) {
+          powerUps.splice(pi, 1);
+          if (p.icon === '🛡️') ship.w += 10;
+          if (p.icon === '⚡') ship.speed = 30;
+          if (p.icon === '💥') {
+            bullets.push({ x: ship.x, y: ship.y - 10 });
+            bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y - 10 });
+          }
+        }
+      });
+    }
+
+    function draw() {
+      if (paused) return;  ctx.clearRect(0, 0, canvas.width, canvas.height);  if (gameOver) {   ctx.fillStyle = '#f00';   ctx.font = '24px Orbitron';   ctx.textAlign = 'center';   ctx.fillText('🛑 GAME OVER', canvas.width / 2, canvas.height / 2 - 20);   ctx.fillStyle = '#ffcc00';   ctx.font = '16px Orbitron';   ctx.fillText('Oh no🤧', canvas.width / 2, canvas.height / 2 + 10);   return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawShip();
+      drawBullets();
+      drawEnemies();
+      drawBoss();
+      drawPowerUps();
+      detectCollisions();
+
+      document.getElementById('score-line').textContent = `Score: ${score} | Stage: ${stage}`;
+      if (score >= stage * 100) {
+        stage++;
+        if (stage % 5 === 0) {
+          boss = {
+            x: 140,
+            y: 0,
+            icon: bossIcons[(stage / 5 - 1) % bossIcons.length]
+          };
+        }
+        powerUps.push({
+          x: Math.random() * (canvas.width - 20),
+          y: 0,
+          icon: ['🛡️', '⚡', '💥'][Math.floor(Math.random() * 3)]
+        });
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    function fire() {
+      bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y });
+    }
+
+    function move(dir) {
+      if (paused || gameOver) return;
+      const speed = ship.speed || 20;
+      if (dir === 'left') ship.x = Math.max(0, ship.x - speed);
+      if (dir === 'right') ship.x = Math.min(canvas.width - ship.w, ship.x + speed);
+      if (dir === 'up') ship.y = Math.max(0, ship.y - speed);
+      if (dir === 'down') ship.y = Math.min(canvas.height - ship.h, ship.y + speed);
+    }
+
+    function togglePause() {
+      paused = !paused;
+      if (!paused && !gameOver) draw();
+    }
+
+    function restart() {
+      ship = { x: 150, y: 400, w: 20, h: 20 };
+      bullets = [];
+      enemies = [];
+      boss = null;
+      powerUps = [];
+      score = 0;
+      stage = 1;
+      gameOver = false;
+      paused = false;
+      draw();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') move('left');
+      if (e.key === 'ArrowRight') move('right');
+      if (e.key === 'ArrowUp') move('up');
+      if (e.key === 'ArrowDown') move('down');
+      if (e.key === 'p') togglePause();
+      if (e.key === 'r') restart();
+    });
+
+    // Auto-fire every 300ms
+    setInterval(() => {
+      if (!paused && !gameOver) {
+        fire();
+      }
+    }, 300);
+
+    // Spawn enemies every 1000ms
+    setInterval(() => {
+      if (!paused && !gameOver) {
+        enemies.push({ x: Math.random() * (canvas.width - 20), y: 0 });
+      }
+    }, 1000);
+
+    draw();
+  </script>
+  <footer>
+    © 2025 Africa United News · Built with pride in Pretoria 🇿🇦
+  </footer>
+</body>
+</html>
