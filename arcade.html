@@ -4,6 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Africa United Arcade Block</title>
+   <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FKXMFN74FW');
+</script>
   <style>
   button {
   touch-action: manipulation; /* Prevents double-tap zoom */
@@ -178,11 +187,8 @@
     }
 
     function drawBall() {
-      ctx.beginPath();
-      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffcc00";
-      ctx.fill();
-      ctx.closePath();
+  ctx.font = '20px Segoe UI';
+  ctx.fillText('🏐', ball.x - 10, ball.y + 10);
     }
 
     function drawPaddle() {
@@ -191,18 +197,23 @@
     }
 
     function drawBlocks() {
-      blocks.forEach(b => {
-        if (!b.hit) {
-          ctx.fillStyle = "#ff4444";
-          ctx.fillRect(b.x, b.y, blockWidth, blockHeight);
-        }
-      });
+  blocks.forEach(b => {
+    if (!b.hit) {
+      ctx.font = '20px Segoe UI';
+      ctx.fillText('🧱', b.x, b.y + 15);
     }
+  });
+}
 
     function draw() {
       if (!gameRunning) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const boardIcons = ['🚻', '♿', '🚮', '🛗', '🚰'];
+boardIcons.forEach((icon, i) => {
+  ctx.font = '18px Segoe UI';
+  ctx.fillText(icon, 10 + i * 55, 20);
+});
       drawBall();
       drawPaddle();
       drawBlocks();
