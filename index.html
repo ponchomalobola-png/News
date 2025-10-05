@@ -18,6 +18,78 @@
 </script>
 
   <style>
+  .splash-poem-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #ffcc00;
+  text-align: center;
+}
+
+.splash-poem-text {
+  font-size: 1rem;
+  margin: 10px 20px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.splash-reflection {
+  font-size: 0.95rem;
+  margin-top: 10px;
+  font-style: italic;
+  text-align: center;
+  opacity: 0.8;
+}
+  #splash-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+  z-index: 9999;
+  animation: fadeOut 1s ease forwards;
+  animation-delay: 3.5s;
+}
+
+.splash-logo {
+  width: 140px;
+  height: auto;
+  margin-bottom: 10px;
+  animation: popIn 1s ease-out;
+}
+
+.splash-tagline {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  opacity: 0.85;
+  text-align: center;
+}
+
+.splash-loader {
+  font-size: 1.5rem;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
   .button-stack {
   position: fixed;
   right: 20px;
@@ -464,13 +536,25 @@ input:checked + .slider:before {
   </style>
 </head>
 <body>
+  <body>
+  <div id="splash-screen">
+    <img src="juvenile-logo.png" alt="Juvenile Corner News Logo" class="splash-logo" />
+    <div id="poem-title" class="splash-poem-title"></div>
+    <div id="poem-text" class="splash-poem-text"></div>
+    <div id="reflection-text" class="splash-reflection"></div> 
+
+    <div class="splash-loader">🌀</div>
+    <audio id="splash-audio" src="splash-sound.mp3" preload="auto"></audio>
+  </div>
+</body>
+
   <div class="button-stack">
   <a href="gamezone.html" class="round-button" title="Play Slots">🎮</a>
   <a href="journalist-chat.html" class="round-button" title="Chat with Journalist">️📬</a>
 </div>
   <a href="journalist-chat.html" class="floating-chat">📬</a>
   <header>
-  <div class="header-title">Juvenile Corner News</div>
+  <div class="header-title">JUVENILE CORNER News</div>
   <div class="theme-toggle-wrapper">
     <label class="theme-toggle">
       <input type="checkbox" id="themeSwitch" onchange="toggleTheme()">
@@ -525,6 +609,50 @@ input:checked + .slider:before {
   </footer>
 
  <script>
+ 
+ document.addEventListener("DOMContentLoaded", () => {
+  const weeklyPoems = [
+    { title: "Start with Spark", text: "We begin with flickers — not flames. But even a whisper of light can change the room.", date: "Monday" },
+    { title: "No One Is Background", text: "I am not scenery. I am the scene. My silence is not absence — it’s waiting.", date: "Tuesday" },
+    { title: "Pause Is Power", text: "Stillness is not sleep. It’s the breath before brilliance.", date: "Wednesday" },
+    { title: "Speak Like You Mean It", text: "Let your words wear boots. Let them stomp. Let them echo.", date: "Thursday" },
+    { title: "Joy Is a Form of Protest", text: "We laugh in the face of silence. We dance where they said 'don’t.'", date: "Friday" },
+    { title: "Build What You Needed", text: "I didn’t have it. So I made it. Now it’s yours too.", date: "Saturday" },
+    { title: "We Are the Headline", text: "We are not the future. We are the front page. We are the now.", date: "Sunday" }
+  ];
+
+  const weeklyReflections = [
+    { text: "Every idea begins with a flicker. Fan it. Feed it. Let it light your way.", date: "Monday" },
+    { text: "You’re not filler. You’re the frame. The story bends around your presence.", date: "Tuesday" },
+    { text: "Stillness isn’t weakness. It’s where clarity gathers.", date: "Wednesday" },
+    { text: "Don’t dilute your truth. Say it bold. Say it whole.", date: "Thursday" },
+    { text: "Smile loud. Dance hard. Joy disrupts what tries to dim you.", date: "Friday" },
+    { text: "If it didn’t exist for you, make it for someone else.", date: "Saturday" },
+    { text: "Youth isn’t the future. It’s the front page.", date: "Sunday" }
+  ];
+
+  const day = new Date().toLocaleDateString("en-US", { weekday: "long" });
+  const poem = weeklyPoems.find(p => p.date === day);
+  const reflection = weeklyReflections.find(r => r.date === day);
+
+  if (poem) {
+    document.getElementById("poem-title").textContent = poem.title;
+    document.getElementById("poem-text").textContent = poem.text;
+  }
+
+  if (reflection) {
+    document.getElementById("reflection-text").textContent = reflection.text;
+  }
+
+  const audio = document.getElementById("splash-audio");
+  audio.play().catch(e => console.warn("Autoplay blocked:", e));
+
+  setTimeout(() => {
+    document.getElementById("splash-screen").style.display = "none";
+  }, 12000);
+});
+ 
+  
    document.addEventListener('gesturestart', function (e) {
   e.preventDefault();
 });
@@ -591,25 +719,24 @@ input:checked + .slider:before {
   request.onerror = function(event) {
     console.error("IndexedDB error:", event.target.errorCode);
   };
-
-   const weeklyPoems = [
-  { title: "Ubuntu", text: "I am because we are...", date: "Monday" },
-  { title: "The Drum Remembers", text: "The drum remembers what the world forgets...", date: "Tuesday" },
-  { title: "The Soil Remembers Us", text: "We walk on stories buried deep...", date: "Wednesday" },
-  { title: "River of Names", text: "Each name a ripple, each soul a tide...", date: "Thursday" },
-  { title: "Skyline of Hope", text: "Hope rises like skyline over morning dust...", date: "Friday" },
-  { title: "Footprints of Grace", text: "Grace walks ahead, leaving light behind...", date: "Saturday" },
-  { title: "Echoes of Unity", text: "We echo each other’s strength...", date: "Sunday" }
+const weeklyPoems = [
+  { title: "Start with Spark", text: "We begin with flickers — not flames. But even a whisper of light can change the room.", date: "Monday" },
+  { title: "No One Is Background", text: "I am not scenery. I am the scene. My silence is not absence — it’s waiting.", date: "Tuesday" },
+  { title: "Pause Is Power", text: "Stillness is not sleep. It’s the breath before brilliance.", date: "Wednesday" },
+  { title: "Speak Like You Mean It", text: "Let your words wear boots. Let them stomp. Let them echo.", date: "Thursday" },
+  { title: "Joy Is a Form of Protest", text: "We laugh in the face of silence. We dance where they said 'don’t.'", date: "Friday" },
+  { title: "Build What You Needed", text: "I didn’t have it. So I made it. Now it’s yours too.", date: "Saturday" },
+  { title: "We Are the Headline", text: "We are not the future. We are the front page. We are the now.", date: "Sunday" }
 ];
 
 const weeklyReflections = [
-  { text: "Faith is a bridge we build toward each other.", date: "Monday" },
-  { text: "Courage doesn’t always roar — sometimes it’s the quiet choice to keep loving.", date: "Tuesday" },
-  { text: "Grace moves quietly, but leaves footprints on every heart it touches.", date: "Wednesday" },
-  { text: "Peace is not the absence of noise, but the presence of purpose.", date: "Thursday" },
-  { text: "Kindness is a seed — plant it even when the soil feels dry.", date: "Friday" },
-  { text: "Joy is resistance — a flame that dances even in the wind.", date: "Saturday" },
-  { text: "Unity is not sameness — it’s harmony in difference.", date: "Sunday" }
+  { text: "Every idea begins with a flicker. Fan it. Feed it. Let it light your way.", date: "Monday" },
+  { text: "You’re not filler. You’re the frame. The story bends around your presence.", date: "Tuesday" },
+  { text: "Stillness isn’t weakness. It’s where clarity gathers.", date: "Wednesday" },
+  { text: "Don’t dilute your truth. Say it bold. Say it whole.", date: "Thursday" },
+  { text: "Smile loud. Dance hard. Joy disrupts what tries to dim you.", date: "Friday" },
+  { text: "If it didn’t exist for you, make it for someone else.", date: "Saturday" },
+  { text: "Youth isn’t the future. It’s the front page.", date: "Sunday" }
 ];
 
   // 3. Prune Old Headlines
@@ -717,7 +844,7 @@ store.getAll().onsuccess = function(e) {
 
   // 8. Copy as HTML
   function copyAsHTML(title, description, link) {
-    const html = `<h2>${title}</h2><p>${description}</p><a href="${link}" target="_blank">Read more on Africa United News</a>`;
+    const html = `<h2>${title}</h2><p>${description}</p><a href="${link}" target="_blank">Read more on Juvenile Corner News</a>`;
     navigator.clipboard.writeText(html).then(() => {
       alert("Copied as HTML! Paste into WhatsApp, blog, or newsletter.");
     });
@@ -757,7 +884,7 @@ function showWeeklyPoemAndReflection() {
       <div class="article religion">
         <h2>Daily Reflection</h2>
         <p><em>${reflection.text}</em></p>
-        <div class="meta">From Africa United Faith Desk &nbsp;|&nbsp; ${day}, ${new Date().toLocaleDateString("en-ZA")}</div>
+        <div class="meta">From Juvenile Corner Faith Desk &nbsp;|&nbsp; ${day}, ${new Date().toLocaleDateString("en-ZA")}</div>
         <button onclick="readReflection()">🔊 Listen to Reflection</button>
       </div>
     `;
