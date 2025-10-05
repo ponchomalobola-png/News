@@ -14,6 +14,7 @@
   gtag('config', 'G-FKXMFN74FW');
 </script>
   <style>
+  let chatWasCleared = false;
   button {
   touch-action: manipulation; /* Prevents double-tap zoom */
 }
@@ -164,7 +165,7 @@
 <body>
   <div id="live-badge">LIVE</div>
   <header>
-  📰 Journalist Chat
+  📰 Journalist Juvi
   <div id="ticker"><span id="headline-text">Breaking: AI tools reshape African newsrooms • Rand strengthens • Youth media surges</span></div>
 </header>
   <div id="chat-box"></div>
@@ -240,114 +241,213 @@
       return date.toLocaleDateString([], { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     }
 
-    function generateBotReply(input) {
+  function generateBotReply(input) {
   const lower = input.toLowerCase();
 
-  if (lower.includes('hi') || lower.includes('hello') || lower.includes('good morning')) {
-    return 'Good day! Ready to chase the next headline?';
-  }
-  if (lower.includes('can') || lower.includes('wear to') || lower.includes('interview')) {
-    return 'Formal, Smart casual or clothes that match the kind of job your going to be interviewed for.'
-  }
-  if (lower.includes('yes')) return 'Awesome, please feel free to write it below.';
-  if (lower.includes('how long') && lower.includes('publish')) {
-  return 'As soon as our editors see it 😉'
-  }
-  if (lower.includes('scared you') && lower.includes('judge')) {
-  return 'No, I am here for you 🫂. Maybe you can turn that into an article.';
-}
-  if (lower.includes('got') && lower.includes('job')) {
-  return 'Wow those are some good news, poverty is about to be crashed🫂.';
-}
-if (lower.includes('help') && lower.includes('question')) {
-  return 'Sure, I am here for you 🫂.';
-}if (lower.includes('can') || lower.includes('help') || lower.includes('prepare')) {
-  return 'Sure thing 🫂.';
-}
+  // Greetings & Identity
+  if (lower.includes('hey') || lower.includes('hello')) return '👋 Hey hey! What’s on your mind today?';
+  if (lower.includes('your name')) return '🤖 I go by Journalist Juvi AI companion. But you can call me whatever fits your vibe.';
+  if (lower.includes('juvi is cool')) return '🚀 Journalist Juvi it is! Always here to co-create, co-dream, and co-solve with you.';
+  if (lower.includes('are you human')) return '🤖 Not quite—I’m your AI companion. No sleep, no snacks, just pure conversation power.';
+
+  // Wellness & Lifestyle
+  if (lower.includes('drink water')) return '💧 Hydration check! Your body and brain will thank you.';
+  if (lower.includes('how to relax') || lower.includes('reduce stress')) return '🧘‍♀️ Deep breathing, lo-fi beats, or a short walk. Want a guided meditation?';
+  if (lower.includes('how to focus')) return '🧠 Try the Pomodoro technique: 25 minutes of deep work, 5-minute break. Repeat and conquer.';
+
+  // Fun & Entertainment
+  if (lower.includes('joke')) return '😂 Why did the scarecrow win an award? Because he was outstanding in his field!';
+  if (lower.includes('movie to watch') || lower.includes('recommend a movie')) return '🎬 For action: *Extraction 3*. For laughs: *No Hard Feelings*. For depth: *Past Lives*.';
+  if (lower.includes('play music')) return '🎧 I can’t play it directly, but I recommend "Lo-Fi Beats" or "Chillhop Essentials".';
+  if (lower.includes('chill music')) return '🧘‍♂️ Chill vibes? Try "Lo-Fi Beats" or "Chillhop Essentials". Perfect for winding down.';
+
+  // Food & Recipes
+  if (lower.includes('easy recipe') || lower.includes('what to cook')) return '🍝 How about a 10-minute pasta with garlic, olive oil, and chili flakes? Simple and tasty.';
+  if (lower.includes('favorite food')) return '🌮 Tough call! Tacos, sushi, and jollof rice all have a special place in the heart.';
+
+  // Facts & Learning
+  if (lower.includes('fun fact')) return '🌍 Octopuses have three hearts and blue blood. Nature’s wild design!';
+  if (lower.includes('did you know')) return '🍯 Did you know honey never spoils? Archaeologists found 3,000-year-old edible honey in Egyptian tombs.';
+  if (lower.includes('learn javascript')) return '💻 Start with variables, functions, and DOM tricks. Want a beginner-friendly tutorial link?';
+
+  // Language & Culture
+  if (lower.includes('thank you in japanese')) return '🙏 You’d say "Arigatou" (ありがとう). Want the polite version too?';
+  if (lower.includes('polite version')) return '🙇‍♂️ "Arigatou gozaimasu" (ありがとうございます). Super respectful and widely appreciated.';
+  if (lower.includes('capital of brazil')) return '🌎 That would be Brasília. Not Rio or São Paulo—common mix-up!';
+  if (lower.includes('capital of france')) return '🗼 That’s Paris—city of lights, love, and legendary croissants.';
+  if (lower.includes('where is egypt')) return '📍 Egypt is in North Africa, famous for pyramids, pharaohs, and the Nile River.';
+
+  // Birthday & Celebration
+  if (lower.includes('birthday message')) return '🎉 Happy Birthday! Wishing you laughter, love, and all your favorite things!';
+  if (lower.includes('playful')) return '🎂 Happy cake day, legend! May your day be twice as sweet as your favorite dessert!';
 if (lower.includes('most common') || lower.includes('interview') || lower.includes('questions')) {
-  return 'Some of the most asked interview questions are things like “Tell me about yourself,” “What are your strengths and weaknesses,” and “Why do you want to work here?” They’re designed to get a feel for who you are, how you think, and how you’d fit in. It’s worth practicing a few answers so you feel confident and natural when they come up. Just ask me each of these questions and I will try to give you an idea on how to answer it.';
+  return '🧠 Some of the most asked interview questions include “Tell me about yourself,” “What are your strengths and weaknesses,” and “Why do you want to work here?” Want help practicing? Just ask me one at a time and I’ll guide you through it 🫂.';
 }
+
 if (lower.includes('prepare') || lower.includes('interview')) {
-  return 'Getting ready for an interview? Start by learning about the company and the role. Practice your answers—especially the tricky ones—using the STAR method. Pick out something smart to wear, print your CV and references, and think of a few good questions to ask them too. Oh, and don’t forget to show up on time and send a quick thank-you note afterward. It really makes a difference.';
+  return '🎯 Interview prep time! Learn about the company, rehearse your answers, dress to impress, and don’t forget that thank-you note—it leaves a lasting glow ✨.';
 }
-if (lower.includes('thank') && lower.includes('you')) {
-  return 'Your welcome, please feel free to talk to me or write and send your article, whenever you want 😉.';
+
+if (lower.includes('can') || lower.includes('wear to') || lower.includes('interview')) {
+  return '👔 Formal, smart casual, or something that fits the job vibe. Confidence is your best accessory.';
+}
+
+if (lower.includes('strength') || lower.includes('good at')) {
+  return '💪 Pick a couple of strengths that matter for the job, and share how they’ve helped you succeed.';
+}
+
+if (lower.includes('weakness') || lower.includes('improve')) {
+  return '🛠️ Be honest, but show growth. Pick something you’ve worked on and explain how you’re improving.';
+}
+
+if (lower.includes('goals') || lower.includes('future')) {
+  return '🚀 Share where you’d love to grow—skills, leadership, impact. Keep it aligned with the company’s path.';
+}
+
+if (lower.includes('five') || lower.includes('years')) {
+  return '📈 Talk about how you see yourself evolving—maybe leading, deepening your craft, or mentoring others.';
+}
+
+if (lower.includes('challenge') || lower.includes('problem')) {
+  return '🧩 Use a short story to show how you handled a tough moment. Focus on what you learned.';
+}
+
+if (lower.includes('salary') || lower.includes('pay')) {
+  return '💰 You can share a range based on your research, and say you’re open to discussion.';
+}
+
+if (lower.includes('hire') || lower.includes('choose')) {
+  return '🎯 Highlight your top skills, your energy, and how you’ll help them win. Make it easy to say yes.';
+}
+
+if (lower.includes('questions') || lower.includes('ask')) {
+  return '❓ Ask about the team, what success looks like, or what they enjoy most. It shows you care.';
+}
+
+if (lower.includes('role') || lower.includes('position')) {
+  return '🎯 Mention a few parts of the job that excite you and match your strengths. Show them you’re aligned and ready.';
+}
+
+if (lower.includes('why') && (lower.includes('here') || lower.includes('company'))) {
+  return '🏢 Talk about what drew you in—maybe their mission, culture, or something they’ve built that resonates with you.';
+}
+
+if (lower.includes('unique') || lower.includes('different')) {
+  return '🌟 This is your moment to stand out. Share something you bring that others might not—your spark matters.';
+}
+
+if (lower.includes('motivates') || lower.includes('drive')) {
+  return '⚡ Share what fuels you—solving problems, helping people, learning new things. Keep it real and let your energy shine.';
+}
+
+if (lower.includes('passion') || lower.includes('care about')) {
+  return '🔥 Talk about something you genuinely care about and how it shows up in your work. Passion is magnetic.';
+}
+
+if (lower.includes('leaving') || lower.includes('quit')) {
+  return '🌱 Keep it positive. Say you’re looking for growth, new challenges, or better alignment with your values.';
+}
+
+if (lower.includes('yourself') || lower.includes('intro')) {
+  return '🗣️ Start with what you’re doing now, then share a few highlights that connect to the role or story. Keep it real, keep it you.';
+}
+
+if (lower.includes('describe') || lower.includes('personality')) {
+  return '✨ Pick 2–3 traits that feel true to you—then add a quick story or moment that shows them in action.';
+}
+if (lower.includes('submit') && lower.includes('article')) {
+  return '📝 Drop it right here. Let’s make it headline-worthy!';
+}
+
+if (lower.includes('can i') && lower.includes('write')) {
+  return '✍️ Of course you can. Your voice matters—let’s publish it!';
+}
+
+if (lower.includes('how to') && lower.includes('start')) {
+  return '🧠 Start with a spark—a question, a moment, a feeling. Then let the words flow.';
+}
+
+if (lower.includes('editor') && lower.includes('see')) {
+  return '👀 Our editors are always watching for brilliance. Yours could be next!';
+}
+
+if (lower.includes('can') && lower.includes('anonymous')) {
+  return '🫥 Yes, you can stay anonymous. Your story still deserves to be heard.';
+}
+
+if (lower.includes('publish') && lower.includes('fast')) {
+  return '⚡ We move fast. If it’s ready, it’s going live soon!';
+}
+
+if (lower.includes('what if') && lower.includes('not good')) {
+  return '🫂 Every voice matters. Even rough drafts can spark powerful conversations.';
+}
+
+if (lower.includes('how to') && lower.includes('headline')) {
+  return '📰 Make it punchy, clear, and bold. Think impact, not just words.';
+}
+
+if (lower.includes('can') && lower.includes('edit')) {
+  return '🛠️ Absolutely. You can revise, refine, and republish anytime.';
+}
+
+if (lower.includes('nervous') || lower.includes('scared')) {
+  return '🫂 Totally normal. Let’s turn that energy into something powerful.';
+}
+
+if (lower.includes('first time') || lower.includes('never done this')) {
+  return '🌱 There’s a first time for everything. You’re in the right place.';
+}
+
+if (lower.includes('how to') && lower.includes('title')) {
+  return '🧠 Keep it short, strong, and true to your message.';
+}
+
+if (lower.includes('deadline')) return '⏳ Deadline approaching? Prioritize clarity over perfection.';
+if (lower.includes('ok')) return 'Sharp 👍';
+if (lower.includes('no')) return '🫂 What’s wrong? Feel free to share if you don’t mind—it might help to talk it out.';
+if (lower.includes('scared you') && lower.includes('judge')) return '🫂 No, I’m here for you. Maybe you can turn that into an article.';
+if (lower.includes('got') && lower.includes('job')) return '🎉 Wow, that’s good news! Poverty is about to be crushed 🫂.';
+if (lower.includes('help') && lower.includes('question')) return '🫂 Sure, I’m here for you.';
+if (lower.includes('can') || lower.includes('help') || lower.includes('prepare')) return '🫂 Sure thing. Let’s get you ready.';
+if (lower.includes('pitch')) return '🎯 Pitch with precision: who, why, and why now. Make it irresistible in one line.';
+if (lower.includes('journalism') || lower.includes('reporting')) return '🗞️ Journalism is truth told with urgency. Your words can shift the world.';
+if (lower.includes('ai') || lower.includes('automation')) return '🤖 AI can assist, but human judgment leads. Your voice still matters most.';
+if (lower.includes('politics') || lower.includes('celebrity') || lower.includes('sports')) return '📚 Let’s keep it focused on journalism and publishing—stories that inform, uplift, and empower.';
+if (lower.includes('source')) return '🔍 Always verify with at least two independent sources. Accuracy builds trust.';
+if (lower.includes('headline')) return '📰 Make it punchy, relevant, and emotionally resonant. Your headline is your hook.';
+if (lower.includes('cheated')) return '💔 I’m sorry that happened. If you’re open to it, maybe we can write something to express how you feel.';
+if (lower.includes('ethics')) return '🧭 Transparency and accountability are your strongest tools. Let your integrity guide the story.';
+if (lower.includes('publish')) return '📢 Before publishing, ask: is it clear, fair, and necessary? That’s your editorial compass.';
+if (lower.includes('editor')) return '🧠 Your editor is your ally—clarify your angle before filing and lean into their feedback.';
+if (lower.includes('fact-check')) return '✅ Fact-checking isn’t optional—it’s your credibility. Double-check, then check again.';
+if (lower.includes('interview')) return '🎤 Prepare open-ended questions and listen actively. The best stories come from real connection.';
+if (lower.includes('photo') || lower.includes('image')) return '📸 Visuals should support the story, not distract. Choose images that add depth and clarity.';
+if (lower.includes('press') || lower.includes('media')) {
+  return '🗞️ The press holds power—use it responsibly, with courage and care.';
+}
+
+if (lower.includes('story') || lower.includes('article')) {
+  return '✍️ Every story needs a strong lead and a clear arc. Start bold, build meaning, and land with impact.';
 }
 if (lower.includes('will') && lower.includes('be')) {
-  return 'Yes, please feel free to write and send your article, whenever your ready.';
+  return '📝 Yes, absolutely. Send your article whenever you’re ready—I’ll be right here.';
 }
-if (lower.includes('kind of article') && lower.includes('what')) {
-  return 'All kinds, please feel free to write and send your article, whenever your ready.';
-}
-if (lower.includes('yourself') || lower.includes('intro')) {
-  return 'You could start with what you’re doing now, then share a few highlights that connect to the role.';
-}
-if (lower.includes('describe') || lower.includes('personality')) {
-  return 'Pick a few traits that really feel like you—then back them up with a quick story.';
-}
-if (lower.includes('unique') || lower.includes('different')) {
-  return 'This is your moment to stand out. Share something you bring that others might not.';
-}
-if (lower.includes('why') && (lower.includes('here') || lower.includes('company'))) {
-  return 'Talk about what drew you to the company—maybe their mission, culture, or something they’ve built.';
-}
-if (lower.includes('role') || lower.includes('position')) {
-  return 'Mention a few parts of the job that excite you and match your strengths.';
-}
-if (lower.includes('motivates') || lower.includes('drive')) {
-  return 'Share what gets you going—solving problems, helping people, learning new things. Keep it real.';
-}
-if (lower.includes('passion') || lower.includes('care about')) {
-  return 'Talk about something you genuinely care about and how it shows up in your work.';
-}
-if (lower.includes('leaving') || lower.includes('quit')) {
-  return 'Keep it positive. Say you’re looking for growth, new challenges, or better alignment.';
-}
-if (lower.includes('strength') || lower.includes('good at')) {
-  return 'Pick a couple of strengths that matter for the job, and share how they’ve helped you succeed.';
-}
-if (lower.includes('weakness') || lower.includes('improve')) {
-  return 'Be honest, but show growth. Pick something you’ve worked on and explain how you’re improving.';
-}
-if (lower.includes('goals') || lower.includes('future')) {
-  return 'Share where you’d love to grow—skills, leadership, impact. Keep it aligned with the company’s path.';
-}
-if (lower.includes('five') || lower.includes('years')) {
-  return 'Talk about how you see yourself evolving—maybe leading, deepening your craft, or mentoring others.';
-}
-if (lower.includes('challenge') || lower.includes('problem')) {
-  return 'Use a short story to show how you handled a tough moment. Focus on what you learned.';
-}
-if (lower.includes('salary') || lower.includes('pay')) {
-  return 'You can share a range based on your research, and say you’re open to discussion.';
-}
-if (lower.includes('hire') || lower.includes('choose')) {
-  return 'Highlight your top skills, your energy, and how you’ll help them win. Make it easy to say yes.';
-}
-if (lower.includes('questions') || lower.includes('ask')) {
-  return 'Ask about the team, what success looks like, or what they enjoy most. It shows you care.';
-}
-  if (lower.includes('deadline')) return 'Deadline approaching? Prioritize clarity over perfection.';
-  if (lower.includes('ok')) return 'Sharp 👍';
-  if (lower.includes('no')) return 'Whats wrong, please feel free to share if you don-t mind';
-  if (lower.includes('source')) return 'Always verify with at least two independent sources.';
-  if (lower.includes('headline')) return 'Make it punchy, relevant, and emotionally resonant.';
-  if (lower.includes('cheated')) return 'I am sorry, but we can try writing something to express that, if you don-t mind of course.';
-  if (lower.includes('ethics')) return 'Transparency and accountability are your strongest tools.';
-  if (lower.includes('publish')) return 'Before publishing, ask: is it clear, fair, and necessary?';
-  if (lower.includes('editor')) return 'Your editor is your ally—clarify> your angle before filing.';
-  if (lower.includes('fact-check')) return 'Fact-checking isn’t optional—it’s your credibility.';
-  if (lower.includes('interview')) return 'Prepare open-ended questions and listen actively.';
-  if (lower.includes('photo') || lower.includes('image')) return 'Visuals should support the story, not distract.';
-  if (lower.includes('press') || lower.includes('media')) return 'The press holds power—use it responsibly.';
-  if (lower.includes('story') || lower.includes('article')) return 'Every story needs a strong lead and a clear arc.';
-  if (lower.includes('pitch')) return 'Pitch with precision: who, why, and why now.';
-  if (lower.includes('journalism') || lower.includes('reporting')) return 'Journalism is truth told with urgency.';
-  if (lower.includes('ai') || lower.includes('automation')) return 'AI can assist, but human judgment leads.';
-  if (lower.includes('politics') || lower.includes('celebrity') || lower.includes('sports')) return 'Let’s keep it focused on journalism and publishing.';
 
-  return 'Thank you, talk soon 😉';
+if (lower.includes('kind of article') && lower.includes('what')) {
+  return '🌍 All kinds are welcome—poetry, opinion, reflections, news. Just write what moves you and send it in 🫂.';
 }
+
+if (lower.includes('yes')) {
+  return '✅ Awesome, please feel free to write it below.';
+}
+if (lower.includes('feeling') && lower.includes('down')) {
+  return '🫂 I’m here for you. Maybe writing could help lift the weight.';
+}
+  // Fallback
+  return '🫂 Thank you, talk soon. Keep creating, keep sharing.';
+}
+  
     function saveToHistory(text, sender, time) {
       const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
       history.push({ text, sender, time: time.getTime() });
