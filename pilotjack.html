@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pilot Jack</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to top, #111, #222);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #pilot-jack {
+      text-align: center;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #ffcc00;
+      width: 360px;
+    }
+
+    .neon-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ffcc00;
+      text-shadow: 0 0 8px #ffcc00, 0 0 12px #ffaa00;
+      margin-bottom: 10px;
+    }
+
+    .user-info {
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      color: #ccc;
+    }
+
+    .sky-box {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(to right, #333, #444);
+      border: 2px solid #555;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .plane {
+      position: absolute;
+      left: 10px;
+      top: 40px;
+      font-size: 2rem;
+      animation: bounce 0.6s infinite;
+      transition: left 0.1s linear;
+    }
+
+    @keyframes bounce {
+      0%   { transform: translateY(0); }
+      50%  { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    .cloud, .bird, .other-plane {
+      position: absolute;
+      top: 10px;
+      font-size: 1.5rem;
+      animation: drift 12s linear infinite;
+    }
+
+    .cloud { left: 100%; animation-delay: 0s; }
+    .bird { left: 120%; animation-delay: 3s; top: 60px; }
+    .other-plane { left: 140%; animation-delay: 6s; top: 30px; }
+
+    @keyframes drift {
+      0% { left: 100%; }
+      100% { left: -50px; }
+    }
+
+    .multiplier-display {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+    }
+
+    input[type="number"], input[type="text"] {
+      padding: 8px;
+      font-size: 1rem;
+      width: 80px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    #username {
+      width: 140px;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 10px 20px;
+      margin: 5px;
+      background: #ffcc00;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #ffd633;
+    }
+
+    #result-message {
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+
+    #sky-message {
+      position: absolute;
+      top: 45px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1rem;
+      font-weight: bold;
+      display: none;
+      text-shadow: 0 0 6px #ff4444;
+    }
+
+    .crash {
+      color: #ff4444;
+    }
+
+    .cashout {
+      color: #00ffcc;
+    }
+
+    .score-display, .credits-display {
+      font-size: 0.95rem;
+      margin-top: 5px;
+    }
+
+    .score-display { color: #88ff88; }
+    .credits-display { color: #ffccaa; }
+
+    .game-over {
+      font-size: 1rem;
+      color: #ff4444;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="pilot-jack">
+    <div class="neon-title">🚀 Pilot Jack</div>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <div class="user-info">Player: <strong id="player-name">Poncho</strong></div>
+    <div class="sky-box">
+      <div class="plane" id="plane">🛩</div>
+      <div class="cloud">☁️</div>
+      <div class="bird">🚁</div>
+      <div class="other-plane">✈️</div>
+      <div id="sky-message"></div>
+    </div>
+    <div class="multiplier-display">x<span id="multiplier">1.00</span></div>
+    <input type="number" id="bet-amount" placeholder="Bet" min="1" />
+    <br />
+    <button id="start-btn">🎬 Start</button>
+    <button id="cash-out-btn" disabled>💰 Cash Out</button>
+    <button id="restart-btn">🔁 Restart</button>
+    <div id="result-message"></div>
+    <div class="score-display">Total Winnings: $<span id="score">0.00</span></div>
+    <div class="credits-display">Credits: $<span id="credits">100.00</span></div>
+    <div id="game-over" class="game-over" style="display:none;">🛑 Game Over: You're not so lucky today</div>
+  </div>
+
+  <script>
+    let multiplier = 1.00;
+    let crashed = false;
+    let interval;
+    let crashPoint;
+    let gameStarted = false;
+    let planePosition = 10;
+    let score = 0;
+    let credits = 100;
+
+    const multiplierDisplay = document.getElementById("multiplier");
+    const resultMessage = document.getElementById("result-message");
+    const cashOutBtn = document.getElementById("cash-out-btn");
+    const startBtn = document.getElementById("start-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const plane = document.getElementById("plane");
+    const betInput = document.getElementById("bet-amount");
+    const skyMessage = document.getElementById("sky-message");
+    const scoreDisplay = document.getElementById("score");
+    const creditsDisplay = document.getElementById("credits");
+    const usernameInput = document.getElementById("username");
+    const playerName = document.getElementById("player-name");
+    const gameOverMsg = document.getElementById("game-over");
+
+    usernameInput.addEventListener("input", () => {
+      playerName.textContent = usernameInput.value || "Poncho";
+    });
+
+    function resetGame(full = false) {
+      multiplier = 1.00;
+      crashed = false;
+      gameStarted = false;
+      planePosition = 10;
+      multiplierDisplay.textContent = multiplier.toFixed(2);
+      resultMessage.textContent = "";
+      cashOutBtn.disabled = true;
+      plane.style.display = "inline-block";
+      plane.style.left = planePosition + "px";
+      skyMessage.style.display = "none";
+      skyMessage.className = "";
+      gameOverMsg.style.display = "none";
+      if (full) {
+        credits = 100;
+        score = 0;
+        scoreDisplay.textContent = score.toFixed(2);
+        creditsDisplay.textContent = credits.toFixed(2);
+        startBtn.disabled = false;
+      }
+    }
+
+    function startGame() {
+      const bet = parseFloat(betInput.value);
+      if (isNaN(bet) || bet <= 0 || bet > credits) {
+        resultMessage.textContent = "⚠️ Enter a valid bet within your credits.";
+        return;
+      }
+
+      crashPoint = (Math.random() * 5 + 1).toFixed(2);
+      gameStarted = true;
+      cashOutBtn.disabled = false;
+      startBtn.disabled = true;
+      resultMessage.textContent = "";
+
+      interval = setInterval(() => {
+        multiplier = (multiplier * 1.01).toFixed(2);
+        multiplierDisplay.textContent = multiplier;
+
+        if (!crashed) {
+          planePosition += 3;
+          plane.style.left = planePosition + "px";
+        }
+
+        if (parseFloat(multiplier) >= parseFloat(crashPoint)) {
+        crashed = true;
+        clearInterval(interval);
+        skyMessage.textContent = "💥 Plane crashed at x" + multiplier;
+        skyMessage.className = "crash";
+        skyMessage.style.display = "block";
+        cashOutBtn.disabled = true;
+        plane.style.display = "none";
+        startBtn.disabled = false;
+
+        const bet = parseFloat(betInput.value);
+        credits -= bet;
+        if (credits < 0) credits = 0;
+        creditsDisplay.textContent = credits.toFixed(2);
+
+        if (credits <= 0) {
+          gameOverMsg.style.display = "block";
+          startBtn.disabled = true;
+          cashOutBtn.disabled = true;
+        }
+      }
+    }, 100);
+  }
+
+  cashOutBtn.addEventListener("click", () => {
+    if (!crashed && gameStarted) {
+      clearInterval(interval);
+      const bet = parseFloat(betInput.value);
+      const payout = (bet * multiplier).toFixed(2);
+      resultMessage.textContent = "✅ Cashed out at x" + multiplier + " → Won $" + payout;
+      score += parseFloat(payout);
+      credits += parseFloat(payout);
+      scoreDisplay.textContent = score.toFixed(2);
+      creditsDisplay.textContent = credits.toFixed(2);
+
+      plane.style.transition = "left 0.5s ease-out";
+      plane.style.left = "400px";
+      setTimeout(() => {
+        plane.style.display = "none";
+      }, 600);
+
+      skyMessage.textContent = "💸 Cashed out at x" + multiplier;
+      skyMessage.className = "cashout";
+      skyMessage.style.display = "block";
+
+      cashOutBtn.disabled = true;
+      startBtn.disabled = false;
+    }
+  });
+
+  restartBtn.addEventListener("click", () => {
+    resetGame(true);
+  });
+
+  startBtn.addEventListener("click", () => {
+    resetGame();
+    startGame();
+  });
+
+  resetGame(true);
+</script>
+</body>
+</html>
