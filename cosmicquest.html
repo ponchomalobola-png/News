@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Quest: Math & Science Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0b0b2d, #1a1a4a);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #4a4a8a;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(106, 17, 203, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0e0;
+            margin-bottom: 20px;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .panel {
+            background: rgba(30, 30, 70, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid #4a4a8a;
+        }
+        
+        .game-board {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .info-panel {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        }
+        
+        .planet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .planet {
+            background: rgba(50, 50, 100, 0.6);
+            border-radius: 50%;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .planet:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+        }
+        
+        .planet.locked {
+            filter: grayscale(0.7);
+            cursor: not-allowed;
+        }
+        
+        .planet.completed {
+            box-shadow: 0 0 20px #4CAF50;
+        }
+        
+        .planet-number {
+            font-weight: bold;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+        
+        .question-container {
+            background: rgba(40, 40, 80, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .option {
+            background: rgba(60, 60, 120, 0.7);
+            border: 2px solid #4a4a8a;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .option:hover {
+            background: rgba(80, 80, 150, 0.7);
+            border-color: #6a6ac9;
+        }
+        
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+        }
+        
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #F44336;
+        }
+        
+        .feedback {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 15px 0;
+            min-height: 30px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(60, 60, 120, 0.7);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .achievement {
+            background: rgba(50, 50, 100, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .achievement-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            color: gold;
+        }
+        
+        .planet-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .planet-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 15px 0;
+            background: radial-gradient(circle at 30% 30%, #4a4a8a, #2a2a5a);
+            box-shadow: 0 0 30px rgba(106, 17, 203, 0.5);
+        }
+        
+        .planet-name {
+            font-size: 1.8rem;
+            margin: 10px 0;
+            color: #6a6ac9;
+        }
+        
+        .planet-description {
+            text-align: center;
+            line-height: 1.6;
+            color: #c0c0e0;
+        }
+        
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        .comet {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, white);
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Cosmic Quest</h1>
+            <div class="subtitle">A Math & Science Adventure Through the Solar System</div>
+        </header>
+        
+        <div class="game-area">
+            <div class="panel game-board">
+                <!-- Start Screen -->
+                <div id="start-screen" class="screen active">
+                    <h2>Welcome, Space Explorer!</h2>
+                    <p>Embark on an educational journey through our solar system. Solve math and science challenges to unlock planets and learn fascinating facts about our cosmic neighborhood.</p>
+                    <div class="planet-details">
+                        <div class="planet-image"></div>
+                        <div class="planet-name">Solar System</div>
+                        <div class="planet-description">
+                            Your mission is to travel from planet to planet, answering questions to unlock the next destination. Each planet presents unique challenges in mathematics and science.
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button id="start-btn" class="btn">Begin Mission</button>
+                    </div>
+                </div>
+                
+                <!-- Planet Selection Screen -->
+                <div id="planet-screen" class="screen">
+                    <h2>Select Your Destination</h2>
+                    <p>Choose a planet to explore. Complete challenges to unlock further destinations.</p>
+                    
+                    <div class="planet-grid">
+                        <div class="planet completed" data-planet="0">
+                            <div class="planet-number">🌍</div>
+                        </div>
+                        <div class="planet" data-planet="1">
+                            <div class="planet-number">☿</div>
+                        </div>
+                        <div class="planet locked" data-planet="2">
+                            <div class="planet-number">♀</div>
+                        </div>
+                        <div class="planet locked" data-planet="3">
+                            <div class="planet-number">♂</div>
+                        </div>
+                        <div class="planet locked" data-planet="4">
+                            <div class="planet-number">♃</div>
+                        </div>
+                        <div class="planet locked" data-planet="5">
+                            <div class="planet-number">♄</div>
+                        </div>
+                        <div class="planet locked" data-planet="6">
+                            <div class="planet-number">♅</div>
+                        </div>
+                        <div class="planet locked" data-planet="7">
+                            <div class="planet-number">♆</div>
+                        </div>
+                    </div>
+                    
+                    <div class="planet-details">
+                        <div class="planet-image" id="selected-planet-image"></div>
+                        <div class="planet-name" id="selected-planet-name">Earth</div>
+                        <div class="planet-description" id="selected-planet-description">
+                            Our home planet, the only known celestial body to support life. Earth has a diverse environment with liquid water, a protective atmosphere, and a magnetic field that shields us from solar radiation.
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button id="explore-btn" class="btn">Explore This Planet</button>
+                        <button id="back-to-start" class="btn btn-secondary">Mission Control</button>
+                    </div>
+                </div>
+                
+                <!-- Question Screen -->
+                <div id="question-screen" class="screen">
+                    <h2 id="question-planet-name">Planet Challenge</h2>
+                    
+                    <div class="stats">
+                        <div>Questions: <span id="question-count">1/5</span></div>
+                        <div>Score: <span id="score">0</span></div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress" id="question-progress"></div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <div class="question-text" id="question-text">
+                            What is the value of π (pi) rounded to two decimal places?
+                        </div>
+                        
+                        <div class="options" id="options-container">
+                            <div class="option" data-correct="false">3.12</div>
+                            <div class="option" data-correct="true">3.14</div>
+                            <div class="option" data-correct="false">3.16</div>
+                            <div class="option" data-correct="false">3.18</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <div style="text-align: center;">
+                        <button id="next-btn" class="btn" disabled>Next Question</button>
+                    </div>
+                </div>
+                
+                <!-- Results Screen -->
+                <div id="results-screen" class="screen">
+                    <h2>Mission Complete!</h2>
+                    
+                    <div class="planet-details">
+                        <div class="planet-image"></div>
+                        <div class="planet-name" id="results-planet-name">Mercury</div>
+                        <div class="planet-description">
+                            You've successfully completed the challenges for this planet!
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 25px 0;">
+                        <h3>Mission Report</h3>
+                        <div class="stats">
+                            <div>Correct Answers: <span id="correct-answers">4</span>/5</div>
+                            <div>Score Earned: <span id="earned-score">400</span></div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" id="results-progress" style="width: 80%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button id="continue-btn" class="btn">Continue Journey</button>
+                        <button id="retry-btn" class="btn btn-secondary">Try Again</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel info-panel">
+                <h2>Mission Status</h2>
+                
+                <div class="stats">
+                    <div>Total Score: <span id="total-score">0</span></div>
+                    <div>Planets Visited: <span id="planets-visited">1</span>/8</div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="mission-progress" style="width: 12.5%;"></div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">Achievements</h3>
+                
+                <div class="achievement">
+                    <div class="achievement-icon">🚀</div>
+                    <div>
+                        <div>First Launch</div>
+                        <div style="font-size: 0.9rem; color: #a0a0e0;">Begin your space journey</div>
+                    </div>
+                </div>
+                
+                <div class="achievement">
+                    <div class="achievement-icon">🪐</div>
+                    <div>
+                        <div>Planet Explorer</div>
+                        <div style="font-size: 0.9rem; color: #a0a0e0;">Visit 3 different planets</div>
+                    </div>
+                </div>
+                
+                <div class="achievement">
+                    <div class="achievement-icon">⭐</div>
+                    <div>
+                        <div>Science Master</div>
+                        <div style="font-size: 0.9rem; color: #a0a0e0;">Answer 10 science questions correctly</div>
+                    </div>
+                </div>
+                
+                <div class="achievement">
+                    <div class="achievement-icon">🔢</div>
+                    <div>
+                        <div>Math Whiz</div>
+                        <div style="font-size: 0.9rem; color: #a0a0e0;">Answer 10 math questions correctly</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3>Educational Focus</h3>
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.6;">
+                        <li>Mathematics: Arithmetic, Geometry, Algebra</li>
+                        <li>Physics: Gravity, Motion, Energy</li>
+                        <li>Astronomy: Planets, Stars, Space Exploration</li>
+                        <li>Biology: Life Science, Ecosystems</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            currentScreen: 'start-screen',
+            currentPlanet: 0,
+            currentQuestion: 0,
+            score: 0,
+            planetsVisited: 1,
+            totalScore: 0,
+            questions: [
+                // Planet 0: Earth
+                [
+                    {
+                        question: "What is the value of π (pi) rounded to two decimal places?",
+                        options: ["3.12", "3.14", "3.16", "3.18"],
+                        correct: 1,
+                        type: "math"
+                    },
+                    {
+                        question: "Which gas makes up the majority of Earth's atmosphere?",
+                        options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"],
+                        correct: 2,
+                        type: "science"
+                    },
+                    {
+                        question: "If a rectangle has a length of 8 cm and width of 5 cm, what is its area?",
+                        options: ["13 cm²", "26 cm²", "40 cm²", "45 cm²"],
+                        correct: 2,
+                        type: "math"
+                    },
+                    {
+                        question: "What is the process by which plants make their own food using sunlight?",
+                        options: ["Respiration", "Photosynthesis", "Transpiration", "Germination"],
+                        correct: 1,
+                        type: "science"
+                    },
+                    {
+                        question: "Solve for x: 2x + 5 = 15",
+                        options: ["x = 5", "x = 7", "x = 10", "x = 15"],
+                        correct: 0,
+                        type: "math"
+                    }
+                ],
+// Planet 1: Mercury
+                [
+                    {
+                        question: "Mercury is the closest planet to the Sun. How long is a year on Mercury (orbital period)?",
+                        options: ["88 Earth days", "225 Earth days", "365 Earth days", "687 Earth days"],
+                        correct: 0,
+                        type: "science"
+                    },
+                    {
+                        question: "Calculate: 7² - 3 × 4",
+                        options: ["16", "25", "37", "40"],
+                        correct: 2,
+                        type: "math"
+                    },
+                    {
+                        question: "Mercury has a very thin atmosphere composed mainly of:",
+                        options: ["Oxygen", "Carbon Dioxide", "Hydrogen", "Sodium"],
+                        correct: 3,
+                        type: "science"
+                    },
+                    {
+                        question: "If the diameter of Mercury is 4,880 km, what is its radius?",
+                        options: ["1,220 km", "2,440 km", "4,880 km", "9,760 km"],
+                        correct: 1,
+                        type: "math"
+                    },
+                    {
+                        question: "Why does Mercury have extreme temperature variations?",
+                        options: [
+                            "It has a highly elliptical orbit",
+                            "It lacks a substantial atmosphere",
+                            "It rotates very slowly",
+                            "All of the above"
+                        ],
+                        correct: 3,
+                        type: "science"
+                    }
+                ],
+                // Planet 2: Venus
+                [
+                    {
+                        question: "Venus is often called Earth's sister planet because:",
+                        options: ["They have similar sizes", "They have similar masses", "They have similar densities", "All of the above"],
+                        correct: 3,
+                        type: "science"
+                    },
+                    {
+                        question: "If Venus is 67 million miles from the Sun, and Earth is 93 million miles, how much closer is Venus?",
+                        options: ["16 million miles", "26 million miles", "36 million miles", "46 million miles"],
+                        correct: 1,
+                        type: "math"
+                    },
+                    {
+                        question: "What is the main component of Venus's thick atmosphere?",
+                        options: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Methane"],
+                        correct: 2,
+                        type: "science"
+                    },
+                    {
+                        question: "A day on Venus (one rotation) is longer than a year on Venus. If a Venusian year is 225 Earth days, and a day is 243 Earth days, how much longer is the day?",
+                        options: ["8 days", "18 days", "28 days", "38 days"],
+                        correct: 1,
+                        type: "math"
+                    },
+                    {
+                        question: "Why is Venus the hottest planet in our solar system?",
+                        options: [
+                            "It's closest to the Sun",
+                            "It has a runaway greenhouse effect",
+                            "It has active volcanoes",
+                            "It rotates backwards"
+                        ],
+                        correct: 1,
+                        type: "science"
+                    }
+                ]
+            ],
+            planetInfo: [
+                {
+                    name: "Earth",
+                    description: "Our home planet, the only known celestial body to support life. Earth has a diverse environment with liquid water, a protective atmosphere, and a magnetic field that shields us from solar radiation.",
+                    color: "#2E8B57"
+                },
+                {
+                    name: "Mercury",
+                    description: "The smallest and innermost planet in the Solar System. Mercury has no moons and has a surface covered with craters. It has the shortest year of all planets (88 Earth days).",
+                    color: "#A9A9A9"
+                },
+                {
+                    name: "Venus",
+                    description: "Often called Earth's sister planet due to similar size and mass. Venus has a thick, toxic atmosphere that traps heat, making it the hottest planet in our solar system.",
+                    color: "#E6B0AA"
+                },
+                {
+                    name: "Mars",
+                    description: "Known as the Red Planet due to its reddish appearance from iron oxide on its surface. Mars has the largest volcano and canyon in the solar system and may have once had liquid water.",
+                    color: "#CD5C5C"
+                },
+                {
+                    name: "Jupiter",
+                    description: "The largest planet in our solar system, a gas giant with a prominent Great Red Spot - a giant storm bigger than Earth. Jupiter has at least 79 moons, including Ganymede, the largest moon in the solar system.",
+                    color: "#D4AC0D"
+                },
+                {
+                    name: "Saturn",
+                    description: "Famous for its spectacular ring system made of ice particles and rock. Saturn is a gas giant like Jupiter and has at least 82 moons, including Titan which has a thick atmosphere.",
+                    color: "#F4D03F"
+                },
+                {
+                    name: "Uranus",
+                    description: "An ice giant that rotates on its side, with its axis nearly parallel to its orbit. Uranus has a pale blue color due to methane in its atmosphere and has 27 known moons.",
+                    color: "#AED6F1"
+                },
+                {
+                    name: "Neptune",
+                    description: "The windiest planet with speeds up to 2,100 km/h. Neptune is an ice giant like Uranus and was the first planet located through mathematical calculations rather than direct observation.",
+                    color: "#3498DB"
+                }
+            ]
+        };
+
+        // DOM elements
+        const screens = {
+            start: document.getElementById('start-screen'),
+            planets: document.getElementById('planet-screen'),
+            question: document.getElementById('question-screen'),
+            results: document.getElementById('results-screen')
+        };
+
+        // Initialize the game
+        function initGame() {
+            createStars();
+            updateMissionStatus();
+            
+            // Event listeners for buttons
+            document.getElementById('start-btn').addEventListener('click', showPlanetScreen);
+            document.getElementById('back-to-start').addEventListener('click', showStartScreen);
+            document.getElementById('explore-btn').addEventListener('click', startPlanetQuestions);
+            document.getElementById('next-btn').addEventListener('click', nextQuestion);
+            document.getElementById('continue-btn').addEventListener('click', showPlanetScreen);
+            document.getElementById('retry-btn').addEventListener('click', retryPlanet);
+            
+            // Planet selection
+            document.querySelectorAll('.planet').forEach(planet => {
+                planet.addEventListener('click', function() {
+                    selectPlanet(this);
+                });
+            });
+            
+            // Option selection
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('option')) {
+                    selectOption(e.target);
+                }
+            });
+            
+            // Initialize with Earth selected
+            selectPlanet(document.querySelector('.planet[data-planet="0"]'));
+        }
+
+        // Create background stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position and size
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random opacity
+                star.style.opacity = Math.random() * 0.8 + 0.2;
+                
+                starsContainer.appendChild(star);
+            }
+            
+            // Create a few comets
+            for (let i = 0; i < 3; i++) {
+                const comet = document.createElement('div');
+                comet.classList.add('comet');
+                comet.style.left = `${Math.random() * 100}%`;
+                comet.style.top = `${Math.random() * 100}%`;
+                starsContainer.appendChild(comet);
+            }
+        }
+
+        // Show a specific screen
+        function showScreen(screenId) {
+            // Hide all screens
+            Object.values(screens).forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show the requested screen
+            document.getElementById(screenId).classList.add('active');
+            gameState.currentScreen = screenId;
+        }
+
+        function showStartScreen() {
+            showScreen('start-screen');
+        }
+
+        function showPlanetScreen() {
+            showScreen('planet-screen');
+            updatePlanetGrid();
+        }
+
+        function showQuestionScreen() {
+            showScreen('question-screen');
+            displayQuestion();
+        }
+
+        function showResultsScreen() {
+            showScreen('results-screen');
+            displayResults();
+        }
+
+        // Update which planets are unlocked
+        function updatePlanetGrid() {
+            document.querySelectorAll('.planet').forEach((planet, index) => {
+                if (index <= gameState.planetsVisited) {
+                    planet.classList.remove('locked');
+                } else {
+                    planet.classList.add('locked');
+                }
+                
+                if (index < gameState.planetsVisited) {
+                    planet.classList.add('completed');
+                } else {
+                    planet.classList.remove('completed');
+                }
+            });
+        }
+
+        // Select a planet to explore
+        function selectPlanet(planetElement) {
+            if (planetElement.classList.contains('locked')) return;
+            
+            const planetIndex = parseInt(planetElement.getAttribute('data-planet'));
+            gameState.currentPlanet = planetIndex;
+            
+            // Update planet details
+            const planet = gameState.planetInfo[planetIndex];
+            document.getElementById('selected-planet-name').textContent = planet.name;
+            document.getElementById('selected-planet-description').textContent = planet.description;
+            
+            // Update planet image color
+            const planetImage = document.getElementById('selected-planet-image');
+            planetImage.style.background = `radial-gradient(circle at 30% 30%, ${planet.color}, #2a2a5a)`;
+            
+            // Highlight selected planet
+            document.querySelectorAll('.planet').forEach(p => {
+                p.style.boxShadow = '';
+            });
+            planetElement.style.boxShadow = `0 0 20px ${planet.color}`;
+        }
+
+        // Start the questions for the selected planet
+        function startPlanetQuestions() {
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            showQuestionScreen();
+        }
+
+        // Display the current question
+        function displayQuestion() {
+            // Check if we have questions for this planet
+            if (!gameState.questions[gameState.currentPlanet]) {
+                // If not, show a message and return to planet screen
+                alert("This planet's challenges are still under development!");
+                showPlanetScreen();
+                return;
+            }
+            
+            const questionData = gameState.questions[gameState.currentPlanet][gameState.currentQuestion];
+            
+            document.getElementById('question-text').textContent = questionData.question;
+            document.getElementById('question-planet-name').textContent = 
+                `${gameState.planetInfo[gameState.currentPlanet].name} Challenge`;
+            document.getElementById('question-count').textContent = 
+                `${gameState.currentQuestion + 1}/${gameState.questions[gameState.currentPlanet].length}`;
+            
+            // Update progress bar
+            const progress = (gameState.currentQuestion / gameState.questions[gameState.currentPlanet].length) * 100;
+            document.getElementById('question-progress').style.width = `${progress}%`;
+            
+            // Set up options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            questionData.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.setAttribute('data-correct', index === questionData.correct ? 'true' : 'false');
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Reset feedback and disable next button
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('next-btn').disabled = true;
+        }
+
+        // Handle option selection
+        function selectOption(optionElement) {
+            // If we've already selected an option, ignore
+            if (document.querySelector('.option.correct') || document.querySelector('.option.incorrect')) {
+                return;
+            }
+            
+            const isCorrect = optionElement.getAttribute('data-correct') === 'true';
+            
+            if (isCorrect) {
+                optionElement.classList.add('correct');
+                document.getElementById('feedback').textContent = 'Correct! Well done.';
+                document.getElementById('feedback').style.color = '#4CAF50';
+                gameState.score += 100;
+                document.getElementById('score').textContent = gameState.score;
+            } else {
+                optionElement.classList.add('incorrect');
+                document.getElementById('feedback').textContent = 'Not quite. Try again next time!';
+                document.getElementById('feedback').style.color = '#F44336';
+                
+                // Highlight the correct answer
+                document.querySelectorAll('.option').forEach(opt => {
+                    if (opt.getAttribute('data-correct') === 'true') {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+            
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        // Move to the next question or show results
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            
+            if (gameState.currentQuestion < gameState.questions[gameState.currentPlanet].length) {
+                displayQuestion();
+            } else {
+                // Update total score
+                gameState.totalScore += gameState.score;
+                
+                // Check if we've unlocked the next planet
+                if (gameState.currentPlanet === gameState.planetsVisited - 1) {
+                    gameState.planetsVisited++;
+                    updateMissionStatus();
+                }
+                showResultsScreen();
+            }
+        }
+
+        // Display results after completing a planet
+        function displayResults() {
+            const correctAnswers = Math.floor(gameState.score / 100);
+            const totalQuestions = gameState.questions[gameState.currentPlanet].length;
+            const percentage = (correctAnswers / totalQuestions) * 100;
+            
+            document.getElementById('results-planet-name').textContent = 
+                gameState.planetInfo[gameState.currentPlanet].name;
+            document.getElementById('correct-answers').textContent = 
+                `${correctAnswers}/${totalQuestions}`;
+            document.getElementById('earned-score').textContent = gameState.score;
+            document.getElementById('results-progress').style.width = `${percentage}%`;
+        }
+
+        // Retry the current planet
+        function retryPlanet() {
+            startPlanetQuestions();
+        }
+
+        // Update mission status display
+        function updateMissionStatus() {
+            document.getElementById('total-score').textContent = gameState.totalScore;
+            document.getElementById('planets-visited').textContent = 
+                `${gameState.planetsVisited}/8`;
+            document.getElementById('mission-progress').style.width = 
+                `${(gameState.planetsVisited / 8) * 100}%`;
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
