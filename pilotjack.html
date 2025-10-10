@@ -2,183 +2,469 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pilot Jack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Pilot Jack - Mobile Casino</title>
   <style>
-    body {
+    * {
       margin: 0;
-      background: linear-gradient(to top, #111, #222);
-      font-family: 'Segoe UI', sans-serif;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
     }
 
-    #pilot-jack {
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a0a2a, #1a1a4a, #0a0a2a);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 10px;
+      padding-bottom: 20px;
+    }
+
+    /* Header Section */
+    .header {
       text-align: center;
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #ffcc00;
-      width: 360px;
+      padding: 15px 10px;
+      background: linear-gradient(145deg, #1a1a3a, #0f0f2a);
+      border-radius: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      border: 2px solid #ffcc00;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ffcc00, #ffaa00, #ffcc00);
+      border-radius: 16px 16px 0 0;
     }
 
     .neon-title {
       font-size: 1.8rem;
-      font-weight: bold;
+      font-weight: 800;
       color: #ffcc00;
-      text-shadow: 0 0 8px #ffcc00, 0 0 12px #ffaa00;
-      margin-bottom: 10px;
+      text-shadow: 0 0 10px #ffcc00;
+      margin-bottom: 8px;
     }
 
-    .user-info {
-      font-size: 0.95rem;
-      margin-bottom: 10px;
+    .player-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
       color: #ccc;
     }
 
+    .player-name {
+      color: #ffcc00;
+      font-weight: 600;
+    }
+
+    .player-id {
+      color: #00ffcc;
+    }
+
+    /* Game Area */
+    .game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Sky Box */
     .sky-box {
       position: relative;
       width: 100%;
-      height: 120px;
-      background: linear-gradient(to right, #333, #444);
-      border: 2px solid #555;
-      border-radius: 8px;
+      height: 25vh;
+      min-height: 150px;
+      background: linear-gradient(to bottom, #1e3c72, #2a5298);
+      border: 3px solid #444;
+      border-radius: 12px;
       overflow: hidden;
-      margin-bottom: 15px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .sky-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 2%, transparent 10%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 2%, transparent 10%);
     }
 
     .plane {
       position: absolute;
       left: 10px;
-      top: 40px;
-      font-size: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 3rem;
       animation: bounce 0.6s infinite;
       transition: left 0.1s linear;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+      z-index: 10;
     }
 
     @keyframes bounce {
-      0%   { transform: translateY(0); }
-      50%  { transform: translateY(-10px); }
-      100% { transform: translateY(0); }
+      0%, 100% { transform: translateY(-50%); }
+      50% { transform: translateY(-60%); }
     }
 
     .cloud, .bird, .other-plane {
       position: absolute;
-      top: 10px;
-      font-size: 1.5rem;
+      font-size: 2rem;
       animation: drift 12s linear infinite;
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
     }
 
-    .cloud { left: 100%; animation-delay: 0s; }
-    .bird { left: 120%; animation-delay: 3s; top: 60px; }
-    .other-plane { left: 140%; animation-delay: 6s; top: 30px; }
+    .cloud { 
+      top: 20%; 
+      left: 100%; 
+    }
+    .bird { 
+      top: 60%; 
+      left: 120%; 
+      animation-delay: 3s; 
+    }
+    .other-plane { 
+      top: 40%; 
+      left: 140%; 
+      animation-delay: 6s; 
+    }
 
     @keyframes drift {
       0% { left: 100%; }
       100% { left: -50px; }
     }
 
+    /* Multiplier Display */
     .multiplier-display {
-      font-size: 1.6rem;
-      margin-bottom: 10px;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #ffcc00;
+      text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #444;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Controls Section */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     input[type="number"], input[type="text"] {
-      padding: 8px;
-      font-size: 1rem;
-      width: 80px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      border: none;
+      padding: 16px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: 2px solid #444;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      text-align: center;
+      transition: all 0.3s;
     }
 
-    #username {
-      width: 140px;
+    input[type="number"]:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: #ffcc00;
+      box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
     }
 
     button {
-      font-size: 1rem;
-      padding: 10px 20px;
-      margin: 5px;
-      background: #ffcc00;
+      flex: 1;
+      padding: 18px 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.2s;
+      color: #000;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
     }
 
-    button:hover {
-      background: #ffd633;
+    button:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0.3);
     }
 
-    #result-message {
+    button:disabled {
+      background: linear-gradient(to bottom, #666, #555);
+      color: #999;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 0 #444;
+    }
+
+    #start-btn {
+      background: linear-gradient(to bottom, #ffcc00, #e6b800);
+    }
+
+    #cash-out-btn {
+      background: linear-gradient(to bottom, #00cc66, #00aa44);
+    }
+
+    #restart-btn {
+      background: linear-gradient(to bottom, #ff4444, #cc0000);
+    }
+
+    /* Stats Section */
+    .stats-container {
+      display: flex;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #444;
       margin-top: 10px;
-      font-size: 1rem;
+    }
+
+    .score-display, .credits-display {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .score-display { 
+      color: #88ff88; 
+      text-shadow: 0 0 5px rgba(136, 255, 136, 0.5);
+    }
+    
+    .credits-display { 
+      color: #ffccaa; 
+      text-shadow: 0 0 5px rgba(255, 204, 170, 0.5);
+    }
+
+    /* Messages */
+    #result-message {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      min-height: 24px;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
     }
 
     #sky-message {
       position: absolute;
-      top: 45px;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      font-size: 1rem;
+      transform: translate(-50%, -50%);
+      font-size: 1.3rem;
       font-weight: bold;
       display: none;
-      text-shadow: 0 0 6px #ff4444;
+      text-shadow: 0 0 10px currentColor;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px 25px;
+      border-radius: 12px;
+      animation: pulse-text 0.5s infinite alternate;
+      text-align: center;
+      width: 90%;
+    }
+
+    @keyframes pulse-text {
+      from { transform: translate(-50%, -50%) scale(1); }
+      to { transform: translate(-50%, -50%) scale(1.05); }
     }
 
     .crash {
       color: #ff4444;
+      border: 2px solid #ff4444;
     }
 
     .cashout {
       color: #00ffcc;
+      border: 2px solid #00ffcc;
     }
-
-    .score-display, .credits-display {
-      font-size: 0.95rem;
-      margin-top: 5px;
-    }
-
-    .score-display { color: #88ff88; }
-    .credits-display { color: #ffccaa; }
 
     .game-over {
-      font-size: 1rem;
+      font-size: 1.3rem;
       color: #ff4444;
       font-weight: bold;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+      animation: pulse-text 1s infinite alternate;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #ff4444;
       margin-top: 10px;
+    }
+
+    /* Chip animation for wins */
+    .chip-animation {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0;
+      animation: chip-fall 1s forwards;
+      z-index: 100;
+    }
+
+    @keyframes chip-fall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Landscape mode adjustments */
+    @media (orientation: landscape) and (max-height: 500px) {
+      body {
+        padding: 5px;
+      }
+      
+      .header {
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      
+      .neon-title {
+        font-size: 1.5rem;
+      }
+      
+      .sky-box {
+        height: 60vh;
+        min-height: 120px;
+      }
+      
+      .button-group {
+        flex-direction: row;
+      }
+      
+      button {
+        padding: 12px 8px;
+        font-size: 1rem;
+      }
+    }
+
+    /* Very small screens */
+    @media (max-width: 350px) {
+      .neon-title {
+        font-size: 1.5rem;
+      }
+      
+      .multiplier-display {
+        font-size: 1.8rem;
+        padding: 12px;
+      }
+      
+      button {
+        padding: 16px 8px;
+        font-size: 1rem;
+      }
+      
+      .stats-container {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+    }
+
+    /* Safe area support for notched devices */
+    @supports(padding: max(0px)) {
+      body {
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+      }
     }
   </style>
 </head>
 <body>
-  <div id="pilot-jack">
-    <div class="neon-title">🚀 Pilot Jack</div>
-    <input type="text" id="username" placeholder="Enter your name" />
-    <div class="user-info">Player: <strong id="player-name">Poncho</strong></div>
+  <!-- Header -->
+  <div class="header">
+    <div class="neon-title">🎰 PILOT JACK</div>
+    <div class="player-info">
+      <span class="player-name">Player: <strong id="player-name">Poncho</strong></span>
+      <span class="player-id">ID: <span id="player-id">#7829</span></span>
+    </div>
+  </div>
+
+  <!-- Game Area -->
+  <div class="game-area">
+    <!-- Sky Box -->
     <div class="sky-box">
-      <div class="plane" id="plane">🛩</div>
+      <div class="plane" id="plane">🛩️</div>
       <div class="cloud">☁️</div>
       <div class="bird">🚁</div>
       <div class="other-plane">✈️</div>
       <div id="sky-message"></div>
     </div>
-    <div class="multiplier-display">x<span id="multiplier">1.00</span></div>
-    <input type="number" id="bet-amount" placeholder="Bet" min="1" />
-    <br />
-    <button id="start-btn">🎬 Start</button>
-    <button id="cash-out-btn" disabled>💰 Cash Out</button>
-    <button id="restart-btn">🔁 Restart</button>
+
+    <!-- Multiplier Display -->
+    <div class="multiplier-display">
+      MULTIPLIER: x<span id="multiplier">1.00</span>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="input-group">
+        <input type="text" id="username" placeholder="Enter your name" />
+        <input type="number" id="bet-amount" placeholder="Bet amount" min="1" value="10" />
+      </div>
+
+      <div class="button-group">
+        <button id="start-btn">🎬 START</button>
+        <button id="cash-out-btn" disabled>💰 CASH OUT</button>
+        <button id="restart-btn">🔄 RESTART</button>
+      </div>
+    </div>
+
+    <!-- Result Message -->
     <div id="result-message"></div>
-    <div class="score-display">Total Winnings: $<span id="score">0.00</span></div>
-    <div class="credits-display">Credits: $<span id="credits">100.00</span></div>
-    <div id="game-over" class="game-over" style="display:none;">🛑 Game Over: You're not so lucky today</div>
+
+    <!-- Stats -->
+    <div class="stats-container">
+      <div class="score-display">Winnings: $<span id="score">0.00</span></div>
+      <div class="credits-display">Credits: $<span id="credits">100.00</span></div>
+    </div>
+
+    <!-- Game Over Message -->
+    <div id="game-over" class="game-over" style="display:none;">
+      🛑 GAME OVER: Insufficient credits
+    </div>
   </div>
 
   <script>
+    // Initialize game variables
     let multiplier = 1.00;
     let crashed = false;
     let interval;
@@ -188,6 +474,7 @@
     let score = 0;
     let credits = 100;
 
+    // DOM elements
     const multiplierDisplay = document.getElementById("multiplier");
     const resultMessage = document.getElementById("result-message");
     const cashOutBtn = document.getElementById("cash-out-btn");
@@ -200,12 +487,40 @@
     const creditsDisplay = document.getElementById("credits");
     const usernameInput = document.getElementById("username");
     const playerName = document.getElementById("player-name");
+    const playerId = document.getElementById("player-id");
     const gameOverMsg = document.getElementById("game-over");
 
+    // Generate random player ID
+    playerId.textContent = '#' + Math.floor(1000 + Math.random() * 9000);
+
+    // Create chip animation for wins
+    function createChipAnimation() {
+      const chips = ['🟡', '🔴', '🔵', '🟢'];
+      const skyBox = document.querySelector('.sky-box');
+      
+      for (let i = 0; i < 6; i++) {
+        const chip = document.createElement('div');
+        chip.className = 'chip-animation';
+        chip.textContent = chips[Math.floor(Math.random() * chips.length)];
+        chip.style.left = (Math.random() * 80 + 10) + '%';
+        chip.style.animationDelay = (i * 0.1) + 's';
+        skyBox.appendChild(chip);
+        
+        // Remove element after animation
+        setTimeout(() => {
+          if (chip.parentNode) {
+            chip.parentNode.removeChild(chip);
+          }
+        }, 1000);
+      }
+    }
+
+    // Update player name
     usernameInput.addEventListener("input", () => {
       playerName.textContent = usernameInput.value || "Poncho";
     });
 
+    // Reset game state
     function resetGame(full = false) {
       multiplier = 1.00;
       crashed = false;
@@ -213,103 +528,138 @@
       planePosition = 10;
       multiplierDisplay.textContent = multiplier.toFixed(2);
       resultMessage.textContent = "";
+      resultMessage.style.background = "transparent";
       cashOutBtn.disabled = true;
-      plane.style.display = "inline-block";
+      plane.style.display = "block";
       plane.style.left = planePosition + "px";
+      plane.style.transition = "none";
       skyMessage.style.display = "none";
       skyMessage.className = "";
       gameOverMsg.style.display = "none";
+      
       if (full) {
         credits = 100;
         score = 0;
         scoreDisplay.textContent = score.toFixed(2);
         creditsDisplay.textContent = credits.toFixed(2);
         startBtn.disabled = false;
+        betInput.value = "10";
       }
     }
 
+    // Start the game
     function startGame() {
       const bet = parseFloat(betInput.value);
       if (isNaN(bet) || bet <= 0 || bet > credits) {
         resultMessage.textContent = "⚠️ Enter a valid bet within your credits.";
+        resultMessage.style.background = "rgba(255, 68, 68, 0.3)";
         return;
       }
 
-      crashPoint = (Math.random() * 5 + 1).toFixed(2);
+      // Set crash point between 1.10 and 5.00
+      crashPoint = (Math.random() * 3.9 + 1.1).toFixed(2);
       gameStarted = true;
       cashOutBtn.disabled = false;
       startBtn.disabled = true;
-      resultMessage.textContent = "";
+      resultMessage.textContent = "Flight in progress... Good luck!";
+      resultMessage.style.background = "rgba(255, 204, 0, 0.3)";
 
       interval = setInterval(() => {
-        multiplier = (multiplier * 1.01).toFixed(2);
+        multiplier = (parseFloat(multiplier) * 1.01).toFixed(2);
         multiplierDisplay.textContent = multiplier;
 
         if (!crashed) {
           planePosition += 3;
-          plane.style.left = planePosition + "px";
+          if (planePosition > 85) {
+            planePosition = 85; // Keep plane within bounds
+          }
+          plane.style.left = planePosition + "%";
         }
 
+        // Check for crash
         if (parseFloat(multiplier) >= parseFloat(crashPoint)) {
-        crashed = true;
-        clearInterval(interval);
-        skyMessage.textContent = "💥 Plane crashed at x" + multiplier;
-        skyMessage.className = "crash";
-        skyMessage.style.display = "block";
-        cashOutBtn.disabled = true;
-        plane.style.display = "none";
-        startBtn.disabled = false;
+          crashed = true;
+          clearInterval(interval);
+          skyMessage.textContent = "💥 CRASHED at x" + multiplier;
+          skyMessage.className = "crash";
+          skyMessage.style.display = "block";
+          cashOutBtn.disabled = true;
+          plane.style.display = "none";
+          startBtn.disabled = false;
 
+          const bet = parseFloat(betInput.value);
+          credits -= bet;
+          if (credits < 0) credits = 0;
+          creditsDisplay.textContent = credits.toFixed(2);
+
+          if (credits <= 0) {
+            gameOverMsg.style.display = "block";
+            startBtn.disabled = true;
+            cashOutBtn.disabled = true;
+          }
+        }
+      }, 100);
+    }
+
+    // Cash out function
+    cashOutBtn.addEventListener("click", () => {
+      if (!crashed && gameStarted) {
+        clearInterval(interval);
         const bet = parseFloat(betInput.value);
-        credits -= bet;
-        if (credits < 0) credits = 0;
+        const payout = (bet * multiplier).toFixed(2);
+        
+        resultMessage.textContent = "✅ Cashed out at x" + multiplier + " → Won $" + payout;
+        resultMessage.style.background = "rgba(0, 255, 204, 0.3)";
+        
+        score += parseFloat(payout);
+        credits += parseFloat(payout);
+        scoreDisplay.textContent = score.toFixed(2);
         creditsDisplay.textContent = credits.toFixed(2);
 
-        if (credits <= 0) {
-          gameOverMsg.style.display = "block";
-          startBtn.disabled = true;
-          cashOutBtn.disabled = true;
-        }
+        // Create winning animation
+        createChipAnimation();
+
+        // Animate plane flying away
+        plane.style.transition = "left 0.8s ease-out";
+        plane.style.left = "100%";
+        setTimeout(() => {
+          plane.style.display = "none";
+        }, 800);
+
+        skyMessage.textContent = "💰 CASH OUT at x" + multiplier;
+        skyMessage.className = "cashout";
+        skyMessage.style.display = "block";
+
+        cashOutBtn.disabled = true;
+        startBtn.disabled = false;
       }
-    }, 100);
-  }
+    });
 
-  cashOutBtn.addEventListener("click", () => {
-    if (!crashed && gameStarted) {
-      clearInterval(interval);
-      const bet = parseFloat(betInput.value);
-      const payout = (bet * multiplier).toFixed(2);
-      resultMessage.textContent = "✅ Cashed out at x" + multiplier + " → Won $" + payout;
-      score += parseFloat(payout);
-      credits += parseFloat(payout);
-      scoreDisplay.textContent = score.toFixed(2);
-      creditsDisplay.textContent = credits.toFixed(2);
+    // Restart game
+    restartBtn.addEventListener("click", () => {
+      resetGame(true);
+    });
 
-      plane.style.transition = "left 0.5s ease-out";
-      plane.style.left = "400px";
-      setTimeout(() => {
-        plane.style.display = "none";
-      }, 600);
+    // Start game
+    startBtn.addEventListener("click", () => {
+      resetGame();
+      startGame();
+    });
 
-      skyMessage.textContent = "💸 Cashed out at x" + multiplier;
-      skyMessage.className = "cashout";
-      skyMessage.style.display = "block";
+    // Handle keyboard for bet input
+    betInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        startGame();
+      }
+    });
 
-      cashOutBtn.disabled = true;
-      startBtn.disabled = false;
-    }
-  });
-
-  restartBtn.addEventListener("click", () => {
+    // Initialize the game
     resetGame(true);
-  });
 
-  startBtn.addEventListener("click", () => {
-    resetGame();
-    startGame();
-  });
-
-  resetGame(true);
-</script>
+    // Prevent zoom on double-tap
+    document.addEventListener('dblclick', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
 </body>
 </html>

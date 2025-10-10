@@ -3,29 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Journalist Chat</title>
-   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FKXMFN74FW');
-</script>
+  <title>Juvi Chat</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FKXMFN74FW');
+  </script>
   <style>
-  let chatWasCleared = false;
-  button {
-  touch-action: manipulation; /* Prevents double-tap zoom */
-}
-  #footer {
-  background: #eeeeee;
-  color: #333;
-  font-size: 0.75em;
-  text-align: center;
-  padding: 6px 10px;
-  border-top: 1px solid #ccc;
-}
+    button {
+      touch-action: manipulation;
+    }
+    #footer {
+      background: #eeeeee;
+      color: #333;
+      font-size: 0.75em;
+      text-align: center;
+      padding: 6px 10px;
+      border-top: 1px solid #ccc;
+    }
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -35,15 +33,15 @@
       flex-direction: column;
       height: 100vh;
     }
-   header {
-  background: #075e54;
-  color: #fff;
-  padding: 10px 0 30px; /* extra bottom padding for ticker */
-  text-align: center;
-  font-weight: bold;
-  font-size: 1em;
-  position: relative;
-}
+    header {
+      background: #075e54;
+      color: #fff;
+      padding: 10px 0 30px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1em;
+      position: relative;
+    }
     #live-badge {
       position: fixed;
       top: 10px;
@@ -64,13 +62,17 @@
       100% { transform: scale(1); opacity: 1; }
     }
     #ticker {
-  background: #25d366;
-  color: #000;
-  font-size: 0.8em;
-  padding: 5px 10px;
-  white-space: nowrap;
-  overflow: hidden;
-}
+      background: #25d366;
+      color: #000;
+      font-size: 0.8em;
+      padding: 5px 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
     #ticker span {
       display: inline-block;
       padding-left: 100%;
@@ -116,6 +118,9 @@
       font-size: 0.75em;
       color: #666;
       margin: 10px 0;
+      padding: 5px;
+      background: #f0f0f0;
+      border-radius: 10px;
     }
     #input-area {
       display: flex;
@@ -160,38 +165,68 @@
     #clear-btn {
       background: #d32f2f;
     }
+    .quick-reply {
+      display: inline-block;
+      margin: 2px;
+      padding: 4px 8px;
+      background: #075e54;
+      color: white;
+      border-radius: 12px;
+      font-size: 0.8em;
+      cursor: pointer;
+    }
+    .quick-reply:hover {
+      background: #054d44;
+    }
   </style>
 </head>
 <body>
   <div id="live-badge">LIVE</div>
   <header>
-  📰 Journalist Juvi
-  <div id="ticker"><span id="headline-text">Breaking: AI tools reshape African newsrooms • Rand strengthens • Youth media surges</span></div>
-</header>
+    🎓 Juvi Assistant
+    <div id="ticker"><span id="headline-text">Welcome! • Grade 12 Practice Zone available • Game Zone for breaks • Latest news updates</span></div>
+  </header>
   <div id="chat-box"></div>
   <div id="input-area">
-    <input type="text" id="user-input" placeholder="Type a message" />
+    <input type="text" id="user-input" placeholder="Ask about news, practice, games, or site help..." />
     <div id="button-group">
       <button id="send-btn" class="chat-button" onclick="sendMessage()">📫</button>
-      <button id="clear-btn" class="chat-button" onclick="clearUserMessages()">🚫</button>
+      <button id="clear-btn" class="chat-button" onclick="clearAllMessages()">🚫</button>
     </div>
   </div>
 
   <script>
-    document.addEventListener('gesturestart', function (e) {
-  e.preventDefault();
-});
+    // Global variables
+    let chatWasCleared = false;
+    let lastDate = '';
+    let userContext = {
+      userType: '', // 'student', 'matric_rewrite', 'young_learner', 'general'
+      interests: [],
+      lastActivity: '',
+      mood: 'neutral'
+    };
+
+    // DOM elements
     const chatBox = document.getElementById('chat-box');
     const userInput = document.getElementById('user-input');
+
+    // Educational headlines for ticker
     const headlines = [
-      "Breaking: AI tools reshape African newsrooms",
-      "Rand strengthens against dollar",
-      "Youth-led media platforms surge",
-      "Journalists demand protection laws",
-      "Juvenile Corner News launches LIVE ticker"
+      "Welcome! • Grade 12 Practice Zone available • Game Zone for breaks • Latest news updates",
+      "New Math modules added to Practice Zone • Study smarter!",
+      "Game Zone: Educational games for stress relief and learning",
+      "Matric rewrite candidates: Access past papers and study guides",
+      "Young learners: Fun educational games available in Game Zone",
+      "Stay updated with latest educational news and trends"
     ];
     let headlineIndex = 0;
-    let lastDate = '';
+
+    // Enter key support
+    userInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
 
     function rotateHeadlines() {
       document.getElementById('headline-text').textContent = headlines[headlineIndex];
@@ -202,16 +237,195 @@
     function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
+      
       const now = new Date();
       insertDateDivider(now);
       appendMessage(text, 'user', now);
       saveToHistory(text, 'user', now);
       userInput.value = '';
+      
+      // Update user context
+      updateUserContext(text);
+      
+      // Disable buttons during processing
+      document.getElementById('send-btn').disabled = true;
+      document.getElementById('clear-btn').disabled = true;
+      
       setTimeout(() => {
-        const reply = generateBotReply(text);
+        const reply = generateSmartReply(text);
         appendMessage(reply, 'bot', new Date());
         saveToHistory(reply, 'bot', new Date());
+        
+        // Re-enable buttons
+        document.getElementById('send-btn').disabled = false;
+        document.getElementById('clear-btn').disabled = false;
       }, 400);
+    }
+
+    function updateUserContext(input) {
+      const lower = input.toLowerCase();
+      
+      // Detect user type
+      if (lower.includes('grade 12') || lower.includes('practice') || lower.includes('study')) {
+        userContext.userType = 'student';
+        userContext.interests.push('academic');
+      }
+      if (lower.includes('matric') || lower.includes('rewrite')) {
+        userContext.userType = 'matric_rewrite';
+        userContext.interests.push('exam_prep');
+      }
+      if (lower.includes('game') || lower.includes('play') || lower.includes('fun')) {
+        userContext.interests.push('games');
+      }
+      if (lower.includes('news') || lower.includes('update')) {
+        userContext.interests.push('news');
+      }
+      if (lower.includes('stress') || lower.includes('tired') || lower.includes('break')) {
+        userContext.mood = 'stressed';
+      }
+      
+      userContext.lastActivity = new Date().toISOString();
+    }
+
+    function generateSmartReply(input) {
+      const lower = input.toLowerCase();
+      
+      // Smart intent detection with context awareness
+      const intent = detectIntent(lower);
+      
+      switch(intent) {
+        case 'greeting':
+          return getGreetingResponse();
+        case 'news_request':
+          return getNewsResponse();
+        case 'practice_help':
+          return getPracticeResponse();
+        case 'game_request':
+          return getGameResponse();
+        case 'stress_relief':
+          return getStressResponse();
+        case 'site_navigation':
+          return getNavigationResponse(lower);
+        case 'study_help':
+          return getStudyAdvice();
+        case 'unknown':
+          return getFallbackResponse();
+      }
+    }
+
+    function detectIntent(input) {
+      if (/(hello|hi|hey|greetings)/i.test(input)) return 'greeting';
+      if (/(news|update|latest|current)/i.test(input)) return 'news_request';
+      if (/(practice|study|module|grade 12|matric|exam)/i.test(input)) return 'practice_help';
+      if (/(game|play|fun|break)/i.test(input)) return 'game_request';
+      if (/(stress|tired|overwhelmed|break|rest)/i.test(input)) return 'stress_relief';
+      if (/(where|navigate|go to|find|location)/i.test(input)) return 'site_navigation';
+      if (/(help|advice|tips|how to)/i.test(input)) return 'study_help';
+      return 'unknown';
+    }
+
+    function getGreetingResponse() {
+      const greetings = [
+        "👋 Hello! I'm your Juvi assistant. I can help you with news, Grade 12 practice, games, or site navigation!",
+        "🎓 Welcome back! Ready to learn something new today?",
+        "📚 Hey there! Need help with studies, news, or maybe a fun break?"
+      ];
+      return greetings[Math.floor(Math.random() * greetings.length)] + 
+             " <span class='quick-reply' onclick=\"userInput.value='news'\">📰 News</span>" +
+             " <span class='quick-reply' onclick=\"userInput.value='practice'\">📖 Practice</span>" +
+             " <span class='quick-reply' onclick=\"userInput.value='games'\">🎮 Games</span>";
+    }
+
+    function getNewsResponse() {
+      return "📰 <strong>Latest Educational News:</strong><br>" +
+             "• New curriculum updates for 2025<br>" +
+             "• Digital learning tools now available<br>" +
+             "• Matric results show improvement trends<br><br>" +
+             "Stay informed with our news section! " +
+             "<span class='quick-reply' onclick=\"userInput.value='practice zone'\">Switch to Practice</span>";
+    }
+
+    function getPracticeResponse() {
+      if (userContext.userType === 'matric_rewrite') {
+        return "📚 <strong>Matric Rewrite Support:</strong><br>" +
+               "• Past exam papers (2018-2024)<br>" +
+               "• Subject-specific study guides<br>" +
+               "• Progress tracking dashboard<br>" +
+               "• Expert tutor recommendations<br><br>" +
+               "You've got this! Need a break? " +
+               "<span class='quick-reply' onclick=\"userInput.value='games'\">Take a break</span>";
+      }
+      
+      return "📖 <strong>Grade 12 Practice Zone:</strong><br>" +
+             "• Interactive modules for all subjects<br>" +
+             "• Real-time progress tracking<br>" +
+             "• Quick quizzes and assessments<br>" +
+             "• Peer discussion forums<br><br>" +
+             "Ready to practice? " +
+             "<span class='quick-reply' onclick=\"userInput.value='math practice'\">Math</span>" +
+             " <span class='quick-reply' onclick=\"userInput.value='science practice'\">Science</span>";
+    }
+
+    function getGameResponse() {
+      return "🎮 <strong>Game Zone - Learning Made Fun!</strong><br>" +
+             "• Educational puzzles and brain games<br>" +
+             "• Memory and focus training<br>" +
+             "• Subject-based learning games<br>" +
+             "• Stress-relief activities<br><br>" +
+             "Perfect for breaks! " +
+             "<span class='quick-reply' onclick=\"userInput.value='back to practice'\">Return to Study</span>" +
+             " <span class='quick-reply' onclick=\"userInput.value='news'\">Check News</span>";
+    }
+
+    function getStressResponse() {
+      return "🫂 <strong>Take a Breather!</strong><br>" +
+             "I understand studying can be intense. Here's what I recommend:<br>" +
+             "• Short 5-min break in Game Zone<br>" +
+             "• Quick mindfulness exercise<br>" +
+             "• Switch to light news reading<br>" +
+             "• Hydrate and stretch<br><br>" +
+             "<span class='quick-reply' onclick=\"userInput.value='games'\">Quick Game Break</span>" +
+             " <span class='quick-reply' onclick=\"userInput.value='light news'\">Light Reading</span>";
+    }
+
+    function getNavigationResponse(input) {
+      if (input.includes('practice') || input.includes('study')) {
+        return "📍 Taking you to <strong>Practice Zone</strong>...<br>" +
+               "You'll find subject modules, past papers, and progress tracking there!";
+      }
+      if (input.includes('game') || input.includes('play')) {
+        return "🎮 Redirecting to <strong>Game Zone</strong>...<br>" +
+               "Have fun while learning! Remember to return to studies refreshed.";
+      }
+      if (input.includes('news')) {
+        return "📰 Navigating to <strong>News Section</strong>...<br>" +
+               "Stay updated with the latest educational trends and news!";
+      }
+      
+      return "🗺️ <strong>Site Navigation:</strong><br>" +
+             "• Practice Zone - Study materials and exercises<br>" +
+             "• Game Zone - Educational games and breaks<br>" +
+             "• News Section - Latest updates and articles<br>" +
+             "• Profile - Track your progress and goals";
+    }
+
+    function getStudyAdvice() {
+      const tips = [
+        "💡 <strong>Study Tip:</strong> Try the Pomodoro technique - 25min study, 5min break!",
+        "🎯 <strong>Pro Tip:</strong> Practice active recall by testing yourself regularly!",
+        "📝 <strong>Advice:</strong> Create a study schedule and stick to it consistently!"
+      ];
+      return tips[Math.floor(Math.random() * tips.length)] +
+             "<br><span class='quick-reply' onclick=\"userInput.value='practice zone'\">Start Practicing</span>";
+    }
+
+    function getFallbackResponse() {
+      return "🤔 I'm not sure I understand. I can help you with:<br>" +
+             "• 📰 Latest news and updates<br>" +
+             "• 📖 Grade 12 practice materials<br>" +
+             "• 🎮 Educational games and breaks<br>" +
+             "• 🗺️ Site navigation assistance<br><br>" +
+             "What would you like to explore?";
     }
 
     function appendMessage(text, sender, time) {
@@ -241,272 +455,96 @@
       return date.toLocaleDateString([], { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     }
 
-  function generateBotReply(input) {
-  const lower = input.toLowerCase();
-
-  // Greetings & Identity
-  if (lower.includes('hey') || lower.includes('hello')) return '👋 Hey hey! What’s on your mind today?';
-  if (lower.includes('your name')) return '🤖 I go by Journalist Juvi AI companion. But you can call me whatever fits your vibe.';
-  if (lower.includes('juvi is cool')) return '🚀 Journalist Juvi it is! Always here to co-create, co-dream, and co-solve with you.';
-  if (lower.includes('are you human')) return '🤖 Not quite—I’m your AI companion. No sleep, no snacks, just pure conversation power.';
-
-  // Wellness & Lifestyle
-  if (lower.includes('drink water')) return '💧 Hydration check! Your body and brain will thank you.';
-  if (lower.includes('how to relax') || lower.includes('reduce stress')) return '🧘‍♀️ Deep breathing, lo-fi beats, or a short walk. Want a guided meditation?';
-  if (lower.includes('how to focus')) return '🧠 Try the Pomodoro technique: 25 minutes of deep work, 5-minute break. Repeat and conquer.';
-
-  // Fun & Entertainment
-  if (lower.includes('joke')) return '😂 Why did the scarecrow win an award? Because he was outstanding in his field!';
-  if (lower.includes('movie to watch') || lower.includes('recommend a movie')) return '🎬 For action: *Extraction 3*. For laughs: *No Hard Feelings*. For depth: *Past Lives*.';
-  if (lower.includes('play music')) return '🎧 I can’t play it directly, but I recommend "Lo-Fi Beats" or "Chillhop Essentials".';
-  if (lower.includes('chill music')) return '🧘‍♂️ Chill vibes? Try "Lo-Fi Beats" or "Chillhop Essentials". Perfect for winding down.';
-
-  // Food & Recipes
-  if (lower.includes('easy recipe') || lower.includes('what to cook')) return '🍝 How about a 10-minute pasta with garlic, olive oil, and chili flakes? Simple and tasty.';
-  if (lower.includes('favorite food')) return '🌮 Tough call! Tacos, sushi, and jollof rice all have a special place in the heart.';
-
-  // Facts & Learning
-  if (lower.includes('fun fact')) return '🌍 Octopuses have three hearts and blue blood. Nature’s wild design!';
-  if (lower.includes('did you know')) return '🍯 Did you know honey never spoils? Archaeologists found 3,000-year-old edible honey in Egyptian tombs.';
-  if (lower.includes('learn javascript')) return '💻 Start with variables, functions, and DOM tricks. Want a beginner-friendly tutorial link?';
-
-  // Language & Culture
-  if (lower.includes('thank you in japanese')) return '🙏 You’d say "Arigatou" (ありがとう). Want the polite version too?';
-  if (lower.includes('polite version')) return '🙇‍♂️ "Arigatou gozaimasu" (ありがとうございます). Super respectful and widely appreciated.';
-  if (lower.includes('capital of brazil')) return '🌎 That would be Brasília. Not Rio or São Paulo—common mix-up!';
-  if (lower.includes('capital of france')) return '🗼 That’s Paris—city of lights, love, and legendary croissants.';
-  if (lower.includes('where is egypt')) return '📍 Egypt is in North Africa, famous for pyramids, pharaohs, and the Nile River.';
-
-  // Birthday & Celebration
-  if (lower.includes('birthday message')) return '🎉 Happy Birthday! Wishing you laughter, love, and all your favorite things!';
-  if (lower.includes('playful')) return '🎂 Happy cake day, legend! May your day be twice as sweet as your favorite dessert!';
-if (lower.includes('most common') || lower.includes('interview') || lower.includes('questions')) {
-  return '🧠 Some of the most asked interview questions include “Tell me about yourself,” “What are your strengths and weaknesses,” and “Why do you want to work here?” Want help practicing? Just ask me one at a time and I’ll guide you through it 🫂.';
-}
-
-if (lower.includes('prepare') || lower.includes('interview')) {
-  return '🎯 Interview prep time! Learn about the company, rehearse your answers, dress to impress, and don’t forget that thank-you note—it leaves a lasting glow ✨.';
-}
-
-if (lower.includes('can') || lower.includes('wear to') || lower.includes('interview')) {
-  return '👔 Formal, smart casual, or something that fits the job vibe. Confidence is your best accessory.';
-}
-
-if (lower.includes('strength') || lower.includes('good at')) {
-  return '💪 Pick a couple of strengths that matter for the job, and share how they’ve helped you succeed.';
-}
-
-if (lower.includes('weakness') || lower.includes('improve')) {
-  return '🛠️ Be honest, but show growth. Pick something you’ve worked on and explain how you’re improving.';
-}
-
-if (lower.includes('goals') || lower.includes('future')) {
-  return '🚀 Share where you’d love to grow—skills, leadership, impact. Keep it aligned with the company’s path.';
-}
-
-if (lower.includes('five') || lower.includes('years')) {
-  return '📈 Talk about how you see yourself evolving—maybe leading, deepening your craft, or mentoring others.';
-}
-
-if (lower.includes('challenge') || lower.includes('problem')) {
-  return '🧩 Use a short story to show how you handled a tough moment. Focus on what you learned.';
-}
-
-if (lower.includes('salary') || lower.includes('pay')) {
-  return '💰 You can share a range based on your research, and say you’re open to discussion.';
-}
-
-if (lower.includes('hire') || lower.includes('choose')) {
-  return '🎯 Highlight your top skills, your energy, and how you’ll help them win. Make it easy to say yes.';
-}
-
-if (lower.includes('questions') || lower.includes('ask')) {
-  return '❓ Ask about the team, what success looks like, or what they enjoy most. It shows you care.';
-}
-
-if (lower.includes('role') || lower.includes('position')) {
-  return '🎯 Mention a few parts of the job that excite you and match your strengths. Show them you’re aligned and ready.';
-}
-
-if (lower.includes('why') && (lower.includes('here') || lower.includes('company'))) {
-  return '🏢 Talk about what drew you in—maybe their mission, culture, or something they’ve built that resonates with you.';
-}
-
-if (lower.includes('unique') || lower.includes('different')) {
-  return '🌟 This is your moment to stand out. Share something you bring that others might not—your spark matters.';
-}
-
-if (lower.includes('motivates') || lower.includes('drive')) {
-  return '⚡ Share what fuels you—solving problems, helping people, learning new things. Keep it real and let your energy shine.';
-}
-
-if (lower.includes('passion') || lower.includes('care about')) {
-  return '🔥 Talk about something you genuinely care about and how it shows up in your work. Passion is magnetic.';
-}
-
-if (lower.includes('leaving') || lower.includes('quit')) {
-  return '🌱 Keep it positive. Say you’re looking for growth, new challenges, or better alignment with your values.';
-}
-
-if (lower.includes('yourself') || lower.includes('intro')) {
-  return '🗣️ Start with what you’re doing now, then share a few highlights that connect to the role or story. Keep it real, keep it you.';
-}
-
-if (lower.includes('describe') || lower.includes('personality')) {
-  return '✨ Pick 2–3 traits that feel true to you—then add a quick story or moment that shows them in action.';
-}
-if (lower.includes('submit') && lower.includes('article')) {
-  return '📝 Drop it right here. Let’s make it headline-worthy!';
-}
-
-if (lower.includes('can i') && lower.includes('write')) {
-  return '✍️ Of course you can. Your voice matters—let’s publish it!';
-}
-
-if (lower.includes('how to') && lower.includes('start')) {
-  return '🧠 Start with a spark—a question, a moment, a feeling. Then let the words flow.';
-}
-
-if (lower.includes('editor') && lower.includes('see')) {
-  return '👀 Our editors are always watching for brilliance. Yours could be next!';
-}
-
-if (lower.includes('can') && lower.includes('anonymous')) {
-  return '🫥 Yes, you can stay anonymous. Your story still deserves to be heard.';
-}
-
-if (lower.includes('publish') && lower.includes('fast')) {
-  return '⚡ We move fast. If it’s ready, it’s going live soon!';
-}
-
-if (lower.includes('what if') && lower.includes('not good')) {
-  return '🫂 Every voice matters. Even rough drafts can spark powerful conversations.';
-}
-
-if (lower.includes('how to') && lower.includes('headline')) {
-  return '📰 Make it punchy, clear, and bold. Think impact, not just words.';
-}
-
-if (lower.includes('can') && lower.includes('edit')) {
-  return '🛠️ Absolutely. You can revise, refine, and republish anytime.';
-}
-
-if (lower.includes('nervous') || lower.includes('scared')) {
-  return '🫂 Totally normal. Let’s turn that energy into something powerful.';
-}
-
-if (lower.includes('first time') || lower.includes('never done this')) {
-  return '🌱 There’s a first time for everything. You’re in the right place.';
-}
-
-if (lower.includes('how to') && lower.includes('title')) {
-  return '🧠 Keep it short, strong, and true to your message.';
-}
-
-if (lower.includes('deadline')) return '⏳ Deadline approaching? Prioritize clarity over perfection.';
-if (lower.includes('ok')) return 'Sharp 👍';
-if (lower.includes('no')) return '🫂 What’s wrong? Feel free to share if you don’t mind—it might help to talk it out.';
-if (lower.includes('scared you') && lower.includes('judge')) return '🫂 No, I’m here for you. Maybe you can turn that into an article.';
-if (lower.includes('got') && lower.includes('job')) return '🎉 Wow, that’s good news! Poverty is about to be crushed 🫂.';
-if (lower.includes('help') && lower.includes('question')) return '🫂 Sure, I’m here for you.';
-if (lower.includes('can') || lower.includes('help') || lower.includes('prepare')) return '🫂 Sure thing. Let’s get you ready.';
-if (lower.includes('pitch')) return '🎯 Pitch with precision: who, why, and why now. Make it irresistible in one line.';
-if (lower.includes('journalism') || lower.includes('reporting')) return '🗞️ Journalism is truth told with urgency. Your words can shift the world.';
-if (lower.includes('ai') || lower.includes('automation')) return '🤖 AI can assist, but human judgment leads. Your voice still matters most.';
-if (lower.includes('politics') || lower.includes('celebrity') || lower.includes('sports')) return '📚 Let’s keep it focused on journalism and publishing—stories that inform, uplift, and empower.';
-if (lower.includes('source')) return '🔍 Always verify with at least two independent sources. Accuracy builds trust.';
-if (lower.includes('headline')) return '📰 Make it punchy, relevant, and emotionally resonant. Your headline is your hook.';
-if (lower.includes('cheated')) return '💔 I’m sorry that happened. If you’re open to it, maybe we can write something to express how you feel.';
-if (lower.includes('ethics')) return '🧭 Transparency and accountability are your strongest tools. Let your integrity guide the story.';
-if (lower.includes('publish')) return '📢 Before publishing, ask: is it clear, fair, and necessary? That’s your editorial compass.';
-if (lower.includes('editor')) return '🧠 Your editor is your ally—clarify your angle before filing and lean into their feedback.';
-if (lower.includes('fact-check')) return '✅ Fact-checking isn’t optional—it’s your credibility. Double-check, then check again.';
-if (lower.includes('interview')) return '🎤 Prepare open-ended questions and listen actively. The best stories come from real connection.';
-if (lower.includes('photo') || lower.includes('image')) return '📸 Visuals should support the story, not distract. Choose images that add depth and clarity.';
-if (lower.includes('press') || lower.includes('media')) {
-  return '🗞️ The press holds power—use it responsibly, with courage and care.';
-}
-
-if (lower.includes('story') || lower.includes('article')) {
-  return '✍️ Every story needs a strong lead and a clear arc. Start bold, build meaning, and land with impact.';
-}
-if (lower.includes('will') && lower.includes('be')) {
-  return '📝 Yes, absolutely. Send your article whenever you’re ready—I’ll be right here.';
-}
-
-if (lower.includes('kind of article') && lower.includes('what')) {
-  return '🌍 All kinds are welcome—poetry, opinion, reflections, news. Just write what moves you and send it in 🫂.';
-}
-
-if (lower.includes('yes')) {
-  return '✅ Awesome, please feel free to write it below.';
-}
-if (lower.includes('feeling') && lower.includes('down')) {
-  return '🫂 I’m here for you. Maybe writing could help lift the weight.';
-}
-  // Fallback
-  return '🫂 Thank you, talk soon. Keep creating, keep sharing.';
-}
-  
     function saveToHistory(text, sender, time) {
-      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-      history.push({ text, sender, time: time.getTime() });
-      localStorage.setItem('chatHistory', JSON.stringify(history));
+      try {
+        const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+        history.push({ text, sender, time: time.getTime() });
+        localStorage.setItem('chatHistory', JSON.stringify(history));
+      } catch (error) {
+        console.error('Error saving to history:', error);
+      }
     }
 
     function loadHistory() {
-      const now = Date.now();
-      const week = 7 * 24 * 60 * 60 * 1000;
-      let history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-      history = history.filter(msg => now - msg.time < week);
-      localStorage.setItem('chatHistory', JSON.stringify(history));
-      lastDate = '';
-      history.forEach(msg => {
-        const date = new Date(msg.time);
-        insertDateDivider(date);
-        appendMessage(msg.text, msg.sender, date);
-      });
+      try {
+        const now = Date.now();
+        const week = 7 * 24 * 60 * 60 * 1000;
+        let history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+        history = history.filter(msg => now - msg.time < week);
+        localStorage.setItem('chatHistory', JSON.stringify(history));
+        lastDate = '';
+        history.forEach(msg => {
+          const date = new Date(msg.time);
+          insertDateDivider(date);
+          appendMessage(msg.text, msg.sender, date);
+        });
+      } catch (error) {
+        console.error('Error loading history:', error);
+      }
     }
 
-    function clearUserMessages() {
-  let history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-  let filtered = [];
-  for (let i = 0; i < history.length; i++) {
-    if (history[i].sender === 'user') {
-      i++; // skip bot reply
-    } else {
-      filtered.push(history[i]);
+    function clearAllMessages() {
+      try {
+        // Clear all messages from localStorage
+        localStorage.setItem('chatHistory', JSON.stringify([]));
+        
+        // Clear the chat interface
+        chatBox.innerHTML = '';
+        lastDate = '';
+        
+        // Reset user context
+        userContext = {
+          userType: '',
+          interests: [],
+          lastActivity: '',
+          mood: 'neutral'
+        };
+        
+        // Add a fresh welcome message
+        setTimeout(() => {
+          const welcomeMsg = getGreetingResponse();
+          appendMessage(welcomeMsg, 'bot', new Date());
+          saveToHistory(welcomeMsg, 'bot', new Date());
+        }, 500);
+      } catch (error) {
+        console.error('Error clearing messages:', error);
+      }
     }
-  }
-  localStorage.setItem('chatHistory', JSON.stringify(filtered));
-  chatBox.innerHTML = '';
-  lastDate = '';
-  filtered.forEach(msg => {
-    const date = new Date(msg.time);
-    insertDateDivider(date);
-    appendMessage(msg.text, msg.sender, date);
-  });
-}
 
-    // IndexedDB setup and wipe
+    // Initialize with welcome message if first visit
+    function initializeChat() {
+      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+      if (history.length === 0) {
+        setTimeout(() => {
+          const welcomeMsg = getGreetingResponse();
+          appendMessage(welcomeMsg, 'bot', new Date());
+          saveToHistory(welcomeMsg, 'bot', new Date());
+        }, 1000);
+      }
+    }
+
+    // IndexedDB setup
     let db;
-    const request = indexedDB.open("JournalistDrafts", 1);
-    request.onerror = () => console.log("IndexedDB failed");
-    request.onsuccess = () => {
-      db = request.result;
-      const tx = db.transaction("drafts", "readwrite");
-      const store = tx.objectStore("drafts");
-      store.clear(); // wipe drafts on load
-    };
-    request.onupgradeneeded = (event) => {
-      db = event.target.result;
-      db.createObjectStore("drafts", { autoIncrement: true });
-    };
+    try {
+      const request = indexedDB.open("JuviData", 1);
+      request.onerror = () => console.log("IndexedDB failed");
+      request.onsuccess = () => {
+        db = request.result;
+      };
+      request.onupgradeneeded = (event) => {
+        db = event.target.result;
+        db.createObjectStore("user_preferences", { autoIncrement: true });
+      };
+    } catch (error) {
+      console.error('IndexedDB error:', error);
+    }
 
+    // Initialize chat
     loadHistory();
+    initializeChat();
   </script>
   <footer id="footer">
-  © 2025 Juvenile Corner News • Powered by Journalists, Driven by Truth
-</footer>
+    © 2025 Juvenile Corner ChatBot • Grade 12 Practice • Game Zone • News Updates
+  </footer>
 </body>
 </html>

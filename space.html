@@ -4,237 +4,707 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Space: Juvenile Corner</title>
-   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FKXMFN74FW');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FKXMFN74FW');
+  </script>
   <style>
-  
-  /* Existing styles... */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      touch-action: manipulation;
+    }
 
-  .arcade-button {
-    background: linear-gradient(90deg, #444, #222);
-    color: #ffcc00;
-    border: none;
-    border-radius: 8px;
-    padding: 1rem 2rem;
-    margin: 0.5rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-decoration: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    transition: transform 0.2s ease;
-    display: inline-block;
-    text-align: center;
-    max-width: 300px;
-  }
-
-  .arcade-button:hover {
-    transform: scale(1.05);
-    background: #333;
-  }
-
-  button {
-  touch-action: manipulation; /* Prevents double-tap zoom */
-}
     body {
       margin: 0;
-      background: radial-gradient(circle at center, #000 40%, #111 100%);
+      background: radial-gradient(circle at center, #0a0a2a 0%, #000033 70%, #00001a 100%);
       color: #fff;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Orbitron', 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .star {
+      position: absolute;
+      background-color: white;
+      border-radius: 50%;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    .game-header {
+      text-align: center;
+      width: 100%;
+      padding: 1rem;
+      background: rgba(10, 10, 40, 0.7);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 204, 0, 0.2);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, #ffcc00, #ff9900, #ff6600);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #a0a0ff;
+      margin-bottom: 1rem;
+    }
+
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 1rem;
+    }
+
+    .game-canvas-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 204, 0, 0.3);
+      touch-action: none;
+    }
+
+    #game {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .touch-indicator {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 204, 0, 0.3);
+      border: 2px solid rgba(255, 204, 0, 0.7);
+      border-radius: 50%;
+      pointer-events: none;
+      display: none;
+      z-index: 5;
+    }
+
+    .game-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      z-index: 10;
+      display: none;
+    }
+
+    .game-overlay h2 {
+      font-size: 2.5rem;
+      color: #ff3333;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+    }
+
+    .game-overlay p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .stats-panel {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 400px;
+      background: rgba(20, 20, 60, 0.8);
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 204, 0, 0.2);
+    }
+
+    .stat {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    h1 {
-      font-size: 2rem;
+    .stat-value {
+      font-weight: bold;
       color: #ffcc00;
-      text-shadow: 0 0 6px #ffcc00;
-      margin: 1rem 0 0.5rem;
+      font-size: 1.3rem;
     }
 
-    canvas {
-      background: #000;
-      border: 2px solid #ffcc00;
-      box-shadow: 0 0 12px rgba(255, 204, 0, 0.4);
+    .stat-label {
+      font-size: 0.8rem;
+      color: #a0a0ff;
     }
 
-    #controls {
-      margin: 1rem 0;
+    .controls {
       display: flex;
-      gap: 0.5rem;
       flex-wrap: wrap;
       justify-content: center;
+      gap: 0.8rem;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 1rem;
     }
 
-    button {
-      padding: 0.6rem 1rem;
+    .btn {
+      padding: 0.8rem 1.2rem;
       font-size: 1rem;
       font-weight: bold;
       border: none;
-      border-radius: 6px;
-      background: linear-gradient(90deg, #444, #222);
+      border-radius: 10px;
+      background: linear-gradient(135deg, #333366, #222244);
       color: #ffcc00;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-      touch-action: manipulation;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    #score-line {
-      font-size: 1rem;
-      margin-top: 0.5rem;
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(135deg, #444477, #333355);
     }
 
-    #sponsor-banner {
-      background: #0a0;
-      padding: 0.4rem;
-      font-weight: bold;
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff9900, #ff6600);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff3333, #cc0000);
+      color: white;
+    }
+
+    .directional-controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 0.5rem;
+      width: 150px;
+      height: 150px;
+      margin: 1rem auto;
+    }
+
+    .dir-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      background: rgba(40, 40, 80, 0.7);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 204, 0, 0.3);
+    }
+
+    .dir-btn:hover {
+      background: rgba(60, 60, 100, 0.9);
+    }
+
+    .dir-btn.up { grid-column: 2; grid-row: 1; }
+    .dir-btn.down { grid-column: 2; grid-row: 3; }
+    .dir-btn.left { grid-column: 1; grid-row: 2; }
+    .dir-btn.right { grid-column: 3; grid-row: 2; }
+
+    .game-info {
       width: 100%;
+      max-width: 600px;
+      background: rgba(20, 20, 60, 0.7);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 204, 0, 0.2);
+    }
+
+    .info-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .info-section h3 {
+      color: #ffcc00;
+      margin-bottom: 0.8rem;
+      font-size: 1.3rem;
+    }
+
+    .info-section p {
+      line-height: 1.5;
+      color: #d0d0ff;
+    }
+
+    .powerups {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .powerup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      font-size: 1rem;
-      margin-top: 0.4rem;
-      color: #fff;
-      border-radius: 4px;
+      width: 80px;
     }
 
-    footer {
+    .powerup-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .powerup-desc {
+      font-size: 0.8rem;
+      color: #a0a0ff;
+    }
+
+    .touch-instructions {
+      background: rgba(30, 30, 70, 0.8);
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 1rem;
+      border: 1px solid rgba(255, 204, 0, 0.3);
+    }
+
+    .footer {
       width: 100%;
-      padding: 0.6rem;
-      background: #111;
+      padding: 1rem;
+      background: rgba(10, 10, 40, 0.8);
       color: #999;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       text-align: center;
-      border-top: 1px solid #222;
+      margin-top: 2rem;
+      border-top: 1px solid rgba(255, 204, 0, 0.2);
+    }
+
+    .coffee-btn {
+      background: linear-gradient(135deg, #ff9933, #cc6600);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .coffee-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .arcade-button {
+      background: linear-gradient(135deg, #444477, #333355);
+      color: #ffcc00;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .arcade-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(135deg, #555588, #444466);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .stats-panel {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>🚀 Space: Juvenile</h1>
-  <canvas id="game" width="320" height="480"></canvas>
-
-  <div id="controls">
-    <button onclick="move('up')">⬆️</button>
-    <button onclick="move('left')">⬅️</button>
-    <button onclick="move('right')">➡️</button>
-    <button onclick="move('down')">⬇️</button>
-    <button onclick="togglePause()">⏯️ Pause/Play</button>
-    <button onclick="restart()">🔁 Restart</button>
-  </div>
-
-  <div id="score-line">Score: 0 | Stage: 1</div>
-  <a href="https://www.buymeacoffee.com/africaunited" target="_blank"><button class="coffee">☕ Buy Me a Coffee</button></a>
+  <div class="stars" id="stars"></div>
   
-   <div style="margin:1rem 0; display:flex; flex-direction:column; align-items:center;">
-  <a href="gamezone.html" class="arcade-button">🎮 Back to Arcade</a>
+  <div class="container">
+    <div class="game-header">
+      <h1>🚀 Space: Juvenile</h1>
+      <p class="subtitle">Defend the galaxy from alien invaders!</p>
+    </div>
+    
+    <div class="game-area">
+      <div class="game-canvas-container">
+        <canvas id="game" width="400" height="600"></canvas>
+        <div class="touch-indicator" id="touch-indicator"></div>
+        <div class="game-overlay" id="game-overlay">
+          <h2>🛑 GAME OVER</h2>
+          <p>Oh no! The aliens got you! 🤧</p>
+          <p>Final Score: <span id="final-score">0</span></p>
+          <button class="btn btn-primary" id="restart-btn">
+            🔁 Play Again
+          </button>
+        </div>
+      </div>
+      
+      <div class="stats-panel">
+        <div class="stat">
+          <span class="stat-label">SCORE</span>
+          <span class="stat-value" id="score-value">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">STAGE</span>
+          <span class="stat-value" id="stage-value">1</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">LIVES</span>
+          <span class="stat-value" id="lives-value">3</span>
+        </div>
+      </div>
+      
+      <div class="touch-instructions">
+        <h3>Touch Controls</h3>
+        <p>Touch and drag anywhere on the game screen to move your spaceship!</p>
+      </div>
+      
+      <div class="controls">
+        <button class="btn" id="up-btn">⬆️ Up</button>
+        <button class="btn" id="left-btn">⬅️ Left</button>
+        <button class="btn" id="right-btn">➡️ Right</button>
+        <button class="btn" id="down-btn">⬇️ Down</button>
+        <button class="btn btn-primary" id="pause-btn">⏸️ Pause</button>
+        <button class="btn btn-danger" id="restart-control">🔄 Restart</button>
+      </div>
+      
+      <div class="directional-controls">
+        <div class="dir-btn up" id="dir-up">⬆️</div>
+        <div class="dir-btn down" id="dir-down">⬇️</div>
+        <div class="dir-btn left" id="dir-left">⬅️</div>
+        <div class="dir-btn right" id="dir-right">➡️</div>
+      </div>
+      
+      <a href="https://www.buymeacoffee.com/africaunited" target="_blank" class="coffee-btn">
+        ☕ Buy Me a Coffee
+      </a>
+      
+      <a href="gamezone.html" class="arcade-button">
+        🎮 Back to Arcade
+      </a>
+    </div>
+    
+    <div class="game-info">
+      <div class="info-section">
+        <h3>How to Play</h3>
+        <p>Use arrow keys, touch and drag, or the control buttons to move your spaceship. Your ship automatically fires at enemies. Avoid collisions with alien ships and collect power-ups to enhance your abilities!</p>
+      </div>
+      
+      <div class="info-section">
+        <h3>Power-Ups</h3>
+        <div class="powerups">
+          <div class="powerup">
+            <div class="powerup-icon">🛡️</div>
+            <div class="powerup-desc">Shield - Increases ship size</div>
+          </div>
+          <div class="powerup">
+            <div class="powerup-icon">⚡</div>
+            <div class="powerup-desc">Speed - Increases movement speed</div>
+          </div>
+          <div class="powerup">
+            <div class="powerup-icon">💥</div>
+            <div class="powerup-desc">Multi-shot - Fire multiple bullets</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+    © 2025 Juvenile Corner News · Built with pride in Pretoria 🇿🇦
+  </footer>
 
   <script>
+    // Create starfield background
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      const starCount = 100;
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        
+        const size = Math.random() * 3;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        
+        star.style.opacity = Math.random() * 0.7 + 0.3;
+        
+        starsContainer.appendChild(star);
+      }
+    }
+    
+    createStars();
+
+    // Game code
     document.addEventListener('gesturestart', function (e) {
-  e.preventDefault();
-});
+      e.preventDefault();
+    });
+    
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
-    let ship = { x: 150, y: 400, w: 20, h: 20 };
+    const gameOverlay = document.getElementById('game-overlay');
+    const scoreValue = document.getElementById('score-value');
+    const stageValue = document.getElementById('stage-value');
+    const livesValue = document.getElementById('lives-value');
+    const finalScore = document.getElementById('final-score');
+    const touchIndicator = document.getElementById('touch-indicator');
+    
+    let ship = { x: 180, y: 500, w: 30, h: 30, speed: 8 };
     let bullets = [];
     let enemies = [];
     let boss = null;
     let score = 0;
     let stage = 1;
+    let lives = 3;
     let gameOver = false;
     let paused = false;
     let powerUps = [];
+    let lastEnemySpawn = 0;
+    let lastBossSpawn = 0;
+    let lastPowerUpSpawn = 0;
+    
+    // Touch control variables
+    let isTouching = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let shipStartX = 0;
+    let shipStartY = 0;
 
     const bossIcons = ['👹', '🖲️', '👺', '🗿'];
 
     function drawShip() {
-      ctx.font = '20px Orbitron';
-      ctx.fillText('🚨', ship.x, ship.y + 20);
+      ctx.save();
+      // Draw ship glow
+      ctx.shadowColor = '#ffcc00';
+      ctx.shadowBlur = 15;
+      ctx.font = '24px Arial';
+      ctx.fillText('🚀', ship.x, ship.y + 24);
+      ctx.restore();
     }
 
     function drawBullets() {
-      ctx.fillStyle = '#ff0';
+      ctx.fillStyle = '#ffcc00';
+      ctx.shadowColor = '#ffcc00';
+      ctx.shadowBlur = 5;
+      
       bullets.forEach(b => {
-        ctx.fillRect(b.x, b.y, 4, 10);
-        b.y -= 5;
+        ctx.fillRect(b.x, b.y, 4, 12);
+        b.y -= 8;
       });
+      
       bullets = bullets.filter(b => b.y > 0);
+      ctx.shadowBlur = 0;
     }
 
     function drawEnemies() {
-      ctx.font = '20px Orbitron';
+      ctx.font = '20px Arial';
+      ctx.shadowColor = '#ff3333';
+      ctx.shadowBlur = 5;
+      
       enemies.forEach(e => {
         ctx.fillText('👾', e.x, e.y + 20);
-        e.y += 2 + stage;
+        e.y += 2 + stage * 0.5;
       });
+      
       enemies = enemies.filter(e => e.y < canvas.height);
+      ctx.shadowBlur = 0;
     }
 
     function drawBoss() {
       if (boss) {
-        ctx.font = '32px Orbitron';
-        ctx.fillText(boss.icon, boss.x, boss.y + 32);
+        ctx.font = '36px Arial';
+        ctx.shadowColor = '#ff6600';
+        ctx.shadowBlur = 10;
+        ctx.fillText(boss.icon, boss.x, boss.y + 36);
         boss.y += 1;
+        ctx.shadowBlur = 0;
       }
     }
 
     function drawPowerUps() {
-      ctx.font = '16px Orbitron';
+      ctx.font = '20px Arial';
+      ctx.shadowColor = '#00ccff';
+      ctx.shadowBlur = 5;
+      
       powerUps.forEach(p => {
-        ctx.fillText(p.icon, p.x, p.y + 16);
-        p.y += 2;
+        ctx.fillText(p.icon, p.x, p.y + 20);
+        p.y += 3;
       });
+      
       powerUps = powerUps.filter(p => p.y < canvas.height);
+      ctx.shadowBlur = 0;
     }
 
     function detectCollisions() {
+      // Bullet collisions with enemies
       bullets.forEach(b => {
         enemies.forEach((e, ei) => {
-          if (b.x < e.x + 20 && b.x + 4 > e.x && b.y < e.y + 20 && b.y + 10 > e.y) {
+          if (b.x < e.x + 20 && b.x + 4 > e.x && b.y < e.y + 20 && b.y + 12 > e.y) {
             enemies.splice(ei, 1);
             score += 10;
             if (navigator.vibrate) navigator.vibrate([100]);
           }
         });
 
-        if (boss && b.x < boss.x + 40 && b.x + 4 > boss.x && b.y < boss.y + 40 && b.y + 10 > boss.y) {
-          boss = null;
-          score += 100;
-          if (navigator.vibrate) navigator.vibrate([200]);
+        // Bullet collisions with boss
+        if (boss && b.x < boss.x + 40 && b.x + 4 > boss.x && b.y < boss.y + 40 && b.y + 12 > boss.y) {
+          boss.health--;
+          if (boss.health <= 0) {
+            boss = null;
+            score += 100;
+            if (navigator.vibrate) navigator.vibrate([200]);
+          }
         }
       });
 
+      // Enemy collisions with ship
       enemies.forEach(e => {
         if (e.x < ship.x + ship.w && e.x + 20 > ship.x && e.y < ship.y + ship.h && e.y + 20 > ship.y) {
-          gameOver = true;
+          lives--;
+          enemies.splice(enemies.indexOf(e), 1);
+          if (lives <= 0) {
+            gameOver = true;
+            gameOverlay.style.display = 'flex';
+            finalScore.textContent = score;
+          }
           if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
         }
       });
 
+      // Boss collision with ship
       if (boss && boss.x < ship.x + ship.w && boss.x + 40 > ship.x && boss.y < ship.y + ship.h && boss.y + 40 > ship.y) {
+        lives = 0;
         gameOver = true;
+        gameOverlay.style.display = 'flex';
+        finalScore.textContent = score;
         if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
       }
 
+      // Power-up collisions
       powerUps.forEach((p, pi) => {
         if (p.x < ship.x + ship.w && p.x + 20 > ship.x && p.y < ship.y + ship.h && p.y + 20 > ship.y) {
           powerUps.splice(pi, 1);
-          if (p.icon === '🛡️') ship.w += 10;
-          if (p.icon === '⚡') ship.speed = 30;
+          if (p.icon === '🛡️') {
+            ship.w += 10;
+            ship.h += 10;
+          }
+          if (p.icon === '⚡') ship.speed = 15;
           if (p.icon === '💥') {
-            bullets.push({ x: ship.x, y: ship.y - 10 });
-            bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y - 10 });
+            // Enable multi-shot for 5 seconds
+            setTimeout(() => {
+              // Return to normal fire
+            }, 5000);
           }
         }
       });
     }
 
     function draw() {
-      if (paused) return;  ctx.clearRect(0, 0, canvas.width, canvas.height);  if (gameOver) {   ctx.fillStyle = '#f00';   ctx.font = '24px Orbitron';   ctx.textAlign = 'center';   ctx.fillText('🛑 GAME OVER', canvas.width / 2, canvas.height / 2 - 20);   ctx.fillStyle = '#ffcc00';   ctx.font = '16px Orbitron';   ctx.fillText('Oh no🤧', canvas.width / 2, canvas.height / 2 + 10);   return; }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (paused) return;
+      
+      // Clear canvas with a space-like gradient
+      const gradient = ctx.createRadialGradient(
+        canvas.width/2, canvas.height/2, 0,
+        canvas.width/2, canvas.height/2, canvas.width
+      );
+      gradient.addColorStop(0, '#0a0a2a');
+      gradient.addColorStop(1, '#00001a');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw stars in background
+      ctx.fillStyle = 'white';
+      for (let i = 0; i < 50; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const size = Math.random() * 2;
+        ctx.fillRect(x, y, size, size);
+      }
+      
       drawShip();
       drawBullets();
       drawEnemies();
@@ -242,24 +712,44 @@
       drawPowerUps();
       detectCollisions();
 
-      document.getElementById('score-line').textContent = `Score: ${score} | Stage: ${stage}`;
+      // Update UI
+      scoreValue.textContent = score;
+      stageValue.textContent = stage;
+      livesValue.textContent = lives;
+      
+      // Stage progression
       if (score >= stage * 100) {
         stage++;
         if (stage % 5 === 0) {
           boss = {
-            x: 140,
+            x: 160,
             y: 0,
-            icon: bossIcons[(stage / 5 - 1) % bossIcons.length]
+            icon: bossIcons[(stage / 5 - 1) % bossIcons.length],
+            health: 5
           };
         }
+      }
+      
+      // Spawn enemies
+      const now = Date.now();
+      if (now - lastEnemySpawn > 1000 - Math.min(stage * 50, 800)) {
+        enemies.push({ x: Math.random() * (canvas.width - 20), y: 0 });
+        lastEnemySpawn = now;
+      }
+      
+      // Spawn power-ups occasionally
+      if (now - lastPowerUpSpawn > 15000) {
         powerUps.push({
           x: Math.random() * (canvas.width - 20),
           y: 0,
           icon: ['🛡️', '⚡', '💥'][Math.floor(Math.random() * 3)]
         });
+        lastPowerUpSpawn = now;
       }
 
-      requestAnimationFrame(draw);
+      if (!gameOver) {
+        requestAnimationFrame(draw);
+      }
     }
 
     function fire() {
@@ -268,7 +758,7 @@
 
     function move(dir) {
       if (paused || gameOver) return;
-      const speed = ship.speed || 20;
+      const speed = ship.speed || 8;
       if (dir === 'left') ship.x = Math.max(0, ship.x - speed);
       if (dir === 'right') ship.x = Math.min(canvas.width - ship.w, ship.x + speed);
       if (dir === 'up') ship.y = Math.max(0, ship.y - speed);
@@ -277,22 +767,74 @@
 
     function togglePause() {
       paused = !paused;
+      document.getElementById('pause-btn').textContent = paused ? '▶️ Play' : '⏸️ Pause';
       if (!paused && !gameOver) draw();
     }
 
     function restart() {
-      ship = { x: 150, y: 400, w: 20, h: 20 };
+      ship = { x: 180, y: 500, w: 30, h: 30, speed: 8 };
       bullets = [];
       enemies = [];
       boss = null;
       powerUps = [];
       score = 0;
       stage = 1;
+      lives = 3;
       gameOver = false;
       paused = false;
+      gameOverlay.style.display = 'none';
+      document.getElementById('pause-btn').textContent = '⏸️ Pause';
       draw();
     }
 
+    // Touch control functions
+    function handleTouchStart(e) {
+      if (paused || gameOver) return;
+      
+      e.preventDefault();
+      isTouching = true;
+      
+      const rect = canvas.getBoundingClientRect();
+      touchStartX = e.touches[0].clientX - rect.left;
+      touchStartY = e.touches[0].clientY - rect.top;
+      
+      shipStartX = ship.x;
+      shipStartY = ship.y;
+      
+      // Show touch indicator
+      touchIndicator.style.display = 'block';
+      touchIndicator.style.left = (touchStartX - 25) + 'px';
+      touchIndicator.style.top = (touchStartY - 25) + 'px';
+    }
+    
+    function handleTouchMove(e) {
+      if (!isTouching || paused || gameOver) return;
+      
+      e.preventDefault();
+      
+      const rect = canvas.getBoundingClientRect();
+      const touchX = e.touches[0].clientX - rect.left;
+      const touchY = e.touches[0].clientY - rect.top;
+      
+      // Calculate movement delta
+      const deltaX = touchX - touchStartX;
+      const deltaY = touchY - touchStartY;
+      
+      // Update ship position based on touch movement
+      ship.x = Math.max(0, Math.min(canvas.width - ship.w, shipStartX + deltaX));
+      ship.y = Math.max(0, Math.min(canvas.height - ship.h, shipStartY + deltaY));
+      
+      // Update touch indicator position
+      touchIndicator.style.left = (touchX - 25) + 'px';
+      touchIndicator.style.top = (touchY - 25) + 'px';
+    }
+    
+    function handleTouchEnd(e) {
+      isTouching = false;
+      touchIndicator.style.display = 'none';
+    }
+
+    // Set up event listeners
     document.addEventListener('keydown', e => {
       if (e.key === 'ArrowLeft') move('left');
       if (e.key === 'ArrowRight') move('right');
@@ -302,6 +844,27 @@
       if (e.key === 'r') restart();
     });
 
+    // Button controls
+    document.getElementById('up-btn').addEventListener('click', () => move('up'));
+    document.getElementById('down-btn').addEventListener('click', () => move('down'));
+    document.getElementById('left-btn').addEventListener('click', () => move('left'));
+    document.getElementById('right-btn').addEventListener('click', () => move('right'));
+    document.getElementById('pause-btn').addEventListener('click', togglePause);
+    document.getElementById('restart-control').addEventListener('click', restart);
+    document.getElementById('restart-btn').addEventListener('click', restart);
+
+    // Directional pad controls
+    document.getElementById('dir-up').addEventListener('click', () => move('up'));
+    document.getElementById('dir-down').addEventListener('click', () => move('down'));
+    document.getElementById('dir-left').addEventListener('click', () => move('left'));
+    document.getElementById('dir-right').addEventListener('click', () => move('right'));
+
+    // Touch event listeners
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd);
+    canvas.addEventListener('touchcancel', handleTouchEnd);
+
     // Auto-fire every 300ms
     setInterval(() => {
       if (!paused && !gameOver) {
@@ -309,17 +872,8 @@
       }
     }, 300);
 
-    // Spawn enemies every 1000ms
-    setInterval(() => {
-      if (!paused && !gameOver) {
-        enemies.push({ x: Math.random() * (canvas.width - 20), y: 0 });
-      }
-    }, 1000);
-
+    // Start the game
     draw();
   </script>
-  <footer>
-    © 2025 Juvenile Corner News · Built with pride in Pretoria 🇿🇦
-  </footer>
 </body>
 </html>

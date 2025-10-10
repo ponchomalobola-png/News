@@ -1,313 +1,843 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Juvenile Corner Arcade Block</title>
-   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Block Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
 
-  gtag('config', 'G-FKXMFN74FW');
-</script>
-  <style>
-  button {
-  touch-action: manipulation; /* Prevents double-tap zoom */
-}
-  /* Existing styles... */
+        html, body {
+            height: 100%;
+            overflow: auto;
+        }
 
-  .arcade-button {
-    background: linear-gradient(90deg, #444, #222);
-    color: #ffcc00;
-    border: none;
-    border-radius: 8px;
-    padding: 1rem 2rem;
-    margin: 0.5rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-decoration: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    transition: transform 0.2s ease;
-    display: inline-block;
-    text-align: center;
-    max-width: 300px;
-  }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
 
-  .arcade-button:hover {
-    transform: scale(1.05);
-    background: #333;
-  }
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      margin: 0;
-      background: #000;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-    }
+        .header {
+            padding: 15px 10px 10px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    canvas {
-      background: #000;
-      border: 2px solid #fff;
-    }
+        .header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
 
-    button {
-      padding: 0.6em 1.2em;
-      font-size: 1em;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
+        .subtitle {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
 
-    button:hover {
-      transform: scale(1.05);
-    }
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.2);
+        }
 
-    #gameOverlay, #winOverlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.6);
-      font-size: 1.4em;
-      font-weight: bold;
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            position: relative;
+            width: 100%;
+        }
 
-    #gameOverlay {
-      color: #ff4444;
-      animation: flash 1s infinite;
-    }
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            max-height: 60vh;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
 
-    #winOverlay {
-      color: #00ff99;
-      animation: flashWin 1s infinite;
-    }
+        .controls {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-    footer {
-      padding: 1em;
-      font-size: 0.9em;
-      background: #111;
-      color: #ccc;
-      text-align: center;
-      border-top: 1px solid #333;
-    }
+        .touch-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
 
-    a {
-      text-decoration: none;
-    }
+        .touch-area {
+            width: 48%;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
 
-    @keyframes flash {
-      0%, 100% { color: #ff4444; }
-      50% { color: #fff; }
-    }
+        .touch-area:active {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(0.95);
+        }
 
-    @keyframes flashWin {
-      0%, 100% { color: #00ff99; }
-      50% { color: #fff; }
-    }
-  </style>
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 15px 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.1s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+
+        .reset-btn {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .overlay-content {
+            text-align: center;
+            padding: 25px;
+            background: rgba(30, 30, 40, 0.9);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .overlay h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .overlay p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .overlay-btn {
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructions {
+            margin-top: 15px;
+            padding: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .arcade-button {
+            background: linear-gradient(135deg, #444, #222);
+            color: #ffcc00;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            margin: 10px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            text-align: center;
+            max-width: 300px;
+        }
+
+        .arcade-button:active {
+            transform: scale(0.95);
+        }
+
+        .sponsor {
+            margin: 15px 0;
+            padding: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .footer {
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            margin-top: auto;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .bounce {
+            animation: bounce 1s infinite;
+        }
+
+        /* Scrollable content */
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Landscape orientation adjustments */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .header {
+                padding: 5px 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .game-info {
+                padding: 5px 15px;
+                font-size: 1rem;
+            }
+            
+            canvas {
+                max-height: 70vh;
+            }
+            
+            .touch-area {
+                height: 80px;
+                font-size: 1.8rem;
+            }
+        }
+
+        /* For very small screens */
+        @media (max-height: 700px) {
+            canvas {
+                max-height: 50vh;
+            }
+            
+            .touch-area {
+                height: 80px;
+            }
+            
+            .action-btn {
+                padding: 12px 10px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* For extra small screens */
+        @media (max-height: 600px) {
+            canvas {
+                max-height: 45vh;
+            }
+            
+            .header {
+                padding: 10px 10px 5px;
+            }
+            
+            .game-info {
+                padding: 8px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main style="flex: 1;">
-    <section id="arcadeBlock" style="margin-top: 3em;">
-      <h2>🧱 Juvenile Corner Arcade Block</h2>
-
-      <div style="position: relative; display: inline-block;">
-        <canvas id="blockCanvas" width="300" height="400"></canvas>
-
-        <div id="gameOverlay">
-          <div>GAME OVER! Final Score: <span id="finalScore">0</span></div>
-          <button onclick="resetGame()" style="background: #ffcc00;">🔁 Play Again</button>
+    <div class="header">
+        <h1>🧱 Mobile Block Breaker</h1>
+        <div class="subtitle">Swipe or tap to move the paddle</div>
+    </div>
+    
+    <div class="game-info">
+        <div>Score: <span id="score">0</span></div>
+        <div>Level: <span id="level">1</span></div>
+    </div>
+    
+    <div class="scrollable-content">
+        <div class="game-container">
+            <canvas id="gameCanvas" width="350" height="500"></canvas>
+            
+            <div id="startOverlay" class="overlay">
+                <div class="overlay-content">
+                    <h2>Block Breaker</h2>
+                    <p>Break all the blocks to advance to the next level!</p>
+                    <p>Tap PLAY to start</p>
+                    <button class="overlay-btn pulse" onclick="startGame()">PLAY GAME</button>
+                    <div class="instructions">
+                        <p>Use the touch controls or swipe to move the paddle</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="gameOverOverlay" class="overlay">
+                <div class="overlay-content">
+                    <h2>Game Over!</h2>
+                    <p>Your score: <span id="finalScore">0</span></p>
+                    <button class="overlay-btn" onclick="resetGame()">PLAY AGAIN</button>
+                </div>
+            </div>
+            
+            <div id="levelCompleteOverlay" class="overlay">
+                <div class="overlay-content">
+                    <h2>Level Complete!</h2>
+                    <p>Score: <span id="levelScore">0</span></p>
+                    <button class="overlay-btn" onclick="nextLevel()">NEXT LEVEL</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="touch-controls">
+                <div class="touch-area" id="leftBtn">⬅️</div>
+                <div class="touch-area" id="rightBtn">➡️</div>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn play-btn" onclick="startGame()">▶️ PLAY</button>
+                <button class="action-btn reset-btn" onclick="resetGame()">🔄 RESET</button>
+            </div>
         </div>
 
-        <div id="winOverlay">
-          <div>🎉 Good work! Stage cleared!</div>
-          <button onclick="nextStage()" style="background: #00ccff; color: #fff;">🚀 Next Stage</button>
+        <div style="margin: 10px 0; display: flex; flex-direction: column; align-items: center;">
+            <a href="gamezone.html" class="arcade-button">🎮 Back to Arcade</a>
+            
+            <div class="sponsor">
+                Sponsored by <strong>Public | You | Reader</strong>
+            </div>
+
+            <a href="https://www.buymeacoffee.com/africaunited" target="_blank">
+                <button class="play-btn" style="margin-top: 10px; padding: 12px 20px;">
+                    <span>☕</span> Buy Me a Coffee
+                </button>
+            </a>
         </div>
-      </div>
-
-      <div id="blockScore" style="margin-top:1em; font-size:1.1em;">Score: 0</div>
-
-      <div style="margin-top: 1em;">
-        <button onclick="startGame()" style="background: #ffcc00;">▶️ Play</button>
-      </div>
-
-      <div style="margin-top: 1em;">
-        <button onclick="moveLeft()" style="margin-right: 1em;">⬅️</button>
-        <button onclick="moveRight()">➡️</button>
-      </div>
-    </section>
-<div style="margin:1rem 0; display:flex; flex-direction:column; align-items:center;">
-  <a href="gamezone.html" class="arcade-button">🎮 Back to Arcade</a>
-    <div style="margin-top: 2em; font-size: 0.95em; color: #ccc;">
-      Sponsored by <strong>Public | You | Reader</strong>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 Juvenile Corner News · Built with pride in Pretoria 🇿🇦</p>
     </div>
 
-    <div style="margin-top: 1em;">
-      <a href="https://www.buymeacoffee.com/africaunited" target="_blank">
-        <button style="background: #ffcc00;">☕ Buy Me a Coffee</button>
-      </a>
-    </div>
-  </main>
-
-  <footer>
-    © 2025 Juvenile Corner News · Built with pride in Pretoria 🇿🇦
-  </footer>
-
-  <script>
-    document.addEventListener('gesturestart', function (e) {
-  e.preventDefault();
-});
-    const canvas = document.getElementById("blockCanvas");
-    const ctx = canvas.getContext("2d");
-    let score = 0;
-    let ball = { x: 150, y: 200, dx: 2, dy: -2, radius: 5 };
-    let paddle = { x: 120, width: 60, height: 10 };
-    let blocks = [];
-    let gameRunning = false;
-
-    const rows = 4, cols = 6, blockWidth = 45, blockHeight = 15;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        blocks.push({ x: c * (blockWidth + 5) + 10, y: r * (blockHeight + 5) + 30, hit: false });
-      }
-    }
-
-    function drawBall() {
-  ctx.font = '20px Segoe UI';
-  ctx.fillText('🏐', ball.x - 10, ball.y + 10);
-    }
-
-    function drawPaddle() {
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(paddle.x, canvas.height - paddle.height - 10, paddle.width, paddle.height);
-    }
-
-    function drawBlocks() {
-  blocks.forEach(b => {
-    if (!b.hit) {
-      ctx.font = '20px Segoe UI';
-      ctx.fillText('🧱', b.x, b.y + 15);
-    }
-  });
-}
-
-    function draw() {
-      if (!gameRunning) return;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const boardIcons = ['🚻', '♿', '🚮', '🛗', '🚰'];
-boardIcons.forEach((icon, i) => {
-  ctx.font = '18px Segoe UI';
-  ctx.fillText(icon, 10 + i * 55, 20);
-});
-      drawBall();
-      drawPaddle();
-      drawBlocks();
-
-      ball.x += ball.dx;
-      ball.y += ball.dy;
-
-      if (ball.x < ball.radius || ball.x > canvas.width - ball.radius) ball.dx *= -1;
-      if (ball.y < ball.radius) ball.dy *= -1;
-
-      if (
-        ball.y > canvas.height - paddle.height - 10 - ball.radius &&
-        ball.x > paddle.x &&
-        ball.x < paddle.x + paddle.width
-      ) {
-        ball.dy *= -1;
-      }
-
-      blocks.forEach(b => {
-        if (!b.hit &&
-          ball.x > b.x &&
-          ball.x < b.x + blockWidth &&
-          ball.y > b.y &&
-          ball.y < b.y + blockHeight
-        ) {
-          b.hit = true;
-          ball.dy *= -1;
-          score += 10;
-          document.getElementById("blockScore").innerText = `Score: ${score}`;
+    <script>
+        // Game elements
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startOverlay = document.getElementById('startOverlay');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const levelCompleteOverlay = document.getElementById('levelCompleteOverlay');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const finalScoreElement = document.getElementById('finalScore');
+        const levelScoreElement = document.getElementById('levelScore');
+        
+        // Game variables
+        let score = 0;
+        let level = 1;
+        let gameRunning = false;
+        let ball, paddle, blocks;
+        let leftPressed = false;
+        let rightPressed = false;
+        
+        // Touch elements
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        
+        // Initialize game
+        function initGame() {
+            // Set canvas size based on device
+            resizeCanvas();
+            
+            // Initialize game objects
+            ball = {
+                x: canvas.width / 2,
+                y: canvas.height - 50,
+                dx: 4,
+                dy: -4,
+                radius: 8
+            };
+            
+            paddle = {
+                x: canvas.width / 2 - 40,
+                y: canvas.height - 20,
+                width: 80,
+                height: 12,
+                speed: 8
+            };
+            
+            createBlocks();
+            
+            // Show start overlay
+            startOverlay.style.display = 'flex';
+            gameOverOverlay.style.display = 'none';
+            levelCompleteOverlay.style.display = 'none';
+            
+            // Update UI
+            updateUI();
+            
+            // Draw initial state
+            draw();
         }
-      });
-
-      const allCleared = blocks.every(b => b.hit);
-      if (allCleared) {
-        gameRunning = false;
-        const win = document.getElementById("winOverlay");
-        win.style.display = "flex";
-        setTimeout(() => { win.style.opacity = 1; }, 100);
-      }
-
-      if (ball.y > canvas.height) {
-        gameRunning = false;
-        document.getElementById("finalScore").innerText = score;
-        const overlay = document.getElementById("gameOverlay");
-        overlay.style.display = "flex";
-        setTimeout(() => { overlay.style.opacity = 1; }, 100);
-      }
-
-      requestAnimationFrame(draw);
-    }
-
-    function startGame() {
-      if (!gameRunning) {
-        gameRunning = true;
-        draw();
-      }
-    }
-
-    function resetGame() {
-      score = 0;
-      ball = { x: 150, y: 200, dx: 2, dy: -2, radius: 5 };
-      paddle = { x: 120, width: 60, height: 10 };
-      blocks.forEach(b => b.hit = false);
-      document.getElementById("blockScore").innerText = "Score: 0";
-      const overlay = document.getElementById("gameOverlay");
-      overlay.style.opacity = 0;
-      setTimeout(() => { overlay.style.display = "none"; }, 500);
-      gameRunning = true;
-      draw();
-    }
-
-    function nextStage() {
-    score = 0;
-    ball = { x: 150, y: 200, dx: 3, dy: -3, radius: 5 };
-    paddle = { x: 120, width: 60, height: 10 };
-    blocks.forEach(b => b.hit = false);
-    document.getElementById("blockScore").innerText = "Score: 0";
-    const win = document.getElementById("winOverlay");
-    win.style.opacity = 0;
-    setTimeout(() => { win.style.display = "none"; }, 500);
-    gameRunning = true;
-    draw();
-  }
-
-  function moveLeft() {
-    paddle.x = Math.max(0, paddle.x - 40);
-  }
-
-  function moveRight() {
-    paddle.x = Math.min(canvas.width - paddle.width, paddle.x + 40);
-  }
-
-  document.addEventListener("keydown", e => {
-    if (e.key === "ArrowLeft") moveLeft();
-    if (e.key === "ArrowRight") moveRight();
-  });
-</script>
+        
+        // Create blocks for current level
+        function createBlocks() {
+            blocks = [];
+            const rows = 3 + level;
+            const cols = 5;
+            const blockWidth = canvas.width / cols - 10;
+            const blockHeight = 20;
+            
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    blocks.push({
+                        x: c * (blockWidth + 10) + 5,
+                        y: r * (blockHeight + 10) + 50,
+                        width: blockWidth,
+                        height: blockHeight,
+                        color: `hsl(${r * 30}, 70%, 50%)`,
+                        hit: false
+                    });
+                }
+            }
+        }
+        
+        // Draw game elements
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background
+            drawBackground();
+            
+            // Draw ball
+            drawBall();
+            
+            // Draw paddle
+            drawPaddle();
+            
+            // Draw blocks
+            drawBlocks();
+            
+            // Draw score and level
+            drawUI();
+        }
+        
+        // Draw background with gradient
+        function drawBackground() {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#1a2a6c');
+            gradient.addColorStop(0.5, '#b21f1f');
+            gradient.addColorStop(1, '#fdbb2d');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid pattern
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            
+            for (let x = 0; x < canvas.width; x += 20) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y < canvas.height; y += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        // Draw ball with gradient
+        function drawBall() {
+            const gradient = ctx.createRadialGradient(
+                ball.x, ball.y, 0,
+                ball.x, ball.y, ball.radius
+            );
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(1, '#ffcc00');
+            
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.closePath();
+            
+            // Add shine effect
+            ctx.beginPath();
+            ctx.arc(ball.x - ball.radius/3, ball.y - ball.radius/3, ball.radius/3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fill();
+            ctx.closePath();
+        }
+        
+        // Draw paddle with gradient
+        function drawPaddle() {
+            const gradient = ctx.createLinearGradient(
+                paddle.x, paddle.y,
+                paddle.x, paddle.y + paddle.height
+            );
+            gradient.addColorStop(0, '#4A90E2');
+            gradient.addColorStop(1, '#007AFF');
+            
+            ctx.beginPath();
+            ctx.roundRect(paddle.x, paddle.y, paddle.width, paddle.height, 8);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.closePath();
+            
+            // Add shine effect
+            ctx.beginPath();
+            ctx.roundRect(paddle.x + 2, paddle.y + 2, paddle.width - 4, 4, 4);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.fill();
+            ctx.closePath();
+        }
+        
+        // Draw blocks with gradient
+        function drawBlocks() {
+            blocks.forEach(block => {
+                if (!block.hit) {
+                    const gradient = ctx.createLinearGradient(
+                        block.x, block.y,
+                        block.x, block.y + block.height
+                    );
+                    gradient.addColorStop(0, block.color);
+                    gradient.addColorStop(1, darkenColor(block.color, 30));
+                    
+                    ctx.beginPath();
+                    ctx.roundRect(block.x, block.y, block.width, block.height, 4);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                    ctx.closePath();
+                    
+                    // Add shine effect
+                    ctx.beginPath();
+                    ctx.roundRect(block.x + 2, block.y + 2, block.width - 4, 4, 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            });
+        }
+        
+        // Draw UI elements
+        function drawUI() {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = '16px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 25);
+            ctx.fillText(`Level: ${level}`, canvas.width - 80, 25);
+        }
+        
+        // Update game state
+        function update() {
+            if (!gameRunning) return;
+            
+            // Move paddle based on input
+            if (leftPressed && paddle.x > 0) {
+                paddle.x -= paddle.speed;
+            }
+            if (rightPressed && paddle.x + paddle.width < canvas.width) {
+                paddle.x += paddle.speed;
+            }
+            
+            // Move ball
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+            
+            // Ball collision with walls
+            if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                ball.dx = -ball.dx;
+            }
+            if (ball.y - ball.radius < 0) {
+                ball.dy = -ball.dy;
+            }
+            
+            // Ball collision with paddle
+            if (
+                ball.y + ball.radius > paddle.y &&
+                ball.x > paddle.x &&
+                ball.x < paddle.x + paddle.width
+            ) {
+                // Calculate bounce angle based on where the ball hits the paddle
+                const hitPos = (ball.x - paddle.x) / paddle.width;
+                ball.dx = 8 * (hitPos - 0.5);
+                ball.dy = -Math.abs(ball.dy);
+            }
+            
+            // Ball collision with blocks
+            blocks.forEach(block => {
+                if (!block.hit && 
+                    ball.x + ball.radius > block.x &&
+                    ball.x - ball.radius < block.x + block.width &&
+                    ball.y + ball.radius > block.y &&
+                    ball.y - ball.radius < block.y + block.height
+                ) {
+                    block.hit = true;
+                    ball.dy = -ball.dy;
+                    score += 10;
+                    updateUI();
+                }
+            });
+            
+            // Check if all blocks are cleared
+            if (blocks.every(block => block.hit)) {
+                levelComplete();
+                return;
+            }
+            
+            // Check if game over
+            if (ball.y - ball.radius > canvas.height) {
+                gameOver();
+                return;
+            }
+        }
+        
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            
+            if (gameRunning) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // Start the game
+        function startGame() {
+            startOverlay.style.display = 'none';
+            gameRunning = true;
+            gameLoop();
+        }
+        
+        // Reset the game
+        function resetGame() {
+            score = 0;
+            level = 1;
+            gameOverOverlay.style.display = 'none';
+            levelCompleteOverlay.style.display = 'none';
+            initGame();
+        }
+        
+        // Advance to next level
+        function nextLevel() {
+            level++;
+            levelCompleteOverlay.style.display = 'none';
+            createBlocks();
+            updateUI();
+            gameRunning = true;
+            gameLoop();
+        }
+        
+        // Handle level completion
+        function levelComplete() {
+            gameRunning = false;
+            levelScoreElement.textContent = score;
+            levelCompleteOverlay.style.display = 'flex';
+        }
+        
+        // Handle game over
+        function gameOver() {
+            gameRunning = false;
+            finalScoreElement.textContent = score;
+            gameOverOverlay.style.display = 'flex';
+        }
+        
+        // Update UI elements
+        function updateUI() {
+            scoreElement.textContent = score;
+            levelElement.textContent = level;
+        }
+        
+        // Resize canvas for mobile devices
+        function resizeCanvas() {
+            const maxWidth = Math.min(400, window.innerWidth - 20);
+            const maxHeight = Math.min(500, window.innerHeight * 0.6);
+            
+            canvas.width = maxWidth;
+            canvas.height = maxHeight;
+        }
+        
+        // Utility function to darken a color
+        function darkenColor(color, percent) {
+            const num = parseInt(color.slice(1), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) - amt;
+            const G = (num >> 8 & 0x00FF) - amt;
+            const B = (num & 0x0000FF) - amt;
+            
+            return '#' + (
+                0x1000000 +
+                (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+                (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+                (B < 255 ? (B < 1 ? 0 : B) : 255)
+            ).toString(16).slice(1);
+        }
+        
+        // Touch event handlers
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            leftPressed = true;
+        });
+        
+        leftBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            leftPressed = false;
+        });
+        
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            rightPressed = true;
+        });
+        
+        rightBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            rightPressed = false;
+        });
+        
+        // Mouse event handlers for testing
+        leftBtn.addEventListener('mousedown', () => leftPressed = true);
+        leftBtn.addEventListener('mouseup', () => leftPressed = false);
+        leftBtn.addEventListener('mouseleave', () => leftPressed = false);
+        
+        rightBtn.addEventListener('mousedown', () => rightPressed = true);
+        rightBtn.addEventListener('mouseup', () => rightPressed = false);
+        rightBtn.addEventListener('mouseleave', () => rightPressed = false);
+        
+        // Swipe controls for the game area
+        let touchStartX = 0;
+        
+        canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            e.preventDefault();
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            if (!gameRunning) return;
+            
+            const touchX = e.touches[0].clientX;
+            const diff = touchX - touchStartX;
+            
+            if (Math.abs(diff) > 5) {
+                if (diff > 0) {
+                    // Moving right
+                    leftPressed = false;
+                    rightPressed = true;
+                } else {
+                    // Moving left
+                    rightPressed = false;
+                    leftPressed = true;
+                }
+            }
+            
+            e.preventDefault();
+        });
+        
+        canvas.addEventListener('touchend', () => {
+            leftPressed = false;
+            rightPressed = false;
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Initialize the game when page loads
+        window.addEventListener('load', initGame);
+        
+        // Prevent context menu on long press
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+    </script>
+</body>
+</html>

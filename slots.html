@@ -2,346 +2,1084 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎰 Juvenile Corner Slots</title>
-   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FKXMFN74FW');
-</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>🔥 Hot Hot Slots</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FKXMFN74FW');
+  </script>
   <style>
-  button {
-  touch-action: manipulation; /* Prevents double-tap zoom */
-}
-  #pageFooter {
-  padding: 1em;
-  font-size: 0.9em;
-  background: #111;
-  color: #ccc;
-  text-align: center;
-  border-top: 1px solid #333;
-}
-#pageFooter a {
-  color: #ffcc00;
-  text-decoration: none;
-}
-  .reel.pop {
-  animation: pop 0.3s ease;
-}
-@keyframes pop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.3); }
-  100% { transform: scale(1); }
-}
-    body {
+    * {
       margin: 0;
-      padding: 1em;
-      font-family: sans-serif;
-      background: radial-gradient(circle at center, #222 40%, #000);
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: auto;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #8B0000, #B22222, #8B0000);
       color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 10px;
+      padding-bottom: 20px;
+    }
+
+    /* Header Section */
+    .header {
+      text-align: center;
+      padding: 15px 10px;
+      background: linear-gradient(145deg, #8B0000, #A52A2A);
+      border-radius: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      border: 3px solid #FFD700;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+      border-radius: 16px 16px 0 0;
+    }
+
+    .neon-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #FFD700;
+      text-shadow: 0 0 10px #FFD700, 0 0 20px #FF8C00;
+      margin-bottom: 8px;
+    }
+
+    .player-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #FFD700;
+    }
+
+    .player-name {
+      font-weight: 600;
+    }
+
+    .player-id {
+      color: #FFA500;
+    }
+
+    /* Scrollable Content */
+    .scrollable-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding-bottom: 10px;
+    }
+
+    /* Game Area */
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Slots Machine */
+    .slots-machine {
+      background: linear-gradient(145deg, #2F4F4F, #1a1a1a);
+      border: 4px solid #FFD700;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), 
+                  inset 0 0 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .slots-machine::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .reels-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .reel {
+      background: linear-gradient(145deg, #4B0082, #2E0854);
+      border: 2px solid #FFD700;
+      border-radius: 12px;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7),
+                  0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .reel.spinning::before {
+      opacity: 1;
+    }
+
+    .reel.win {
+      animation: win-pop 0.6s ease-in-out;
+    }
+
+    @keyframes win-pop {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7),
+                    0 0 0 #FFD700;
+      }
+      50% { 
+        transform: scale(1.3);
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7),
+                    0 0 20px #FFD700,
+                    0 0 30px #FF8C00;
+      }
+    }
+
+    .win-line {
+      position: absolute;
+      background: rgba(255, 215, 0, 0.3);
+      border: 2px solid #FFD700;
+      border-radius: 8px;
+      z-index: 5;
+      animation: line-pulse 1s infinite alternate;
+    }
+
+    @keyframes line-pulse {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    /* Controls Section */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bet-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: 12px;
+      border: 2px solid #444;
+    }
+
+    .bet-amount {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #FFD700;
+    }
+
+    .bet-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .bet-btn {
+      padding: 8px 12px;
+      background: linear-gradient(to bottom, #FFD700, #FFA500);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #B8860B;
+    }
+
+    .bet-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 0 0 #B8860B;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 18px 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #000;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0.3);
+    }
+
+    button:disabled {
+      background: linear-gradient(to bottom, #666, #555);
+      color: #999;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 0 #444;
+    }
+
+    #spin-btn {
+      background: linear-gradient(to bottom, #FFD700, #FFA500);
+      font-size: 1.3rem;
+    }
+
+    #auto-spin-btn {
+      background: linear-gradient(to bottom, #32CD32, #228B22);
+    }
+
+    #reset-btn {
+      background: linear-gradient(to bottom, #FF4444, #CC0000);
+    }
+
+    /* Stats Section */
+    .stats-container {
+      display: flex;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #444;
+    }
+
+    .credits-display, .winnings-display {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .credits-display { 
+      color: #FFD700; 
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+    
+    .winnings-display { 
+      color: #32CD32; 
+      text-shadow: 0 0 5px rgba(50, 205, 50, 0.5);
+    }
+
+    /* Messages */
+    #result-message {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      min-height: 24px;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .jackpot {
+      color: #FFD700;
+      background: rgba(255, 215, 0, 0.2) !important;
+      border: 2px solid #FFD700;
+    }
+
+    .big-win {
+      color: #32CD32;
+      background: rgba(50, 205, 50, 0.2) !important;
+      border: 2px solid #32CD32;
+    }
+
+    .small-win {
+      color: #87CEEB;
+      background: rgba(135, 206, 235, 0.2) !important;
+      border: 2px solid #87CEEB;
+    }
+
+    .no-win {
+      color: #FF4444;
+      background: rgba(255, 68, 68, 0.2) !important;
+      border: 2px solid #FF4444;
+    }
+
+    /* Win Details */
+    .win-details {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #444;
+      margin-top: 10px;
+    }
+
+    .win-details h3 {
+      color: #FFD700;
+      margin-bottom: 10px;
       text-align: center;
     }
-    h1 {
-      font-size: 2em;
-      margin-bottom: 0.5em;
-    }
-    input {
-      padding: 0.6em;
-      font-size: 1em;
-      width: 80%;
-      max-width: 300px;
-      margin-bottom: 1em;
-    }
-    #machine {
+
+    .win-combination {
       display: flex;
-      justify-content: center;
-      gap: 1em;
-      margin: 1em 0;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #444;
+      font-size: 0.9rem;
     }
-   .reel {
-  width: 80px;
-  height: 80px;
-  font-size: 2em;
-  background: #333;
-  border: 3px solid #fff;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 10px #000;
-  transition: transform 0.3s ease;
-}
-.reel.spin {
-  animation: flash 0.5s linear infinite;
-}
-@keyframes flash {
-  0%   { transform: scale(1); background: #444; }
-  50%  { transform: scale(1.2); background: #666; }
-  100% { transform: scale(1); background: #444; }
-}
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-    #controls {
+
+    .win-combination:last-child {
+      border-bottom: none;
+    }
+
+    /* Leaderboard */
+    .leaderboard {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #444;
+      margin-top: 10px;
+    }
+
+    .leaderboard h3 {
+      color: #FFD700;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .leaderboard-entry {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.5em;
-      margin: 1em 0;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #444;
     }
-    button {
-      padding: 0.6em 1em;
-      font-size: 1em;
-      border: none;
-      border-radius: 5px;
-      background: #ffcc00;
-      color: #000;
-      cursor: pointer;
+
+    .leaderboard-entry:last-child {
+      border-bottom: none;
     }
-    #credits, #result, #leaderboard {
-      margin-top: 1em;
-      font-size: 1.1em;
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 15px;
+      border-radius: 8px;
     }
-    #ads, #donation {
-      margin-top: 2em;
-      font-size: 0.9em;
-      color: #ccc;
+
+    /* Chip animation for wins */
+    .coin-animation {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0;
+      animation: coin-fall 1s forwards;
+      z-index: 100;
     }
-    @media (max-width: 600px) {
-      .reel {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5em;
+
+    @keyframes coin-fall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Landscape mode adjustments */
+    @media (orientation: landscape) and (max-height: 500px) {
+      body {
+        padding: 5px;
       }
+      
+      .header {
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      
+      .neon-title {
+        font-size: 1.5rem;
+      }
+      
+      .reels-container {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 5px;
+      }
+      
+      .reel {
+        font-size: 1.8rem;
+      }
+      
+      .button-group {
+        flex-direction: row;
+      }
+      
       button {
-        flex: 1 1 100%;
+        padding: 12px 8px;
+        font-size: 1rem;
+      }
+    }
+
+    /* Very small screens */
+    @media (max-width: 350px) {
+      .neon-title {
+        font-size: 1.5rem;
+      }
+      
+      .reel {
+        font-size: 1.8rem;
+      }
+      
+      button {
+        padding: 16px 8px;
+        font-size: 1rem;
+      }
+      
+      .stats-container {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+    }
+
+    /* Safe area support for notched devices */
+    @supports(padding: max(0px)) {
+      body {
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
       }
     }
   </style>
 </head>
-<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
-  <main style="flex: 1;">
-  <h1>   <a href="index.html" style="text-decoration: none; color: inherit;">     🎰 Juvenile Corner Slots   </a> </h1>
-  <input type="text" id="playerName" placeholder="Enter your name" />
-  <div id="machine">
-    <div class="reel">🍒</div>
-    <div class="reel">🍒</div>
-    <div class="reel">🍒</div>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="neon-title">🔥 Hot Hot Slots 🔥</div>
+    <div class="player-info">
+      <span class="player-name">Player: <strong id="player-name">Player</strong></span>
+      <span class="player-id">ID: <span id="player-id">#8294</span></span>
+    </div>
   </div>
-  <div id="controls">
-    <button onclick="spin()">Spin</button>
-    <button onclick="toggleAutoSpin()">Auto Spin</button>
-    <button onclick="resetCredits()">Reset</button>
-  </div>
-  <div id="credits">Credits: 100</div>
-  <div id="result"></div>
-  <div id="leaderboard">🏆 Leaderboard:</div>
-  <div id="ads">Sponsored by Public | You | Reader</div>
-  <div id="donation">   <a href="https://buymeacoffee.com/africaunited" target="_blank">     <button style="       padding: 0.6em 1.2em;       font-size: 1em;       border: none;       border-radius: 50px;       background: linear-gradient(to right, #ffcc00, #ffaa00);       color: #000;       cursor: pointer;       box-shadow: 0 4px 10px rgba(0,0,0,0.3);       transition: transform 0.2s;     " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">       ☕ Buy Me a Coffee     </button>   </a> </div>
 
-<audio id="bgMusic" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7e6b6c9b5e.mp3?filename=arcade-magic-13449.mp3" loop></audio>
-<audio id="spinSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c3b6f3c6f.mp3?filename=slot-machine-spin-13450.mp3"></audio>
-<audio id="winSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2e3b6f3c6f.mp3?filename=slot-machine-win-13451.mp3"></audio>
+  <!-- Scrollable Content -->
+  <div class="scrollable-content">
+    <!-- Game Area -->
+    <div class="game-area">
+      <!-- Slots Machine -->
+      <div class="slots-machine">
+        <div class="reels-container" id="reels-container">
+          <!-- 4x3 grid will be generated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Bet Controls -->
+      <div class="controls">
+        <div class="bet-controls">
+          <div class="bet-amount">Bet: $<span id="bet-amount">5</span></div>
+          <div class="bet-buttons">
+            <button class="bet-btn" onclick="changeBet(-5)">-5</button>
+            <button class="bet-btn" onclick="changeBet(5)">+5</button>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button id="spin-btn" onclick="spin()">🎰 SPIN</button>
+          <button id="auto-spin-btn" onclick="toggleAutoSpin()">🔄 AUTO</button>
+          <button id="reset-btn" onclick="resetGame()">🆕 RESET</button>
+        </div>
+      </div>
+
+      <!-- Result Message -->
+      <div id="result-message">Place your bet and spin!</div>
+
+      <!-- Win Details -->
+      <div class="win-details" id="win-details" style="display: none;">
+        <h3>🎉 WINNING COMBINATIONS 🎉</h3>
+        <div id="win-combinations">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-container">
+        <div class="credits-display">Credits: $<span id="credits">1000</span></div>
+        <div class="winnings-display">Winnings: $<span id="winnings">0</span></div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="leaderboard">
+        <h3>🏆 TOP PLAYERS</h3>
+        <div id="leaderboard-entries">
+          <div class="leaderboard-entry">
+            <span>Loading...</span>
+            <span>$0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    © 2025 Hot Hot Slots Casino · Built with pride in Pretoria 🇿🇦
+  </div>
 
   <script>
-    document.addEventListener('gesturestart', function (e) {
-  e.preventDefault();
-});
+    // Game configuration
+    const SYMBOLS = ["🍒", "🍋", "🍊", "🍇", "🍉", "🔔", "💎", "7️⃣", "🔥", "⭐"];
+    const ROWS = 3;
+    const COLS = 4;
     
-    const bgMusic = document.getElementById("bgMusic");
-const spinSound = document.getElementById("spinSound");
-const winSound = document.getElementById("winSound");
+    // Enhanced payout table
+    const PAYOUTS = {
+      "7️⃣": { 3: 100, 4: 500 },
+      "💎": { 3: 50, 4: 200 },
+      "🔔": { 3: 25, 4: 100 },
+      "🔥": { 3: 20, 4: 80 },
+      "⭐": { 3: 15, 4: 60 },
+      "🍉": { 3: 10, 4: 40 },
+      "🍇": { 3: 8, 4: 30 },
+      "🍊": { 3: 5, 4: 20 },
+      "🍋": { 3: 3, 4: 15 },
+      "🍒": { 3: 2, 4: 10 }
+    };
 
-// Start background music when page loads
-window.addEventListener("load", () => {
-  bgMusic.volume = 0.3;
-  bgMusic.play().catch(() => {
-    // Autoplay might be blocked; user interaction will trigger it
-    document.body.addEventListener("click", () => bgMusic.play(), { once: true });
-  });
-});
-    
-    const symbols = ["🍒", "🔔", "💎", "🍋", "7️⃣"];
-    const reels = document.querySelectorAll(".reel");
-    const result = document.getElementById("result");
-    const creditsDisplay = document.getElementById("credits");
-    const leaderboardDisplay = document.getElementById("leaderboard");
-    const playerNameInput = document.getElementById("playerName");
-
-    let credits = 100;
+    // Game state
+    let credits = 1000;
+    let currentBet = 5;
+    let totalWinnings = 0;
     let autoSpin = false;
     let autoSpinInterval;
-    let db;
+    let isSpinning = false;
 
-    const request = indexedDB.open("SlotMachineDB", 3);
-    request.onupgradeneeded = e => {
-      db = e.target.result;
-      if (!db.objectStoreNames.contains("credits")) {
-        db.createObjectStore("credits", { keyPath: "id" });
-      }
-      if (!db.objectStoreNames.contains("leaderboard")) {
-        db.createObjectStore("leaderboard", { keyPath: "name" });
-      }
-    };
-    request.onsuccess = e => {
-      db = e.target.result;
-      loadCredits();
+    // DOM elements
+    const reelsContainer = document.getElementById("reels-container");
+    const creditsDisplay = document.getElementById("credits");
+    const winningsDisplay = document.getElementById("winnings");
+    const betAmountDisplay = document.getElementById("bet-amount");
+    const resultMessage = document.getElementById("result-message");
+    const playerNameElement = document.getElementById("player-name");
+    const playerIdElement = document.getElementById("player-id");
+    const spinBtn = document.getElementById("spin-btn");
+    const autoSpinBtn = document.getElementById("auto-spin-btn");
+    const leaderboardEntries = document.getElementById("leaderboard-entries");
+    const winDetails = document.getElementById("win-details");
+    const winCombinations = document.getElementById("win-combinations");
+
+    // Initialize the game
+    function initGame() {
+      generateReels();
+      updateDisplay();
+      generatePlayerId();
+      
+      // Load from localStorage if available
+      const savedCredits = localStorage.getItem('hotHotFruits_credits');
+      const savedWinnings = localStorage.getItem('hotHotFruits_winnings');
+      
+      if (savedCredits) credits = parseInt(savedCredits);
+      if (savedWinnings) totalWinnings = parseInt(savedWinnings);
+      
+      updateDisplay();
       loadLeaderboard();
-    };
-
-    function getPlayerName() {
-      return playerNameInput.value.trim() || "Anonymous";
     }
 
-    function loadCredits() {
-      const tx = db.transaction("credits", "readonly");
-      const store = tx.objectStore("credits");
-      const get = store.get("player");
-      get.onsuccess = () => {
-        if (get.result) {
-          credits = get.result.amount;
-          updateCredits();
+    // Generate the 4x3 grid of reels
+    function generateReels() {
+      reelsContainer.innerHTML = '';
+      
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const reel = document.createElement('div');
+          reel.className = 'reel';
+          reel.textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+          reel.dataset.row = row;
+          reel.dataset.col = col;
+          reelsContainer.appendChild(reel);
         }
+      }
+    }
+
+    // Generate random player ID
+    function generatePlayerId() {
+      playerIdElement.textContent = '#' + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    // Update all displays
+    function updateDisplay() {
+      creditsDisplay.textContent = credits;
+      winningsDisplay.textContent = totalWinnings;
+      betAmountDisplay.textContent = currentBet;
+      
+      // Save to localStorage
+      localStorage.setItem('hotHotFruits_credits', credits);
+      localStorage.setItem('hotHotFruits_winnings', totalWinnings);
+    }
+
+    // Change bet amount
+    function changeBet(amount) {
+      const newBet = currentBet + amount;
+      if (newBet >= 5 && newBet <= 100 && newBet <= credits) {
+        currentBet = newBet;
+        updateDisplay();
+      }
+    }
+
+    // Main spin function
+    function spin() {
+      if (isSpinning) return;
+      
+      if (credits < currentBet) {
+        showResult("Insufficient credits!", "no-win");
+        return;
+      }
+
+      isSpinning = true;
+      credits -= currentBet;
+      updateDisplay();
+
+      // Hide win details
+      winDetails.style.display = 'none';
+      winCombinations.innerHTML = '';
+
+      // Disable buttons during spin
+      spinBtn.disabled = true;
+      autoSpinBtn.disabled = true;
+
+      const reels = document.querySelectorAll('.reel');
+      
+      // Add spinning animation
+      reels.forEach(reel => {
+        reel.classList.add('spinning');
+      });
+
+      // Simulate spinning
+      let spinTime = 2000;
+      const spinInterval = setInterval(() => {
+        reels.forEach(reel => {
+          reel.textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        });
+      }, 100);
+
+      // Stop spinning and check results
+      setTimeout(() => {
+        clearInterval(spinInterval);
+        
+        // Generate final results
+        const results = generateResults();
+        displayResults(results);
+        
+        // Check for wins with enhanced combination detection
+        const winResult = calculateAllWins(results);
+        const totalWinAmount = winResult.totalWin * currentBet;
+        
+        if (totalWinAmount > 0) {
+          credits += totalWinAmount;
+          totalWinnings += totalWinAmount;
+          
+          // Show winning combinations
+          showWinCombinations(winResult.combinations, totalWinAmount);
+          
+          // Highlight winning reels
+          highlightWinningReels(winResult.winningPositions);
+          
+          createCoinAnimation();
+          
+          // Vibrate if supported
+          if (navigator.vibrate) navigator.vibrate(200);
+          
+          updateLeaderboard();
+        } else {
+          showResult("No win this time. Try again!", "no-win");
+        }
+
+        updateDisplay();
+        
+        // Remove spinning class
+        reels.forEach(reel => {
+          reel.classList.remove('spinning');
+        });
+
+        // Re-enable buttons
+        spinBtn.disabled = false;
+        autoSpinBtn.disabled = false;
+        isSpinning = false;
+
+      }, spinTime);
+    }
+
+    // Generate random results for the 4x3 grid
+    function generateResults() {
+      const results = [];
+      for (let row = 0; row < ROWS; row++) {
+        results[row] = [];
+        for (let col = 0; col < COLS; col++) {
+          results[row][col] = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        }
+      }
+      return results;
+    }
+
+    // Display results on the reels
+    function displayResults(results) {
+      const reels = document.querySelectorAll('.reel');
+      reels.forEach(reel => {
+        const row = parseInt(reel.dataset.row);
+        const col = parseInt(reel.dataset.col);
+        reel.textContent = results[row][col];
+        reel.classList.remove('win');
+      });
+      
+      // Clear any existing win lines
+      document.querySelectorAll('.win-line').forEach(line => line.remove());
+    }
+
+    // Enhanced win calculation - finds ALL winning combinations
+    function calculateAllWins(results) {
+      const combinations = [];
+      const winningPositions = new Set();
+      let totalWin = 0;
+
+      // Check horizontal lines (rows)
+      for (let row = 0; row < ROWS; row++) {
+        const line = results[row];
+        const lineResult = checkLine(line, row, 'horizontal');
+        combinations.push(...lineResult.combinations);
+        lineResult.positions.forEach(pos => winningPositions.add(pos));
+        totalWin += lineResult.win;
+      }
+
+      // Check vertical lines (columns)
+      for (let col = 0; col < COLS; col++) {
+        const line = [];
+        for (let row = 0; row < ROWS; row++) {
+          line.push(results[row][col]);
+        }
+        const lineResult = checkLine(line, col, 'vertical');
+        combinations.push(...lineResult.combinations);
+        lineResult.positions.forEach(pos => winningPositions.add(pos));
+        totalWin += lineResult.win;
+      }
+
+      // Check diagonal lines (top-left to bottom-right)
+      for (let startCol = 0; startCol <= COLS - 3; startCol++) {
+        const line = [];
+        for (let i = 0; i < Math.min(ROWS, COLS - startCol); i++) {
+          line.push(results[i][startCol + i]);
+        }
+        if (line.length >= 3) {
+          const lineResult = checkLine(line, startCol, 'diagonal');
+          combinations.push(...lineResult.combinations);
+          lineResult.positions.forEach(pos => winningPositions.add(pos));
+          totalWin += lineResult.win;
+        }
+      }
+
+      // Check diagonal lines (top-right to bottom-left)
+      for (let startCol = COLS - 1; startCol >= 2; startCol--) {
+        const line = [];
+        for (let i = 0; i < Math.min(ROWS, startCol + 1); i++) {
+          line.push(results[i][startCol - i]);
+        }
+        if (line.length >= 3) {
+          const lineResult = checkLine(line, startCol, 'diagonal');
+          combinations.push(...lineResult.combinations);
+          lineResult.positions.forEach(pos => winningPositions.add(pos));
+          totalWin += lineResult.win;
+        }
+      }
+
+      return {
+        totalWin,
+        combinations,
+        winningPositions: Array.from(winningPositions)
       };
     }
 
-    function saveCredits() {
-      const tx = db.transaction("credits", "readwrite");
-      const store = tx.objectStore("credits");
-      store.put({ id: "player", amount: credits });
-    }
-
-    function updateCredits() {
-      creditsDisplay.innerText = `Credits: ${credits}`;
-    }
-
-    function resetCredits() {
-      credits = 100;
-      saveCredits();
-      updateCredits();
-      result.innerText = "Credits reset.";
-    }
-
-function spin() {
-  if (credits < 1) {
-    result.innerText = "Out of credits!";
-    stopAutoSpin();
-    return;
-  }
-
-  credits -= 1;
-  updateCredits();
-  saveCredits();
-
-  // Disable buttons during spin
-  document.querySelectorAll("button").forEach(btn => btn.disabled = true);
-
-  // Play spin sound
-  spinSound.currentTime = 0;
-  spinSound.play();
-
-  const spinResult = [];
-  let rollCount = 10;
-  let frame = 0;
-
-  const rollInterval = setInterval(() => {
-    for (let i = 0; i < reels.length; i++) {
-      const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-      reels[i].innerText = symbol;
-    }
-    frame++;
-    if (frame >= rollCount) {
-      clearInterval(rollInterval);
-
-      // Final result with pop animation
-      for (let i = 0; i < reels.length; i++) {
-        const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-        reels[i].innerText = symbol;
-        reels[i].classList.add("pop");
-        setTimeout(() => reels[i].classList.remove("pop"), 300);
-        spinResult.push(symbol);
+    // Check a single line for wins and return detailed information
+    function checkLine(line, lineIndex, direction) {
+      const combinations = [];
+      const positions = [];
+      let lineWin = 0;
+      
+      // Find consecutive matching symbols
+      let count = 1;
+      let currentSymbol = line[0];
+      let startIndex = 0;
+      
+      for (let i = 1; i <= line.length; i++) {
+        if (i < line.length && line[i] === currentSymbol) {
+          count++;
+        } else {
+          if (count >= 3 && PAYOUTS[currentSymbol]) {
+            const winAmount = PAYOUTS[currentSymbol][count] || PAYOUTS[currentSymbol][3];
+            lineWin += winAmount;
+            
+            // Record the winning combination
+            combinations.push({
+              symbols: Array(count).fill(currentSymbol),
+              count: count,
+              payout: winAmount,
+              direction: direction,
+              lineIndex: lineIndex,
+              position: startIndex
+            });
+            
+            // Record winning positions
+            for (let j = startIndex; j < startIndex + count; j++) {
+              let position;
+              if (direction === 'horizontal') {
+                position = `${lineIndex}-${j}`;
+              } else if (direction === 'vertical') {
+                position = `${j}-${lineIndex}`;
+              } else { // diagonal
+                position = `${j}-${lineIndex + (direction.includes('right') ? j : -j)}`;
+              }
+              positions.push(position);
+            }
+          }
+          
+          if (i < line.length) {
+            count = 1;
+            currentSymbol = line[i];
+            startIndex = i;
+          }
+        }
       }
+      
+      return {
+        win: lineWin,
+        combinations,
+        positions
+      };
+    }
 
-      const win = checkWin(spinResult);
-      if (win > 0) {
-        credits += win;
-        result.innerText = `🎉 You won ${win} credits!`;
-
-        // Play win sound
-        winSound.currentTime = 0;
-        winSound.play();
-
-        navigator.vibrate?.([200]);
-        updateLeaderboard(getPlayerName(), credits);
+    // Show winning combinations in details panel
+    function showWinCombinations(combinations, totalWin) {
+      if (combinations.length === 0) return;
+      
+      winCombinations.innerHTML = '';
+      
+      combinations.forEach((combo, index) => {
+        const comboElement = document.createElement('div');
+        comboElement.className = 'win-combination';
+        comboElement.innerHTML = `
+          <span>${combo.symbols.join(' ')} (${combo.count} in a row)</span>
+          <span>+$${combo.payout * currentBet}</span>
+        `;
+        winCombinations.appendChild(comboElement);
+      });
+      
+      // Add total win
+      const totalElement = document.createElement('div');
+      totalElement.className = 'win-combination';
+      totalElement.style.fontWeight = 'bold';
+      totalElement.style.borderTop = '2px solid #FFD700';
+      totalElement.innerHTML = `
+        <span>TOTAL WIN</span>
+        <span>$${totalWin}</span>
+      `;
+      winCombinations.appendChild(totalElement);
+      
+      winDetails.style.display = 'block';
+      
+      // Show appropriate message
+      if (totalWin > 500) {
+        showResult(`JACKPOT! Won $${totalWin}`, "jackpot");
+      } else if (totalWin > 100) {
+        showResult(`BIG WIN! $${totalWin}`, "big-win");
       } else {
-        result.innerText = "Try again!";
+        showResult(`You won $${totalWin}`, "small-win");
       }
-
-      updateCredits();
-      saveCredits();
-
-      // Re-enable buttons after 3 seconds
-      setTimeout(() => {
-        document.querySelectorAll("button").forEach(btn => btn.disabled = false);
-      }, 3000);
-    }
-  }, 100);
-}
-
-    function checkWin([a, b, c]) {
-      if (a === b && b === c) return 50;
-      if ((a === b || b === c) && Math.random() > 0.7) return 20;
-      return 0;
     }
 
+    // Highlight winning reels with pop animation
+    function highlightWinningReels(winningPositions) {
+      winningPositions.forEach(position => {
+        const [row, col] = position.split('-').map(Number);
+        const reel = document.querySelector(`.reel[data-row="${row}"][data-col="${col}"]`);
+        if (reel) {
+          reel.classList.add('win');
+        }
+      });
+    }
+
+    // Show result message with appropriate styling
+    function showResult(message, type) {
+      resultMessage.textContent = message;
+      resultMessage.className = '';
+      resultMessage.classList.add(type);
+    }
+
+    // Create coin animation for wins
+    function createCoinAnimation() {
+      for (let i = 0; i < 8; i++) {
+        const coin = document.createElement('div');
+        coin.className = 'coin-animation';
+        coin.textContent = '💰';
+        coin.style.left = (Math.random() * 80 + 10) + '%';
+        coin.style.animationDelay = (i * 0.1) + 's';
+        document.body.appendChild(coin);
+        
+        setTimeout(() => {
+          if (coin.parentNode) {
+            coin.parentNode.removeChild(coin);
+          }
+        }, 1000);
+      }
+    }
+
+    // Toggle auto-spin
     function toggleAutoSpin() {
       autoSpin = !autoSpin;
+      
       if (autoSpin) {
-        autoSpinInterval = setInterval(spin, 3000); // was 1000
-        result.innerText = "Auto-spin started.";
+        autoSpinBtn.textContent = "🛑 STOP";
+        autoSpinInterval = setInterval(() => {
+          if (credits >= currentBet && !isSpinning) {
+            spin();
+          } else {
+            toggleAutoSpin(); // Stop if can't spin
+          }
+        }, 3000);
       } else {
-        stopAutoSpin();
+        autoSpinBtn.textContent = "🔄 AUTO";
+        clearInterval(autoSpinInterval);
       }
     }
 
-    function stopAutoSpin() {
-      clearInterval(autoSpinInterval);
-      autoSpin = false;
-      result.innerText = "Auto-spin stopped.";
+    // Reset game
+    function resetGame() {
+      credits = 1000;
+      totalWinnings = 0;
+      currentBet = 5;
+      updateDisplay();
+      showResult("Game reset! Good luck!", "small-win");
+      winDetails.style.display = 'none';
+      
+      if (autoSpin) {
+        toggleAutoSpin();
+      }
     }
 
-    function updateLeaderboard(name, score) {
-      const tx = db.transaction("leaderboard", "readwrite");
-      const store = tx.objectStore("leaderboard");
-      const get = store.get(name);
-      get.onsuccess = () => {
-        const current = get.result;
-        if (!current || score > current.score) {
-          store.put({ name, score });
-          loadLeaderboard();
-        }
+    // Leaderboard functions
+    function updateLeaderboard() {
+      const playerName = playerNameElement.textContent;
+      const playerData = {
+        name: playerName,
+        score: totalWinnings,
+        id: playerIdElement.textContent
       };
+      
+      let leaderboard = JSON.parse(localStorage.getItem('hotHotFruits_leaderboard') || '[]');
+      
+      // Update or add player
+      const existingIndex = leaderboard.findIndex(entry => entry.id === playerData.id);
+      if (existingIndex !== -1) {
+        if (playerData.score > leaderboard[existingIndex].score) {
+          leaderboard[existingIndex] = playerData;
+        }
+      } else {
+        leaderboard.push(playerData);
+      }
+      
+      // Sort and limit to top 5
+      leaderboard.sort((a, b) => b.score - a.score);
+      leaderboard = leaderboard.slice(0, 5);
+      
+      localStorage.setItem('hotHotFruits_leaderboard', JSON.stringify(leaderboard));
+      loadLeaderboard();
     }
 
     function loadLeaderboard() {
-      const tx = db.transaction("leaderboard", "readonly");
-      const store = tx.objectStore("leaderboard");
-      const request = store.getAll();
-      request.onsuccess = () => {
-        const sorted = request.result.sort((a, b) => b.score - a.score).slice(0, 5);
-        leaderboardDisplay.innerHTML = "🏆 Leaderboard:<br>" + sorted.map(e => `${e.name}: ${e.score}`).join("<br>");
-      };
+      const leaderboard = JSON.parse(localStorage.getItem('hotHotFruits_leaderboard') || '[]');
+      
+      leaderboardEntries.innerHTML = '';
+      
+      if (leaderboard.length === 0) {
+        leaderboardEntries.innerHTML = '<div class="leaderboard-entry"><span>No scores yet</span><span>$0</span></div>';
+        return;
+      }
+      
+      leaderboard.forEach((entry, index) => {
+        const entryElement = document.createElement('div');
+        entryElement.className = 'leaderboard-entry';
+        entryElement.innerHTML = `
+          <span>${index + 1}. ${entry.name}</span>
+          <span>$${entry.score}</span>
+        `;
+        leaderboardEntries.appendChild(entryElement);
+      });
+    }
+
+    // Initialize the game when page loads
+    window.addEventListener('load', initGame);
+
+    // Prevent zoom on double-tap
+    document.addEventListener('dblclick', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+
+    // Handle player name input
+    let nameTimeout;
+    document.addEventListener('input', function(e) {
+      if (e.target === playerNameElement) {
+        clearTimeout(nameTimeout);
+        nameTimeout = setTimeout(() => {
+          localStorage.setItem('hotHotFruits_playerName', playerNameElement.textContent);
+        }, 1000);
+      }
+    });
+
+    // Load saved player name
+    const savedName = localStorage.getItem('hotHotFruits_playerName');
+    if (savedName) {
+      playerNameElement.textContent = savedName;
     }
   </script>
-  
-  </main>
-  <footer id="pageFooter">
-  © 2025 Juvenile Corner News · Built with pride in Pretotia 🇿🇦 ·
-</footer>
 </body>
 </html>
