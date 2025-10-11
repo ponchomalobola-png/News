@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gates of Luck Slot Machine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+        
+        .game-container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px gold, 0 0 20px orange;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            color: #ffcc00;
+        }
+        
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            background: #0c1648;
+            border-radius: 10px;
+            padding: 12px;
+            border: 2px solid #ffcc00;
+        }
+        
+        .credit, .bet, .win {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .label {
+            font-size: 0.8rem;
+            color: #ffcc00;
+            margin-bottom: 3px;
+        }
+        
+        .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .reels-container {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0;
+            position: relative;
+            height: 120px;
+        }
+        
+        .win-line {
+            position: absolute;
+            top: 50%; /* Positioned at exact center to match starting middle icons */
+            left: 5%;
+            width: 90%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, gold, transparent);
+            transform: translateY(-50%);
+            z-index: 10;
+            box-shadow: 0 0 15px gold, 0 0 30px orange;
+            display: none;
+            border-radius: 2px;
+        }
+        
+        .win-line.active {
+            display: block;
+            animation: winLinePulse 0.5s infinite alternate;
+        }
+        
+        @keyframes winLinePulse {
+            0% { opacity: 0.7; box-shadow: 0 0 10px gold; }
+            100% { opacity: 1; box-shadow: 0 0 25px gold, 0 0 40px orange; }
+        }
+        
+        .reel {
+            background: linear-gradient(145deg, #0c1648, #1c2b6d);
+            border: 2px solid gold;
+            border-radius: 8px;
+            height: 120px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .reel-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center all symbols */
+        }
+        
+        .symbol {
+            height: 40px;
+            width: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+        
+        .middle-symbol {
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 5px;
+            border: 2px solid gold;
+            box-shadow: 0 0 10px gold;
+        }
+        
+        .bet-controls {
+            background: #0c1648;
+            border-radius: 10px;
+            padding: 12px;
+            border: 2px solid #ffcc00;
+        }
+        
+        .bet-title {
+            text-align: center;
+            margin-bottom: 8px;
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .bet-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        
+        .bet-btn {
+            background: linear-gradient(to bottom, #ffcc00, #ff9900);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 5px;
+            color: #0c1648;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .bet-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px gold;
+        }
+        
+        .bet-btn.active {
+            background: linear-gradient(to bottom, #ff3333, #cc0000);
+            color: white;
+        }
+        
+        .spin-btn {
+            background: linear-gradient(to bottom, #ff3333, #cc0000);
+            border: none;
+            border-radius: 10px;
+            padding: 16px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+        
+        .spin-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px red;
+        }
+        
+        .spin-btn:disabled {
+            background: linear-gradient(to bottom, #888, #666);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .feature-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .feature-btn {
+            background: linear-gradient(to bottom, #1c2b6d, #0c1648);
+            border: 2px solid #ffcc00;
+            border-radius: 8px;
+            padding: 12px 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .feature-btn:hover {
+            background: linear-gradient(to bottom, #2a3b8a, #1c2b6d);
+            transform: scale(1.03);
+        }
+        
+        .feature-btn:disabled {
+            background: linear-gradient(to bottom, #444, #333);
+            border-color: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .win-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .win-message {
+            font-size: 3rem;
+            font-weight: bold;
+            color: gold;
+            text-shadow: 0 0 20px orange;
+            transform: scale(0);
+            transition: transform 0.5s;
+            text-align: center;
+        }
+        
+        .win-amount {
+            font-size: 2rem;
+            margin-top: 10px;
+            color: #ffcc00;
+        }
+        
+        .free-spins-display {
+            background: rgba(255, 204, 0, 0.2);
+            border: 2px solid gold;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .free-spins-active {
+            display: block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px gold; }
+            50% { box-shadow: 0 0 20px gold; }
+            100% { box-shadow: 0 0 5px gold; }
+        }
+        
+        @keyframes spin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-120px); }
+        }
+        
+        .spinning {
+            animation: spin 0.1s infinite linear;
+        }
+        
+        .game-info {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .message-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid gold;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 200;
+            text-align: center;
+            display: none;
+        }
+        
+        .message-popup button {
+            background: linear-gradient(to bottom, #ffcc00, #ff9900);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            color: #0c1648;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .game-container {
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <div class="game-title">🎰 GATES OF LUCK</div>
+            <div class="subtitle">SUPER SCATTER</div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="credit">
+                <div class="label">CREDIT</div>
+                <div class="value" id="creditValue">R20.20</div>
+            </div>
+            <div class="bet">
+                <div class="label">BET</div>
+                <div class="value" id="betValue">R1.00</div>
+            </div>
+            <div class="win">
+                <div class="label">WIN</div>
+                <div class="value" id="winValue">R5.00</div>
+            </div>
+        </div>
+        
+        <div class="free-spins-display free-spins-active" id="freeSpinsDisplay">
+            <div>FREE SPINS REMAINING: <span id="freeSpinsCount">3</span></div>
+            <div>FREE SPINS MULTIPLIER: <span id="freeSpinsMultiplier">1x</span></div>
+        </div>
+        
+        <div class="reels-container">
+            <div class="win-line" id="winLine"></div>
+            <div class="reel" id="reel1">
+                <div class="reel-content" id="reelContent1">
+                    <div class="symbol">⚡</div>
+                    <div class="symbol middle-symbol">🔱</div>
+                    <div class="symbol">⭐</div>
+                </div>
+            </div>
+            <div class="reel" id="reel2">
+                <div class="reel-content" id="reelContent2">
+                    <div class="symbol">🔱</div>
+                    <div class="symbol middle-symbol">⭐</div>
+                    <div class="symbol">⚡</div>
+                </div>
+            </div>
+            <div class="reel" id="reel3">
+                <div class="reel-content" id="reelContent3">
+                    <div class="symbol">⭐</div>
+                    <div class="symbol middle-symbol">⚡</div>
+                    <div class="symbol">🔱</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bet-controls">
+            <div class="bet-title">PLACE YOUR BETS!</div>
+            <div class="bet-options">
+                <button class="bet-btn" data-bet="0.30">R0.30</button>
+                <button class="bet-btn active" data-bet="1.00">R1.00</button>
+                <button class="bet-btn" data-bet="5.00">R5.00</button>
+                <button class="bet-btn" data-bet="20.00">R20.00</button>
+                <button class="bet-btn" data-bet="50.00">R50.00</button>
+                <button class="bet-btn" data-bet="100.00">R100.00</button>
+            </div>
+        </div>
+        
+        <button class="spin-btn" id="spinBtn">SPIN</button>
+        
+        <div class="feature-buttons">
+            <button class="feature-btn" id="buyFeatureBtn">BUY FEATURE (R50)</button>
+            <button class="feature-btn" id="freeSpinBtn">FREE SPIN</button>
+            <button class="feature-btn" id="superFreeSpinsBtn">SUPER FREE SPINS (R100)</button>
+            <button class="feature-btn" id="doubleBtn">DOUBLE (R20)</button>
+        </div>
+        
+        <div class="game-info">
+            Match 3 symbols on the MIDDLE LINE to win!<br>
+            ⚡⚡⚡ = 10 Free Spins | 🔱🔱🔱 = 15 Free Spins | ⭐⭐⭐ = 20 Free Spins
+        </div>
+    </div>
+    
+    <div class="win-animation" id="winAnimation">
+        <div>
+            <div class="win-message" id="winMessage">WIN!</div>
+            <div class="win-amount" id="winAmountDisplay">R0.00</div>
+        </div>
+    </div>
+    
+    <div class="message-popup" id="messagePopup">
+        <div id="popupMessage">Message</div>
+        <button id="popupOkBtn">OK</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game state
+            let credit = 20.20;
+            let currentBet = 1.00;
+            let winAmount = 5.00;
+            let isSpinning = false;
+            let freeSpinsRemaining = 3;
+            let freeSpinsMultiplier = 1;
+            
+            // DOM elements
+            const creditValue = document.getElementById('creditValue');
+            const betValue = document.getElementById('betValue');
+            const winValue = document.getElementById('winValue');
+            const spinBtn = document.getElementById('spinBtn');
+            const betButtons = document.querySelectorAll('.bet-btn');
+            const reels = [
+                document.getElementById('reelContent1'),
+                document.getElementById('reelContent2'),
+                document.getElementById('reelContent3')
+            ];
+            const winAnimation = document.getElementById('winAnimation');
+            const winMessage = document.getElementById('winMessage');
+            const winAmountDisplay = document.getElementById('winAmountDisplay');
+            const freeSpinsDisplay = document.getElementById('freeSpinsDisplay');
+            const freeSpinsCount = document.getElementById('freeSpinsCount');
+            const freeSpinsMultiplierDisplay = document.getElementById('freeSpinsMultiplier');
+            const messagePopup = document.getElementById('messagePopup');
+            const popupMessage = document.getElementById('popupMessage');
+            const popupOkBtn = document.getElementById('popupOkBtn');
+            const winLine = document.getElementById('winLine');
+            
+            // Feature buttons
+            const buyFeatureBtn = document.getElementById('buyFeatureBtn');
+            const freeSpinBtn = document.getElementById('freeSpinBtn');
+            const superFreeSpinsBtn = document.getElementById('superFreeSpinsBtn');
+            const doubleBtn = document.getElementById('doubleBtn');
+            
+            // Symbols for the reels with different values
+            const symbols = [
+                { symbol: '⚡', value: 2, name: 'Zeus Bolt' },
+                { symbol: '🔱', value: 3, name: 'Poseidon Trident' },
+                { symbol: '⭐', value: 5, name: 'O Star' },
+                { symbol: '🍇', value: 1, name: 'Ambrosia' },
+                { symbol: '🍒', value: 1.5, name: 'Nectar' },
+                { symbol: '🔔', value: 4, name: 'Luck Bell' }
+            ];
+            
+            // Initialize game
+            updateDisplay();
+            updateFreeSpinsDisplay();
+            updateFeatureButtons();
+            
+            // Bet button event listeners
+            betButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (isSpinning) return;
+                    
+                    betButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    currentBet = parseFloat(this.getAttribute('data-bet'));
+                    updateDisplay();
+                });
+            });
+            
+            // Spin button event listener
+            spinBtn.addEventListener('click', function() {
+                if (isSpinning) return;
+                
+                // Check if we have free spins active
+                if (freeSpinsRemaining > 0) {
+                    // Use a free spin
+                    freeSpinsRemaining--;
+                    updateFreeSpinsDisplay();
+                } else if (credit < currentBet) {
+                    showMessage("Not enough credit!");
+                    return;
+                } else {
+                    // Deduct bet from credit
+                    credit -= currentBet;
+                    updateDisplay();
+                }
+                
+                // Start spinning animation
+                isSpinning = true;
+                spinBtn.disabled = true;
+                winAmount = 0.00;
+                updateDisplay();
+                
+                // Hide win line at start of spin
+                winLine.classList.remove('active');
+                
+                // Spin each reel with different durations for realistic effect
+                spinReel(0, 1000);
+                spinReel(1, 1200);
+                spinReel(2, 1400);
+                
+                // Check for win after all reels stop
+                setTimeout(checkWin, 1500);
+            });
+            
+            // Feature button event listeners
+            buyFeatureBtn.addEventListener('click', function() {
+                if (isSpinning) return;
+                if (credit < 50) {
+                    showMessage("Not enough credit to buy feature!");
+                    return;
+                }
+                
+                credit -= 50;
+                // Activate 10 free spins with 2x multiplier
+                freeSpinsRemaining += 10;
+                freeSpinsMultiplier = 2;
+                updateDisplay();
+                updateFreeSpinsDisplay();
+                showMessage("Feature purchased! 10 Free Spins with 2x Multiplier activated!");
+            });
+            
+            freeSpinBtn.addEventListener('click', function() {
+                if (isSpinning) return;
+                if (freeSpinsRemaining > 0) {
+                    freeSpinsRemaining--;
+                    updateFreeSpinsDisplay();
+                    // Trigger a spin with free spin
+                    spinBtn.click();
+                } else {
+                    showMessage("No free spins available!");
+                }
+            });
+            
+            superFreeSpinsBtn.addEventListener('click', function() {
+                if (isSpinning) return;
+                if (credit < 100) {
+                    showMessage("Not enough credit for Super Free Spins!");
+                    return;
+                }
+                
+                credit -= 100;
+                // Activate 20 free spins with 3x multiplier
+                freeSpinsRemaining += 20;
+                freeSpinsMultiplier = 3;
+                updateDisplay();
+                updateFreeSpinsDisplay();
+                showMessage("Super Free Spins activated! 20 Free Spins with 3x Multiplier!");
+            });
+            
+            doubleBtn.addEventListener('click', function() {
+                if (isSpinning) return;
+                if (credit < 20) {
+                    showMessage("Not enough credit to double!");
+                    return;
+                }
+                
+                credit -= 20;
+// Double the current win if any
+                if (winAmount > 0) {
+                    winAmount *= 2;
+                    credit += winAmount;
+                    updateDisplay();
+                    showMessage(`Win doubled! You won R${winAmount.toFixed(2)}!`);
+                    winAmount = 0;
+                    updateDisplay();
+                } else {
+                    showMessage("No win to double!");
+                }
+            });
+            
+            // Popup OK button
+            popupOkBtn.addEventListener('click', function() {
+                messagePopup.style.display = 'none';
+            });
+            
+            // Function to spin a single reel
+            function spinReel(reelIndex, duration) {
+                const reel = reels[reelIndex];
+                reel.classList.add('spinning');
+                
+                // Generate random symbols for the reel
+                setTimeout(() => {
+                    reel.classList.remove('spinning');
+                    
+                    // Set random symbols - always 3 symbols per reel
+                    const shuffledSymbols = [...symbols].sort(() => Math.random() - 0.5).slice(0, 3);
+                    const symbolsHTML = shuffledSymbols
+                        .map((s, index) => {
+                            const isMiddle = index === 1; // Second symbol is the middle one
+                            return `<div class="symbol ${isMiddle ? 'middle-symbol' : ''}">${s.symbol}</div>`;
+                        })
+                        .join('');
+                    
+                    reel.innerHTML = symbolsHTML;
+                }, duration);
+            }
+            
+            // Function to check for wins - ONLY MIDDLE LINE
+            function checkWin() {
+                // Get ONLY the middle symbol from each reel (index 1)
+                const reel1Symbol = reels[0].children[1].textContent;
+                const reel2Symbol = reels[1].children[1].textContent;
+                const reel3Symbol = reels[2].children[1].textContent;
+                
+                // Check if all three MIDDLE symbols match
+                if (reel1Symbol === reel2Symbol && reel2Symbol === reel3Symbol) {
+                    // Find the symbol value
+                    const winningSymbol = symbols.find(s => s.symbol === reel1Symbol);
+                    const symbolValue = winningSymbol ? winningSymbol.value : 1;
+                    
+                    // Calculate win amount based on bet and symbol value
+                    winAmount = currentBet * symbolValue * 5 * freeSpinsMultiplier;
+                    credit += winAmount;
+                    
+                    // Show win line with animation - positioned exactly on the middle icons
+                    winLine.classList.add('active');
+                    
+                    // Check for special free spins combinations (only on middle line)
+                    if (reel1Symbol === '⚡') {
+                        freeSpinsRemaining += 10;
+                        showMessage(`10 FREE SPINS AWARDED! ${winningSymbol.name} BONUS!`);
+                    } else if (reel1Symbol === '🔱') {
+                        freeSpinsRemaining += 15;
+                        showMessage(`15 FREE SPINS AWARDED! ${winningSymbol.name} BONUS!`);
+                    } else if (reel1Symbol === '⭐') {
+                        freeSpinsRemaining += 20;
+                        showMessage(`20 FREE SPINS AWARDED! ${winningSymbol.name} BONUS!`);
+                    } else {
+                        // Show win animation for regular wins
+                        showWinAnimation();
+                    }
+                    
+                    updateFreeSpinsDisplay();
+                } else {
+                    // No win on middle line
+                    winLine.classList.remove('active');
+                }
+                
+                // Update display and re-enable spin button
+                updateDisplay();
+                isSpinning = false;
+                spinBtn.disabled = false;
+                updateFeatureButtons();
+            }
+            
+            // Function to show win animation
+            function showWinAnimation() {
+                winAmountDisplay.textContent = `R${winAmount.toFixed(2)}`;
+                winAnimation.style.opacity = '1';
+                winAnimation.style.pointerEvents = 'all';
+                winMessage.style.transform = 'scale(1)';
+                
+                setTimeout(() => {
+                    winAnimation.style.opacity = '0';
+                    winMessage.style.transform = 'scale(0)';
+                    setTimeout(() => {
+                        winAnimation.style.pointerEvents = 'none';
+                    }, 500);
+                }, 2000);
+            }
+            
+            // Function to update the display
+            function updateDisplay() {
+                creditValue.textContent = `R${credit.toFixed(2)}`;
+                betValue.textContent = `R${currentBet.toFixed(2)}`;
+                winValue.textContent = `R${winAmount.toFixed(2)}`;
+            }
+            
+            // Function to update free spins display
+            function updateFreeSpinsDisplay() {
+                freeSpinsCount.textContent = freeSpinsRemaining;
+                freeSpinsMultiplierDisplay.textContent = `${freeSpinsMultiplier}x`;
+                
+                if (freeSpinsRemaining > 0) {
+                    freeSpinsDisplay.classList.add('free-spins-active');
+                } else {
+                    freeSpinsDisplay.classList.remove('free-spins-active');
+                    freeSpinsMultiplier = 1;
+                }
+            }
+            
+            // Function to update feature buttons state
+            function updateFeatureButtons() {
+                buyFeatureBtn.disabled = credit < 50 || isSpinning;
+                superFreeSpinsBtn.disabled = credit < 100 || isSpinning;
+                doubleBtn.disabled = credit < 20 || winAmount === 0 || isSpinning;
+                freeSpinBtn.disabled = freeSpinsRemaining === 0 || isSpinning;
+            }
+            
+            // Function to show message popup
+            function showMessage(message) {
+                popupMessage.textContent = message;
+                messagePopup.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
