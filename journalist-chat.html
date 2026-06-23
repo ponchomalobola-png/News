@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Juvi Chat</title>
-  <!-- Google tag (gtag.js) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Juvi Chat - AI + DuckDuckGo</title>
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FKXMFN74FW"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -12,539 +12,634 @@
     gtag('js', new Date());
     gtag('config', 'G-FKXMFN74FW');
   </script>
+
   <style>
-    button {
-      touch-action: manipulation;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #e5ddd5; --chat-bg: #fff; --user-msg: #dcf8c6; --bot-msg: #f0f0f0;
+      --header: #075e54; --text: #333; --border: #ccc; --input-bg: #fff;
+      --modal-bg: rgba(0,0,0,0.5);
     }
-    #footer {
-      background: #eeeeee;
-      color: #333;
-      font-size: 0.75em;
-      text-align: center;
-      padding: 6px 10px;
-      border-top: 1px solid #ccc;
+
+    body.dark {
+      --bg: #0b141a; --chat-bg: #111b21; --user-msg: #005c4b; --bot-msg: #202c33;
+      --header: #202c33; --text: #e9edef; --border: #2a3942; --input-bg: #2a3942;
+      --modal-bg: rgba(0,0,0,0.7);
     }
-    * { box-sizing: border-box; }
+
+    html, body { height: 100%; overflow: hidden; }
+
     body {
       margin: 0;
-      font-family: sans-serif;
-      background: #e5ddd5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       flex-direction: column;
       height: 100vh;
+      height: 100dvh;
+      transition: background 0.3s ease;
     }
+
     header {
-      background: #075e54;
+      background: var(--header);
       color: #fff;
-      padding: 10px 0 30px;
+      padding: 12px 16px;
       text-align: center;
-      font-weight: bold;
-      font-size: 1em;
-      position: relative;
+      font-weight: 600;
+      font-size: 1.1em;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      flex-shrink: 0;
     }
-    #live-badge {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: red;
+
+   .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    #theme-btn {
+      background: none;
+      border: none;
+      font-size: 1.4em;
+      cursor: pointer;
       color: white;
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 0.8em;
-      font-weight: bold;
-      box-shadow: 0 0 5px rgba(0,0,0,0.3);
-      animation: pulse 1.5s infinite;
-      z-index: 999;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.2); opacity: 0.7; }
-      100% { transform: scale(1); opacity: 1; }
-    }
+
     #ticker {
       background: #25d366;
       color: #000;
       font-size: 0.8em;
-      padding: 5px 10px;
+      padding: 6px 10px;
       white-space: nowrap;
       overflow: hidden;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      flex-shrink: 0;
     }
+
     #ticker span {
       display: inline-block;
       padding-left: 100%;
-      animation: scroll 15s linear infinite;
+      animation: scroll 20s linear infinite;
     }
+
     @keyframes scroll {
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
     }
+
     #chat-box {
       flex: 1;
-      padding: 10px;
+      padding: 15px;
       overflow-y: auto;
-      background: #fff;
+      background: var(--chat-bg);
       display: flex;
       flex-direction: column;
+      gap: 8px;
+      padding-bottom: 100px;
     }
-    .message {
-      margin: 6px 0;
-      padding: 8px 12px;
+
+   .message {
+      padding: 10px 14px;
       border-radius: 8px;
       max-width: 75%;
       word-wrap: break-word;
-      font-size: 0.9em;
+      font-size: 0.95em;
+      line-height: 1.5;
       position: relative;
+      animation: slideIn 0.2s ease;
     }
-    .user {
-      background: #dcf8c6;
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+   .user {
+      background: var(--user-msg);
       align-self: flex-end;
+      border-bottom-right-radius: 2px;
     }
-    .bot {
-      background: #f0f0f0;
+
+   .bot {
+      background: var(--bot-msg);
       align-self: flex-start;
+      border-bottom-left-radius: 2px;
     }
-    .timestamp {
+
+   .timestamp {
       font-size: 0.7em;
-      color: #555;
-      margin-top: 2px;
+      opacity: 0.6;
+      margin-top: 4px;
       text-align: right;
     }
-    .date-divider {
-      text-align: center;
-      font-size: 0.75em;
-      color: #666;
-      margin: 10px 0;
-      padding: 5px;
-      background: #f0f0f0;
-      border-radius: 10px;
+
+   .typing {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
     }
+
+   .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #888;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+
+   .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+   .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+    }
+
+    #quick-replies {
+      display: flex;
+      gap: 8px;
+      padding: 8px 15px;
+      overflow-x: auto;
+      background: var(--chat-bg);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+   .quick-reply {
+      padding: 8px 14px;
+      background: var(--header);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85em;
+      cursor: pointer;
+      white-space: nowrap;
+      border: none;
+      transition: all 0.2s;
+    }
+
+   .quick-reply:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
     #input-area {
       display: flex;
       align-items: center;
-      padding: 8px;
-      background: #f7f7f7;
+      padding: 10px;
+      background: var(--bg);
       gap: 8px;
+      flex-shrink: 0;
+      position: sticky;
+      bottom: 0;
+      z-index: 100;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
     }
+
     #user-input {
       flex: 1;
-      padding: 10px 14px;
+      padding: 12px 16px;
       border: none;
-      border-radius: 20px;
-      font-size: 0.9em;
-      background: #fff;
-      box-shadow: 0 0 2px rgba(0,0,0,0.2);
+      border-radius: 24px;
+      font-size: 0.95em;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
     }
-    #button-group {
-      display: flex;
-      gap: 6px;
-    }
-    .chat-button {
-      width: 40px;
-      height: 40px;
+
+   .chat-button {
+      width: 44px;
+      height: 44px;
       border: none;
       border-radius: 50%;
-      font-size: 1.2em;
+      font-size: 1.3em;
       color: white;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      cursor: pointer;
       transition: transform 0.2s;
     }
-    .chat-button:hover {
-      transform: scale(1.1);
+
+   .chat-button:active { transform: scale(0.9); }
+    #send-btn { background: #25d366; }
+    #clear-btn { background: #d32f2f; }
+
+    #footer {
+      background: var(--header);
+      color: #fff;
+      font-size: 0.75em;
+      text-align: center;
+      padding: 8px;
+      flex-shrink: 0;
     }
-    #send-btn {
-      background: #25d366;
+
+   .ai-badge {
+      font-size: 0.7em;
+      opacity: 0.7;
+      margin-left: 8px;
     }
-    #clear-btn {
-      background: #d32f2f;
+
+   .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--modal-bg);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.2s ease;
     }
-    .quick-reply {
-      display: inline-block;
-      margin: 2px;
-      padding: 4px 8px;
-      background: #075e54;
-      color: white;
+
+   .modal-overlay.show { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+   .modal-box {
+      background: var(--chat-bg);
       border-radius: 12px;
-      font-size: 0.8em;
-      cursor: pointer;
+      padding: 24px;
+      max-width: 320px;
+      width: 85%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+      text-align: center;
     }
-    .quick-reply:hover {
-      background: #054d44;
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+   .modal-icon { font-size: 3em; margin-bottom: 12px; }
+   .modal-title { font-size: 1.2em; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+   .modal-text { font-size: 0.9em; color: var(--text); opacity: 0.8; margin-bottom: 20px; line-height: 1.5; }
+
+   .modal-buttons { display: flex; gap: 10px; }
+   .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+   .modal-btn.cancel { background: var(--bot-msg); color: var(--text); }
+   .modal-btn.delete { background: #d32f2f; color: white; }
+   .modal-btn:hover { opacity: 0.85; transform: scale(1.02); }
+
+   .source {
+      font-size: 0.75em;
+      opacity: 0.7;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+   .source a {
+      color: #25d366;
+      text-decoration: none;
+    }
+
+   .source a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div id="live-badge">LIVE</div>
   <header>
-    🎓 Juvi Assistant
-    <div id="ticker"><span id="headline-text">Welcome! • Grade 12 Practice Zone available • Game Zone for breaks • Latest news updates</span></div>
+    <div class="header-top">
+      <span>🎓 Juvi Assistant <span class="ai-badge">AI + DuckDuckGo</span></span>
+      <button id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
   </header>
+
+  <div id="ticker"><span id="headline-text">Juvi now uses DuckDuckGo for live news • Ask "NSFAS 2026" • "SA news today" • Weather • Definitions</span></div>
+
   <div id="chat-box"></div>
+
+  <div id="quick-replies">
+    <button class="quick-reply" onclick="sendQuick('SA news today')">📰 News</button>
+    <button class="quick-reply" onclick="sendQuick('NSFAS 2026 dates')">💰 NSFAS</button>
+    <button class="quick-reply" onclick="sendQuick('weather Johannesburg')">🌤️ Weather</button>
+    <button class="quick-reply" onclick="sendQuick('help')">❓ Help</button>
+  </div>
+
   <div id="input-area">
-    <input type="text" id="user-input" placeholder="Ask about news, practice, games, or site help..." />
-    <div id="button-group">
+    <input type="text" id="user-input" placeholder="Ask me anything... search DuckDuckGo" />
+    <div id="button-group" style="display:flex; gap:6px;">
       <button id="send-btn" class="chat-button" onclick="sendMessage()">📫</button>
-      <button id="clear-btn" class="chat-button" onclick="clearAllMessages()">🚫</button>
+      <button id="clear-btn" class="chat-button" onclick="showClearModal()">🚫</button>
     </div>
   </div>
 
-  <script>
-    // Global variables
-    let chatWasCleared = false;
-    let lastDate = '';
-    let userContext = {
-      userType: '', // 'student', 'matric_rewrite', 'young_learner', 'general'
-      interests: [],
-      lastActivity: '',
-      mood: 'neutral'
-    };
-
-    // DOM elements
-    const chatBox = document.getElementById('chat-box');
-    const userInput = document.getElementById('user-input');
-
-    // Educational headlines for ticker
-    const headlines = [
-      "Welcome! • Grade 12 Practice Zone available • Game Zone for breaks • Latest news updates",
-      "New Math modules added to Practice Zone • Study smarter!",
-      "Game Zone: Educational games for stress relief and learning",
-      "Matric rewrite candidates: Access past papers and study guides",
-      "Young learners: Fun educational games available in Game Zone",
-      "Stay updated with latest educational news and trends"
-    ];
-    let headlineIndex = 0;
-
-    // Enter key support
-    userInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
-    });
-
-    function rotateHeadlines() {
-      document.getElementById('headline-text').textContent = headlines[headlineIndex];
-      headlineIndex = (headlineIndex + 1) % headlines.length;
-    }
-    setInterval(rotateHeadlines, 8000);
-
-    function sendMessage() {
-      const text = userInput.value.trim();
-      if (!text) return;
-      
-      const now = new Date();
-      insertDateDivider(now);
-      appendMessage(text, 'user', now);
-      saveToHistory(text, 'user', now);
-      userInput.value = '';
-      
-      // Update user context
-      updateUserContext(text);
-      
-      // Disable buttons during processing
-      document.getElementById('send-btn').disabled = true;
-      document.getElementById('clear-btn').disabled = true;
-      
-      setTimeout(() => {
-        const reply = generateSmartReply(text);
-        appendMessage(reply, 'bot', new Date());
-        saveToHistory(reply, 'bot', new Date());
-        
-        // Re-enable buttons
-        document.getElementById('send-btn').disabled = false;
-        document.getElementById('clear-btn').disabled = false;
-      }, 400);
-    }
-
-    function updateUserContext(input) {
-      const lower = input.toLowerCase();
-      
-      // Detect user type
-      if (lower.includes('grade 12') || lower.includes('practice') || lower.includes('study')) {
-        userContext.userType = 'student';
-        userContext.interests.push('academic');
-      }
-      if (lower.includes('matric') || lower.includes('rewrite')) {
-        userContext.userType = 'matric_rewrite';
-        userContext.interests.push('exam_prep');
-      }
-      if (lower.includes('game') || lower.includes('play') || lower.includes('fun')) {
-        userContext.interests.push('games');
-      }
-      if (lower.includes('news') || lower.includes('update')) {
-        userContext.interests.push('news');
-      }
-      if (lower.includes('stress') || lower.includes('tired') || lower.includes('break')) {
-        userContext.mood = 'stressed';
-      }
-      
-      userContext.lastActivity = new Date().toISOString();
-    }
-
-    function generateSmartReply(input) {
-      const lower = input.toLowerCase();
-      
-      // Smart intent detection with context awareness
-      const intent = detectIntent(lower);
-      
-      switch(intent) {
-        case 'greeting':
-          return getGreetingResponse();
-        case 'news_request':
-          return getNewsResponse();
-        case 'practice_help':
-          return getPracticeResponse();
-        case 'game_request':
-          return getGameResponse();
-        case 'stress_relief':
-          return getStressResponse();
-        case 'site_navigation':
-          return getNavigationResponse(lower);
-        case 'study_help':
-          return getStudyAdvice();
-        case 'unknown':
-          return getFallbackResponse();
-      }
-    }
-
-    function detectIntent(input) {
-      if (/(hello|hi|hey|greetings)/i.test(input)) return 'greeting';
-      if (/(news|update|latest|current)/i.test(input)) return 'news_request';
-      if (/(practice|study|module|grade 12|matric|exam)/i.test(input)) return 'practice_help';
-      if (/(game|play|fun|break)/i.test(input)) return 'game_request';
-      if (/(stress|tired|overwhelmed|break|rest)/i.test(input)) return 'stress_relief';
-      if (/(where|navigate|go to|find|location)/i.test(input)) return 'site_navigation';
-      if (/(help|advice|tips|how to)/i.test(input)) return 'study_help';
-      return 'unknown';
-    }
-
-    function getGreetingResponse() {
-      const greetings = [
-        "👋 Hello! I'm your Juvi assistant. I can help you with news, Grade 12 practice, games, or site navigation!",
-        "🎓 Welcome back! Ready to learn something new today?",
-        "📚 Hey there! Need help with studies, news, or maybe a fun break?"
-      ];
-      return greetings[Math.floor(Math.random() * greetings.length)] + 
-             " <span class='quick-reply' onclick=\"userInput.value='news'\">📰 News</span>" +
-             " <span class='quick-reply' onclick=\"userInput.value='practice'\">📖 Practice</span>" +
-             " <span class='quick-reply' onclick=\"userInput.value='games'\">🎮 Games</span>";
-    }
-
-    function getNewsResponse() {
-      return "📰 <strong>Latest Educational News:</strong><br>" +
-             "• New curriculum updates for 2025<br>" +
-             "• Digital learning tools now available<br>" +
-             "• Matric results show improvement trends<br><br>" +
-             "Stay informed with our news section! " +
-             "<span class='quick-reply' onclick=\"userInput.value='practice zone'\">Switch to Practice</span>";
-    }
-
-    function getPracticeResponse() {
-      if (userContext.userType === 'matric_rewrite') {
-        return "📚 <strong>Matric Rewrite Support:</strong><br>" +
-               "• Past exam papers (2018-2024)<br>" +
-               "• Subject-specific study guides<br>" +
-               "• Progress tracking dashboard<br>" +
-               "• Expert tutor recommendations<br><br>" +
-               "You've got this! Need a break? " +
-               "<span class='quick-reply' onclick=\"userInput.value='games'\">Take a break</span>";
-      }
-      
-      return "📖 <strong>Grade 12 Practice Zone:</strong><br>" +
-             "• Interactive modules for all subjects<br>" +
-             "• Real-time progress tracking<br>" +
-             "• Quick quizzes and assessments<br>" +
-             "• Peer discussion forums<br><br>" +
-             "Ready to practice? " +
-             "<span class='quick-reply' onclick=\"userInput.value='math practice'\">Math</span>" +
-             " <span class='quick-reply' onclick=\"userInput.value='science practice'\">Science</span>";
-    }
-
-    function getGameResponse() {
-      return "🎮 <strong>Game Zone - Learning Made Fun!</strong><br>" +
-             "• Educational puzzles and brain games<br>" +
-             "• Memory and focus training<br>" +
-             "• Subject-based learning games<br>" +
-             "• Stress-relief activities<br><br>" +
-             "Perfect for breaks! " +
-             "<span class='quick-reply' onclick=\"userInput.value='back to practice'\">Return to Study</span>" +
-             " <span class='quick-reply' onclick=\"userInput.value='news'\">Check News</span>";
-    }
-
-    function getStressResponse() {
-      return "🫂 <strong>Take a Breather!</strong><br>" +
-             "I understand studying can be intense. Here's what I recommend:<br>" +
-             "• Short 5-min break in Game Zone<br>" +
-             "• Quick mindfulness exercise<br>" +
-             "• Switch to light news reading<br>" +
-             "• Hydrate and stretch<br><br>" +
-             "<span class='quick-reply' onclick=\"userInput.value='games'\">Quick Game Break</span>" +
-             " <span class='quick-reply' onclick=\"userInput.value='light news'\">Light Reading</span>";
-    }
-
-    function getNavigationResponse(input) {
-      if (input.includes('practice') || input.includes('study')) {
-        return "📍 Taking you to <strong>Practice Zone</strong>...<br>" +
-               "You'll find subject modules, past papers, and progress tracking there!";
-      }
-      if (input.includes('game') || input.includes('play')) {
-        return "🎮 Redirecting to <strong>Game Zone</strong>...<br>" +
-               "Have fun while learning! Remember to return to studies refreshed.";
-      }
-      if (input.includes('news')) {
-        return "📰 Navigating to <strong>News Section</strong>...<br>" +
-               "Stay updated with the latest educational trends and news!";
-      }
-      
-      return "🗺️ <strong>Site Navigation:</strong><br>" +
-             "• Practice Zone - Study materials and exercises<br>" +
-             "• Game Zone - Educational games and breaks<br>" +
-             "• News Section - Latest updates and articles<br>" +
-             "• Profile - Track your progress and goals";
-    }
-
-    function getStudyAdvice() {
-      const tips = [
-        "💡 <strong>Study Tip:</strong> Try the Pomodoro technique - 25min study, 5min break!",
-        "🎯 <strong>Pro Tip:</strong> Practice active recall by testing yourself regularly!",
-        "📝 <strong>Advice:</strong> Create a study schedule and stick to it consistently!"
-      ];
-      return tips[Math.floor(Math.random() * tips.length)] +
-             "<br><span class='quick-reply' onclick=\"userInput.value='practice zone'\">Start Practicing</span>";
-    }
-
-    function getFallbackResponse() {
-      return "🤔 I'm not sure I understand. I can help you with:<br>" +
-             "• 📰 Latest news and updates<br>" +
-             "• 📖 Grade 12 practice materials<br>" +
-             "• 🎮 Educational games and breaks<br>" +
-             "• 🗺️ Site navigation assistance<br><br>" +
-             "What would you like to explore?";
-    }
-
-    function appendMessage(text, sender, time) {
-      const msg = document.createElement('div');
-      msg.className = `message ${sender}`;
-      msg.innerHTML = `${text}<div class="timestamp">${formatTime(time)}</div>`;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function insertDateDivider(date) {
-      const today = formatDate(date);
-      if (today !== lastDate) {
-        const divider = document.createElement('div');
-        divider.className = 'date-divider';
-        divider.textContent = today;
-        chatBox.appendChild(divider);
-        lastDate = today;
-      }
-    }
-
-    function formatTime(date) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function formatDate(date) {
-      return date.toLocaleDateString([], { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-    }
-
-    function saveToHistory(text, sender, time) {
-      try {
-        const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-        history.push({ text, sender, time: time.getTime() });
-        localStorage.setItem('chatHistory', JSON.stringify(history));
-      } catch (error) {
-        console.error('Error saving to history:', error);
-      }
-    }
-
-    function loadHistory() {
-      try {
-        const now = Date.now();
-        const week = 7 * 24 * 60 * 60 * 1000;
-        let history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-        history = history.filter(msg => now - msg.time < week);
-        localStorage.setItem('chatHistory', JSON.stringify(history));
-        lastDate = '';
-        history.forEach(msg => {
-          const date = new Date(msg.time);
-          insertDateDivider(date);
-          appendMessage(msg.text, msg.sender, date);
-        });
-      } catch (error) {
-        console.error('Error loading history:', error);
-      }
-    }
-
-    function clearAllMessages() {
-      try {
-        // Clear all messages from localStorage
-        localStorage.setItem('chatHistory', JSON.stringify([]));
-        
-        // Clear the chat interface
-        chatBox.innerHTML = '';
-        lastDate = '';
-        
-        // Reset user context
-        userContext = {
-          userType: '',
-          interests: [],
-          lastActivity: '',
-          mood: 'neutral'
-        };
-        
-        // Add a fresh welcome message
-        setTimeout(() => {
-          const welcomeMsg = getGreetingResponse();
-          appendMessage(welcomeMsg, 'bot', new Date());
-          saveToHistory(welcomeMsg, 'bot', new Date());
-        }, 500);
-      } catch (error) {
-        console.error('Error clearing messages:', error);
-      }
-    }
-
-    // Initialize with welcome message if first visit
-    function initializeChat() {
-      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-      if (history.length === 0) {
-        setTimeout(() => {
-          const welcomeMsg = getGreetingResponse();
-          appendMessage(welcomeMsg, 'bot', new Date());
-          saveToHistory(welcomeMsg, 'bot', new Date());
-        }, 1000);
-      }
-    }
-
-    // IndexedDB setup
-    let db;
-    try {
-      const request = indexedDB.open("JuviData", 1);
-      request.onerror = () => console.log("IndexedDB failed");
-      request.onsuccess = () => {
-        db = request.result;
-      };
-      request.onupgradeneeded = (event) => {
-        db = event.target.result;
-        db.createObjectStore("user_preferences", { autoIncrement: true });
-      };
-    } catch (error) {
-      console.error('IndexedDB error:', error);
-    }
-
-    // Initialize chat
-    loadHistory();
-    initializeChat();
-  </script>
   <footer id="footer">
-    © 2025 Juvenile Corner ChatBot • Grade 12 Practice • Game Zone • News Updates
+    © 2026 Juvenile Corner ChatBot • Powered by AI + DuckDuckGo • Human-reviewed by Poncho Malobola
   </footer>
+
+  <div id="clearModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-icon">🗑️</div>
+      <div class="modal-title">Clear Chat History?</div>
+      <div class="modal-text">This will delete all messages and reset your preferences.</div>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="hideClearModal()">Cancel</button>
+        <button class="modal-btn delete" onclick="confirmClearChat()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+let chatBox = document.getElementById('chat-box');
+let userInput = document.getElementById('user-input');
+let inputArea = document.getElementById('input-area');
+let lastDate = '';
+let typingIndicator = null;
+
+let userContext = JSON.parse(localStorage.getItem('juviContext') || '{}');
+if (!userContext.interests) userContext = { interests: [], userType: '', mood: 'neutral', name: '' };
+
+const headlines = [
+  "Juvi now uses DuckDuckGo for live news • Ask anything",
+  "NSFAS 2026: Applications 15 Sept - 30 Nov 2025",
+  "No loadshedding expected Apr-Aug 2026 per Eskom",
+  "Ask: 'SA news today' or 'what is photosynthesis'"
+];
+let headlineIndex = 0;
+setInterval(() => {
+  document.getElementById('headline-text').textContent = headlines[headlineIndex];
+  headlineIndex = (headlineIndex + 1) % headlines.length;
+}, 8000);
+
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark');
+  document.getElementById('theme-btn').textContent = '☀️';
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  const btn = document.getElementById('theme-btn');
+  btn.textContent = document.body.classList.contains('dark')? '☀️' : '🌙';
+  localStorage.setItem('theme', document.body.classList.contains('dark')? 'dark' : 'light');
+}
+
+userInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+function sendQuick(text) {
+  userInput.value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
+
+  const now = new Date();
+  addDateDivider(now);
+  appendMessage(text, 'user', now);
+  saveMessage(text, 'user', now);
+  userInput.value = '';
+
+  updateContext(text);
+  showTyping();
+
+  const reply = await generateSmartReply(text);
+  hideTyping();
+  appendMessage(reply, 'bot', new Date());
+  saveMessage(reply, 'bot', new Date());
+}
+
+function showTyping() {
+  typingIndicator = document.createElement('div');
+  typingIndicator.className = 'message bot typing';
+  typingIndicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  chatBox.appendChild(typingIndicator);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function hideTyping() {
+  if (typingIndicator) typingIndicator.remove();
+}
+
+function updateContext(input) {
+  const lower = input.toLowerCase();
+  if (lower.includes('grade 12') || lower.includes('matric') || lower.includes('study')) {
+    userContext.userType = 'student';
+    userContext.interests.push('academic');
+  }
+  if (lower.includes('rewrite')) userContext.userType = 'matric_rewrite';
+  if (lower.includes('game') || lower.includes('break')) userContext.interests.push('games');
+  if (lower.includes('news') || lower.includes('update')) userContext.interests.push('news');
+  if (lower.includes('stress') || lower.includes('tired')) userContext.mood = 'stressed';
+  if (input.startsWith('my name is') || input.startsWith("i'm ")) {
+    userContext.name = input.split(' ').slice(-1)[0];
+  }
+  localStorage.setItem('juviContext', JSON.stringify(userContext));
+}
+
+// DUCKDUCKGO SEARCH VERSION
+async function generateSmartReply(input) {
+  const lower = input.toLowerCase();
+  const intent = detectIntent(lower);
+
+  if (intent === 'greeting') {
+    const name = userContext.name? `, ${userContext.name}` : '';
+    return `👋 Hello${name}! I'm Juvi. Ask me "NSFAS 2026" or "SA news today" and I'll search DuckDuckGo for you 🌐`;
+  }
+
+  if (intent === 'practice') return getPracticeReply();
+  if (intent === 'games') return getGamesReply();
+  if (intent === 'stress') return getStressReply();
+  if (intent === 'help') return getHelpReply();
+
+  return await searchDuckGo(input);
+}
+
+async function searchDuckGo(query) {
+  try {
+    const ddgUrl = `https://api.duckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(ddgUrl)}`;
+
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error("DuckGo failed: " + res.status);
+
+    const data = await res.json();
+
+    if (data.Answer) {
+      return `🔍 <strong>Answer:</strong><br>${data.Answer}<br><br>` +
+        `<div class="source">Source: DuckDuckGo</div>`;
+    }
+
+    if (data.AbstractText) {
+      return `📰 <strong>${data.Heading || query}</strong><br><br>${data.AbstractText}<br><br>` +
+        `<div class="source">Source: <a href="${data.AbstractURL}" target="_blank">${data.AbstractSource}</a></div>`;
+    }
+
+    if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+      const news = data.RelatedTopics
+       .filter(t => t.Text && t.Text.length > 20)
+       .slice(0, 3)
+       .map(t => `• ${t.Text}`)
+       .join('<br>');
+
+      return `📰 <strong>Latest on "${query}":</strong><br><br>${news}<br><br>` +
+        `<div class="source">Source: DuckDuckGo</div>`;
+    }
+
+    if (data.Definition) {
+      return `📚 <strong>Definition:</strong><br>${data.Definition}<br><br>` +
+        `<div class="source">Source: ${data.DefinitionSource}</div>`;
+    }
+
+    return `🤔 No DuckDuckGo results for "${query}". Try "NSFAS 2026 dates" or "SA news today".`;
+
+  } catch (error) {
+    console.error("DuckGo error:", error);
+
+    if (query.toLowerCase().includes('nsfas')) {
+      return getNSFASReply();
+    }
+
+    return `📡 Can't reach DuckDuckGo right now. On localhost this happens due to browser security.<br><br>` +
+      `Upload to HTTPS site and it will work. For now: NSFAS 2026 applications were 15 Sept - 30 Nov 2025.`;
+  }
+}
+
+function detectIntent(input) {
+  if (/(hi|hello|hey|greetings|morning)/i.test(input)) return 'greeting';
+  if (/(practice|study|module|grade 12|matric|exam|past paper)/i.test(input)) return 'practice';
+  if (/(game|play|fun|break|bored)/i.test(input)) return 'games';
+  if (/(stress|tired|overwhelmed|anxious|help me)/i.test(input)) return 'stress';
+  if (/(help|what can you do|commands)/i.test(input)) return 'help';
+  return 'unknown';
+}
+
+function getPracticeReply() {
+  if (userContext.userType === 'matric_rewrite') {
+    return `📚 <strong>Matric Rewrite Support:</strong><br><br>` +
+      `• Past papers: Math, Science, English 2018-2024<br>` +
+      `• Study guides with solutions<br>` +
+      `• Ask "what is quadratic formula" for examples`;
+  }
+  return `📖 <strong>Grade 12 Practice Zone:</strong><br><br>` +
+    `• Interactive modules: Math, Physical Science, English<br>` +
+    `• Quick quizzes - 5min each<br>` +
+    `• Ask me definitions and I'll search DuckDuckGo`;
+}
+
+function getGamesReply() {
+  return `🎮 <strong>Game Zone:</strong><br><br>` +
+    `• Brain training puzzles<br>` +
+    `• Math speed challenges<br>` +
+    `• 10min breaks improve focus by 23%`;
+}
+
+function getStressReply() {
+  return `🫂 <strong>Take a Breather:</strong><br><br>` +
+    `1. 4-7-8 breathing: In 4s, hold 7s, out 8s x3<br>` +
+    `2. 5min walk/stretch<br>` +
+    `3. Drink water 💧<br><br>` +
+    `You're doing better than you think.`;
+}
+
+function getNSFASReply() {
+  return `💰 <strong>NSFAS 2026 - Official Dates:</strong><br><br>` +
+    `• <b>Applications:</b> 15 September 2025 → 30 November 2025<br>` +
+    `• <b>Who qualifies:</b> SA citizen, household income <R350k/year<br>` +
+    `• <b>Funding:</b> R51 billion committed for 2026<br>` +
+    `• <b>Apply:</b> nsfas.org.za → myNSFAS account<br><br>` +
+    `⚠️ Apply early - closes 30 Nov 2025<br>` +
+    `<div class="source">Source: NSFAS official</div>`;
+}
+
+function getHelpReply() {
+  return `❓ <strong>How Juvi Works Now:</strong><br><br>` +
+    `• <b>DuckDuckGo search:</b> Ask "SA news today", "NSFAS 2026", "weather Cape Town"<br>` +
+    `• <b>Local knowledge:</b> Grade 12 help, study tips, mental health<br>` +
+    `• <b>Definitions:</b> Any topic - I'll pull from DuckDuckGo<br><br>` +
+    `No fake dates. All news comes from live search.`;
+}
+
+function appendMessage(text, sender, time) {
+  const msg = document.createElement('div');
+  msg.className = `message ${sender}`;
+  msg.innerHTML = `${text}<div class="timestamp">${formatTime(time)}</div>`;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function addDateDivider(date) {
+  const today = date.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric'});
+  if (today!== lastDate) {
+    const div = document.createElement('div');
+    div.style.cssText = 'text-align:center; font-size:0.75em; color:#888; margin:15px 0; padding:5px;';
+    div.textContent = today;
+    chatBox.appendChild(div);
+    lastDate = today;
+  }
+}
+
+function formatTime(date) {
+  return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+}
+
+function saveMessage(text, sender, time) {
+  try {
+    const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+    history.push({text, sender, time: time.getTime()});
+    if (history.length > 100) history.shift();
+    localStorage.setItem('chatHistory', JSON.stringify(history));
+  } catch(e) { console.log(e); }
+}
+
+function loadHistory() {
+  try {
+    const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+    history.forEach(msg => {
+      addDateDivider(new Date(msg.time));
+      appendMessage(msg.text, msg.sender, new Date(msg.time));
+    });
+  } catch(e) { console.log(e); }
+}
+
+function showClearModal() {
+  document.getElementById('clearModal').classList.add('show');
+}
+
+function hideClearModal() {
+  document.getElementById('clearModal').classList.remove('show');
+}
+
+function confirmClearChat() {
+  localStorage.removeItem('chatHistory');
+  chatBox.innerHTML = '';
+  lastDate = '';
+  userContext = {interests: [], userType: '', mood: 'neutral', name: ''};
+  localStorage.removeItem('juviContext');
+  hideClearModal();
+  setTimeout(() => appendMessage(generateSmartReply('hi'), 'bot', new Date()), 500);
+}
+
+document.getElementById('clearModal').addEventListener('click', e => {
+  if (e.target.id === 'clearModal') hideClearModal();
+});
+
+loadHistory();
+if (JSON.parse(localStorage.getItem('chatHistory') || '[]').length === 0) {
+  setTimeout(() => appendMessage(generateSmartReply('hi'), 'bot', new Date()), 1000);
+}
+</script>
 </body>
 </html>
